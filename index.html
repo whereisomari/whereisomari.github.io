@@ -384,108 +384,13 @@
         <div class="status-details" id="statusDetails">Fetching live tracking data...</div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script>
-    // Only load Firebase if we don't have valid cached data
-    if (!window.usingCachedData) {
-        function loadFirebase() {
-            // Load Firebase scripts in sequence
-            const loadScript = (src, callback) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = callback;
-                document.body.appendChild(script);
-            };
-            
-            // Load app first, then auth, then storage
-            loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
-                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
-                    loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
-                        // Initialize Firebase after all scripts are loaded
-                        const firebaseConfig = {
-                            apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
-                            authDomain: "owngoal-4f34f.firebaseapp.com",
-                            projectId: "owngoal-4f34f",
-                            storageBucket: "owngoal-4f34f.firebasestorage.app",
-                            messagingSenderId: "270078133518",
-                            appId: "1:270078133518:web:36ef7431fda632bed1c35f"
-                        };
-                        
-                        // Initialize Firebase
-                        firebase.initializeApp(firebaseConfig);
-                        
-                        // Set persistence to LOCAL
-                        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                            .catch(error => {
-                                console.error("Persistence error:", error);
-                            });
-                    });
-                });
-            });
-        }
-        
-        // Load Firebase
-        loadFirebase();
-    } else {
-        // Create a placeholder firebase object to prevent errors
-        window.firebase = {
-            auth: () => ({ 
-                signOut: () => Promise.resolve() 
-            })
-        };
-    }
-    </script>
-        
-<script>
-// Only load Firebase if we don't have valid cached data
-if (!window.usingCachedData) {
-    function loadFirebase() {
-        // Load Firebase scripts in sequence
-        const loadScript = (src, callback) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = callback;
-            document.body.appendChild(script);
-        };
-        
-        // Load app first, then auth, then storage
-        loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
-            loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
-                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
-                    // Initialize Firebase after all scripts are loaded
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
-                        authDomain: "owngoal-4f34f.firebaseapp.com",
-                        projectId: "owngoal-4f34f",
-                        storageBucket: "owngoal-4f34f.firebasestorage.app",
-                        messagingSenderId: "270078133518",
-                        appId: "1:270078133518:web:36ef7431fda632bed1c35f"
-                    };
-                    
-                    // Initialize Firebase
-                    firebase.initializeApp(firebaseConfig);
-                    
-                    // Set persistence to LOCAL
-                    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                        .catch(error => {
-                            console.error("Persistence error:", error);
-                        });
-                });
-            });
-        });
-    }
-    
-    // Load Firebase
-    loadFirebase();
-} else {
-    // Create a placeholder firebase object to prevent errors
-    window.firebase = {
-        auth: () => ({ 
-            signOut: () => Promise.resolve() 
-        })
-    };
-}
-</script>          
-          
+        // Firebase configuration
+        const firebaseConfig = {
             apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
             authDomain: "owngoal-4f34f.firebaseapp.com",
             projectId: "owngoal-4f34f",
@@ -494,9 +399,11 @@ if (!window.usingCachedData) {
             appId: "1:270078133518:web:36ef7431fda632bed1c35f"
         };
 
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
         // Hardcoded credentials - only username is hardcoded
         const HARDCODED_USERNAME = "standard@yourapp.local";
-        // Password will be entered by user
         
         // Data storage
         let csvData = null;
@@ -629,11 +536,8 @@ if (!window.usingCachedData) {
             loadingStatus.textContent = 'Authenticating...';
             loadingStatus.style.display = 'block';
             
-            // Initialize Firebase Auth and attempt login
-            initializeFirebaseAuth()
-                .then(() => {
-                    return firebase.auth().signInWithEmailAndPassword(HARDCODED_USERNAME, password);
-                })
+            // Direct Firebase auth call
+            firebase.auth().signInWithEmailAndPassword(HARDCODED_USERNAME, password)
                 .then((userCredential) => {
                     // Authentication successful, now load data
                     loadingStatus.textContent = 'Loading tracking data...';
@@ -665,42 +569,6 @@ if (!window.usingCachedData) {
                     loadingStatus.style.display = 'none';
                 });
         }
-        
-        async function initializeFirebaseAuth() {
-    try {
-        // Load Firebase scripts using the same method as the working site
-        if (typeof firebase === 'undefined') {
-            // Load scripts sequentially using callbacks (like the working site)
-            await new Promise((resolve, reject) => {
-                const loadScript = (src, callback) => {
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.onload = callback;
-                    script.onerror = reject;
-                    document.body.appendChild(script);
-                };
-                
-                // Load app first, then auth, then storage
-                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
-                    loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
-                        loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
-                            resolve();
-                        });
-                    });
-                });
-            });
-            
-            // Initialize Firebase after all scripts are loaded
-            firebase.initializeApp(firebaseConfig);
-            
-            // Set persistence to LOCAL
-            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        }
-    } catch (error) {
-        console.error('Error initializing Firebase Auth:', error);
-        throw error;
-    }
-}      
         
         function showLoginError(message) {
             const loginError = document.getElementById('loginError');
@@ -868,15 +736,6 @@ if (!window.usingCachedData) {
         
         async function loadFirebaseAndFetchDutyData() {
             try {
-                // Firebase should already be loaded from auth, but load storage if needed
-                if (!firebase.storage) {
-                    const scriptStorage = document.createElement('script');
-                    scriptStorage.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js';
-                    document.head.appendChild(scriptStorage);
-                    
-                    await new Promise(resolve => scriptStorage.onload = resolve);
-                }
-                
                 const storage = firebase.storage();
                 
                 // Fetch duty tracker data
@@ -1019,9 +878,6 @@ if (!window.usingCachedData) {
             }
         }
 
-        // Include all the other functions from the original (parseCSVData, detectRunTransitions, calculateCurrentStatus, etc.)
-        // [The rest of the JavaScript from the original file would go here - all the data processing logic]
-        
         // Location mapping from timetable explorer
         const locationMapping = {
             'ABR': 'Abbey Road', 'ALS': 'All Saints', 'BAN': 'Bank', 'BEC': 'Beckton', 
