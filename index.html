@@ -568,29 +568,40 @@
         }
         
         async function initializeFirebaseAuth() {
-            try {
-                // Load Firebase Auth if not already loaded
-                if (typeof firebase === 'undefined') {
-                    const scriptApp = document.createElement('script');
-                    scriptApp.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
-                    document.head.appendChild(scriptApp);
-                    
-                    await new Promise(resolve => scriptApp.onload = resolve);
-                    
-                    const scriptAuth = document.createElement('script');
-                    scriptAuth.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js';
-                    document.head.appendChild(scriptAuth);
-                    
-                    await new Promise(resolve => scriptAuth.onload = resolve);
-                    
-                    // Initialize Firebase
-                    firebase.initializeApp(firebaseConfig);
-                }
-            } catch (error) {
-                console.error('Error initializing Firebase Auth:', error);
-                throw error;
-            }
+    try {
+        // Load Firebase scripts using the same method as the working site
+        if (typeof firebase === 'undefined') {
+            // Load scripts sequentially using callbacks (like the working site)
+            await new Promise((resolve, reject) => {
+                const loadScript = (src, callback) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = callback;
+                    script.onerror = reject;
+                    document.body.appendChild(script);
+                };
+                
+                // Load app first, then auth, then storage
+                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
+                    loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
+                        loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
+                            resolve();
+                        });
+                    });
+                });
+            });
+            
+            // Initialize Firebase after all scripts are loaded
+            firebase.initializeApp(firebaseConfig);
+            
+            // Set persistence to LOCAL
+            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         }
+    } catch (error) {
+        console.error('Error initializing Firebase Auth:', error);
+        throw error;
+    }
+}      
         
         function showLoginError(message) {
             const loginError = document.getElementById('loginError');
