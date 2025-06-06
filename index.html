@@ -385,8 +385,107 @@
     </div>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
+    // Only load Firebase if we don't have valid cached data
+    if (!window.usingCachedData) {
+        function loadFirebase() {
+            // Load Firebase scripts in sequence
+            const loadScript = (src, callback) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = callback;
+                document.body.appendChild(script);
+            };
+            
+            // Load app first, then auth, then storage
+            loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
+                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
+                    loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
+                        // Initialize Firebase after all scripts are loaded
+                        const firebaseConfig = {
+                            apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
+                            authDomain: "owngoal-4f34f.firebaseapp.com",
+                            projectId: "owngoal-4f34f",
+                            storageBucket: "owngoal-4f34f.firebasestorage.app",
+                            messagingSenderId: "270078133518",
+                            appId: "1:270078133518:web:36ef7431fda632bed1c35f"
+                        };
+                        
+                        // Initialize Firebase
+                        firebase.initializeApp(firebaseConfig);
+                        
+                        // Set persistence to LOCAL
+                        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                            .catch(error => {
+                                console.error("Persistence error:", error);
+                            });
+                    });
+                });
+            });
+        }
+        
+        // Load Firebase
+        loadFirebase();
+    } else {
+        // Create a placeholder firebase object to prevent errors
+        window.firebase = {
+            auth: () => ({ 
+                signOut: () => Promise.resolve() 
+            })
+        };
+    }
+    </script>
+        
+<script>
+// Only load Firebase if we don't have valid cached data
+if (!window.usingCachedData) {
+    function loadFirebase() {
+        // Load Firebase scripts in sequence
+        const loadScript = (src, callback) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = callback;
+            document.body.appendChild(script);
+        };
+        
+        // Load app first, then auth, then storage
+        loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
+            loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
+                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
+                    // Initialize Firebase after all scripts are loaded
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
+                        authDomain: "owngoal-4f34f.firebaseapp.com",
+                        projectId: "owngoal-4f34f",
+                        storageBucket: "owngoal-4f34f.firebasestorage.app",
+                        messagingSenderId: "270078133518",
+                        appId: "1:270078133518:web:36ef7431fda632bed1c35f"
+                    };
+                    
+                    // Initialize Firebase
+                    firebase.initializeApp(firebaseConfig);
+                    
+                    // Set persistence to LOCAL
+                    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                        .catch(error => {
+                            console.error("Persistence error:", error);
+                        });
+                });
+            });
+        });
+    }
+    
+    // Load Firebase
+    loadFirebase();
+} else {
+    // Create a placeholder firebase object to prevent errors
+    window.firebase = {
+        auth: () => ({ 
+            signOut: () => Promise.resolve() 
+        })
+    };
+}
+</script>          
+          
             apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
             authDomain: "owngoal-4f34f.firebaseapp.com",
             projectId: "owngoal-4f34f",
