@@ -604,16 +604,18 @@
 				.then(() => {
 					console.log('Duty tracker loaded successfully');
 					
-					// Start fade sequence: loading circle fades out first
-					const loadingOverlay = document.getElementById('loadingOverlay');
-					if (loadingOverlay) {
-						loadingOverlay.style.opacity = '0';
-						setTimeout(() => {
-							loadingOverlay.style.display = 'none';
-						}, 800);
-					}
+					// Wait 3.2 seconds, then start fading circle so it finishes right before text overlay starts
+					setTimeout(() => {
+						const loadingOverlay = document.getElementById('loadingOverlay');
+						if (loadingOverlay) {
+							loadingOverlay.style.opacity = '0';
+							setTimeout(() => {
+								loadingOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 3200);
 					
-					// Wait 2 seconds after circle starts fading, then fade out text overlay
+					// Wait 4 seconds (circle finishes fading), then fade out text overlay
 					setTimeout(() => {
 						const textOverlay = document.getElementById('textOverlay');
 						if (textOverlay) {
@@ -622,7 +624,7 @@
 								textOverlay.style.display = 'none';
 							}, 800);
 						}
-					}, 2000);
+					}, 4000);
 					
 					// Start the real-time updates
 					startRealTimeUpdates();
@@ -630,18 +632,19 @@
 				.catch(error => {
 					console.error("Duty tracker loading failed:", error);
 					
-					// Hide overlays even on error
-					const loadingOverlay = document.getElementById('loadingOverlay');
-					const textOverlay = document.getElementById('textOverlay');
-					
-					if (loadingOverlay) {
-						loadingOverlay.style.opacity = '0';
-						setTimeout(() => {
-							loadingOverlay.style.display = 'none';
-						}, 800);
-					}
+					// Hide overlays even on error with same timing
+					setTimeout(() => {
+						const loadingOverlay = document.getElementById('loadingOverlay');
+						if (loadingOverlay) {
+							loadingOverlay.style.opacity = '0';
+							setTimeout(() => {
+								loadingOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 3200);
 					
 					setTimeout(() => {
+						const textOverlay = document.getElementById('textOverlay');
 						if (textOverlay) {
 							textOverlay.style.opacity = '0';
 							setTimeout(() => {
@@ -659,7 +662,7 @@
 						if (statusDetails) {
 							statusDetails.textContent = error.message;
 						}
-					}, 2000);
+					}, 4000);
 				});
 		}
         
