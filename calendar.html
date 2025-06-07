@@ -230,30 +230,50 @@
 
         /* Header */
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 3rem;
+        }
+
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .title-section {
+            flex: 1;
+            text-align: center;
         }
 
         .page-title {
             font-size: clamp(2rem, 6vw, 3.5rem);
             font-weight: 300;
-            margin-bottom: 1rem;
-            line-height: 1.1;
+            margin: 0;
+            line-height: 1.2;
         }
 
-        .page-title-gradient {
+        .page-title .gradient-text {
             background: linear-gradient(to right, hsl(300, 80%, 70%), hsl(270, 80%, 61%), hsl(235, 85%, 55%), hsl(300, 80%, 70%));
             background-size: 300% 300%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradientCycle 5s linear infinite;
-            display: block;
         }
 
-        .page-title-white {
+        .page-title .white-text {
             color: #ffffff;
-            display: block;
         }
 
         @keyframes gradientCycle {
@@ -261,30 +281,6 @@
             33% { background-position: 100% 100%, 50% 50%; }
             66% { background-position: 50% 50%, 100% 0%; }
             100% { background-position: 0% 0%, 150% 50%; }
-        }
-
-        .nav-link {
-            position: fixed;
-            top: 2rem;
-            left: 2rem;
-            color: #667eea;
-            text-decoration: none;
-            padding: 8px 16px;
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            z-index: 100;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(8px);
-        }
-
-        .nav-link-mobile {
-            display: none;
-        }
-
-        .nav-link:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #667eea;
         }
 
         /* Calendar grid */
@@ -316,30 +312,15 @@
             cursor: default;
         }
 
-        .duty-card.rest-day .duty-category {
-            display: none;
-        }
-
         .duty-card.rest-day:hover {
             transform: none;
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .duty-card.rest-day.category-AL:hover { background: #22330B; }
-        .duty-card.rest-day.category-BH:hover { background: #2B1710; }
-        .duty-card.rest-day.category-LD:hover { background: #5E2405; }
-        .duty-card.rest-day.category-MRD:hover { background: #063004; }
-        .duty-card.rest-day.category-O:hover { background: #063004; }
-        .duty-card.rest-day.category-OAL:hover { background: #22330B; }
-        .duty-card.rest-day.category-RD:hover { background: #063004; }
-
-        /* Full background colors for all-day events */
-        .duty-card.rest-day.category-AL { background: #22330B; }
-        .duty-card.rest-day.category-BH { background: #2B1710; }
-        .duty-card.rest-day.category-LD { background: #5E2405; }
-        .duty-card.rest-day.category-MRD { background: #063004; }
-        .duty-card.rest-day.category-O { background: #063004; }
-        .duty-card.rest-day.category-OAL { background: #22330B; }
-        .duty-card.rest-day.category-RD { background: #063004; }
+        .duty-card.rest-day .duty-category {
+            background: #666 !important;
+            color: white;
+        }
 
         .duty-date {
             font-size: 0.9rem;
@@ -460,6 +441,31 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .clickable-half {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .clickable-half:hover {
+            color: #8A2BE2;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         .section-item {
             margin-bottom: 0.5rem;
             display: flex;
@@ -484,31 +490,23 @@
                 padding: 1rem;
             }
             
-            .nav-link {
-                display: none;
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
             
-            .nav-link-mobile {
-                display: block;
-                color: #667eea;
-                text-decoration: none;
-                padding: 8px 16px;
-                border: 1px solid rgba(102, 126, 234, 0.3);
-                border-radius: 8px;
-                transition: all 0.3s ease;
-                background: rgba(10, 10, 10, 0.8);
-                backdrop-filter: blur(8px);
-                margin: 0 auto 2rem auto;
-                width: fit-content;
-            }
-            
-            .nav-link-mobile:hover {
-                background: rgba(102, 126, 234, 0.1);
-                border-color: #667eea;
+            .title-section {
+                order: 1;
+                margin-bottom: 1rem;
             }
             
             .page-title {
-                font-size: clamp(2.5rem, 8vw, 4rem);
+                font-size: clamp(2.5rem, 10vw, 4rem);
+            }
+            
+            .nav-link {
+                order: 2;
             }
             
             .calendar-grid {
@@ -550,14 +548,15 @@
 
     <!-- Main content -->
     <div class="container" id="mainContainer">
-        <a href="/" class="nav-link">Realtime</a>
-        
         <div class="header">
-            <h1 class="page-title">
-                <span class="page-title-gradient">Omari's</span>
-                <span class="page-title-white">Duty Calendar</span>
-            </h1>
-            <a href="/" class="nav-link-mobile">Realtime</a>
+            <a href="/" class="nav-link">View Realtime</a>
+            <div class="title-section">
+                <h1 class="page-title">
+                    <span class="gradient-text">Omari's</span><br>
+                    <span class="white-text">Duty Calendar</span>
+                </h1>
+            </div>
+            <div></div> <!-- Spacer for flexbox -->
         </div>
         
         <div class="calendar-grid" id="calendarGrid">
@@ -572,7 +571,7 @@
         <div class="duty-modal-content">
             <div class="duty-modal-header">
                 <span id="modalTitle">Duty Details</span>
-                <button class="close-modal" onclick="closeDutyModal()">&times;</button>
+                <button class="close-modal" onclick="history.back()">&times;</button>
             </div>
             <div class="duty-modal-body" id="modalBody">
                 <!-- Duty details will be populated here -->
@@ -588,6 +587,8 @@
             singleTemp: {},
             rangeTemp: []
         };
+        let timetableData = null;
+        let parsedCsvData = null;
 
         // Authentication variables
         const mainContainer = document.getElementById('mainContainer');
@@ -695,10 +696,11 @@
 
             mainContainer.style.display = 'flex';
             
-            // Load both duty tracker and duty lookup data
+            // Load duty tracker, duty lookup data, and timetable
             Promise.all([
                 fetchDutyTracker(),
-                fetchDutyLookupData()
+                fetchDutyLookupData(),
+                fetchTimetable()
             ])
             .then(() => {
                 console.log('All data loaded successfully');
@@ -894,7 +896,7 @@
                         let firstHalf = '';
                         let secondHalf = '';
                         
-                        if (category && !['O', 'RD', 'MRD', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
+                        if (category && !['O', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
                             firstHalf = lines[i + 3]?.trim() || '';
                             secondHalf = lines[i + 4]?.trim() || '';
                         }
@@ -1014,20 +1016,31 @@
             
             const dayNames = {
                 "O": "Rest day",
-                "RD": "Rest day", 
-                "MRD": "Rest day",
                 "AL": "Annual leave",
                 "OAL": "Owed annual leave",
                 "LD": "Lieu day",
                 "BH": "Bank holiday"
             };
             
-            if (['O', 'RD', 'MRD', 'AL', 'OAL', 'LD', 'BH'].includes(dutyInfo.category)) {
+            if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(dutyInfo.category)) {
                 card.classList.add('rest-day');
-                card.classList.add(`category-${dutyInfo.category}`);
+                
+                // Get category color for background
+                const categoryColors = {
+                    'AL': '#22330B',
+                    'BH': '#2B1710', 
+                    'LD': '#5E2405',
+                    'O': '#063004',
+                    'OAL': '#22330B'
+                };
+                
+                const bgColor = categoryColors[dutyInfo.category] || '#333';
+                card.style.background = bgColor;
+                
                 card.innerHTML = `
                     <div class="duty-date">${dateStr}</div>
                     <div class="duty-main">${dayNames[dutyInfo.category] || dutyInfo.category}</div>
+                    <div class="duty-category category-${dutyInfo.category}">${dutyInfo.category}</div>
                 `;
                 return card;
             }
@@ -1080,6 +1093,9 @@
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             
+            // Add history state for modal
+            history.pushState({modal: 'duty-details'}, '', '');
+            
             const duty = versionInfo.duty;
             const dutyId = versionInfo.dutyId;
             const [number, location, endLocation, startTime, endTime] = dutyId.split('-');
@@ -1117,7 +1133,7 @@
                 // First Half
                 content += `
                     <div class="section">
-                        <div class="section-header">First Half (${duty.FirstHalfLength})</div>`;
+                        <div class="section-header clickable-half" onclick="showRunDetails('${duty.FirstHalfRunNumber}', 'First Half', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}')">First Half (${duty.FirstHalfLength})</div>`;
 
                 if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
                     content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
@@ -1153,7 +1169,7 @@
                 // Second Half
                 content += `
                     <div class="section">
-                        <div class="section-header">Second Half (${duty.SecondHalfLength})</div>`;
+                        <div class="section-header clickable-half" onclick="showRunDetails('${duty.SecondHalfRunNumber}', 'Second Half', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}')">Second Half (${duty.SecondHalfLength})</div>`;
 
                 if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
                     content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
@@ -1230,10 +1246,250 @@
             document.getElementById('dutyModal').style.display = 'none';
         }
 
+        // Browser history management
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.modal) {
+                closeDutyModal();
+            }
+        });
+
+        // Fetch timetable data
+        function fetchTimetable() {
+            return new Promise(async (resolve, reject) => {
+                const pathsUrl = 'https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt';
+                
+                try {
+                    const response = await fetch(pathsUrl, { cache: 'no-store' });
+                    if (!response.ok) throw new Error(`Failed to fetch paths.txt: ${response.statusText}`);
+                    const text = await response.text();
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+
+                    let currentEntry = {};
+                    const timetableEntries = [];
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('Name:')) {
+                            if (Object.keys(currentEntry).length > 0) timetableEntries.push({...currentEntry});
+                            currentEntry = { name: trimmedLine.substring(5).trim() };
+                        } else if (trimmedLine.startsWith('Applies:')) {
+                            currentEntry.applies = trimmedLine.substring(8).trim();
+                        } else if (trimmedLine.startsWith('URL:')) {
+                            currentEntry.url = trimmedLine.substring(4).trim();
+                        }
+                    }
+                    if (Object.keys(currentEntry).length > 0) timetableEntries.push(currentEntry);
+
+                    if (timetableEntries.length === 0) {
+                        throw new Error('No valid timetables found in paths.txt');
+                    }
+
+                    const sortedEntries = sortTimetablesByApplicability(timetableEntries);
+                    const applicableTimetable = sortedEntries[0];
+
+                    const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
+                    if (!csvResponse.ok) throw new Error(`Failed to fetch timetable CSV: ${csvResponse.statusText}`);
+                    const csvText = await csvResponse.text();
+
+                    timetableData = csvText;
+                    parsedCsvData = parseCSVData(csvText);
+                    console.log('Timetable data loaded');
+                    resolve();
+
+                } catch (error) {
+                    console.error('Error fetching timetable:', error);
+                    resolve(); // Don't reject - timetable is optional
+                }
+            });
+        }
+
+        // Location mapping from main site
+        const locationMapping = {
+            'ABR': 'Abbey Road', 'ALS': 'All Saints', 'BAN': 'Bank', 'BEC': 'Beckton', 
+            'BEP': 'Beckton Park', 'BLA': 'Blackwall', 'BOC': 'Bow Church', 'CAW': 'Canary Wharf',
+            'CAT': 'Canning Town', 'CRO': 'Crossharbour', 'CUH': 'Custom House', 'CUS': 'Cutty Sark',
+            'CYP': 'Cyprus', 'DEB': 'Deptford Bridge', 'DER': 'Devons Road', 'EAI': 'East India',
+            'ELR': 'Elverson Road', 'GAR': 'Gallions Reach', 'GRE': 'Greenwich', 'HEQ': 'Heron Quays',
+            'ISG': 'Island Gardens', 'KGV': 'King George V', 'LAP': 'Langdon Park', 'LEW': 'Lewisham',
+            'LIM': 'Limehouse', 'LCA': 'London City Airport', 'MUD': 'Mudchute', 'PDK': 'Pontoon Dock',
+            'POP': 'Poplar', 'PRR': 'Prince Regent', 'PML': 'Pudding Mill Lane', 'ROA': 'Royal Albert',
+            'ROV': 'Royal Victoria', 'SHA': 'Shadwell', 'SOQ': 'South Quay', 'STL': 'Star Lane',
+            'SHS': 'Stratford High Street', 'STI': 'Stratford International', 'STR': 'Stratford',
+            'TOG': 'Tower Gateway', 'WEH': 'West Ham', 'WIQ': 'West India Quay', 'WST': 'West Silvertown',
+            'WES': 'Westferry', 'WOA': 'Woolwich Arsenal'
+        };
+
+        // Parse CSV data (from main site)
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const runData = {};
+            
+            const junctions = [
+                'JRMS', 'JRMX', 'JCAW', 'JWEM', 'JCRO', 'JC2M', 'JC3M',
+                'JC4M', 'JROM', 'JWEX', 'JCTM', 'JCTX', 'JWIQ', 'JNQX',
+                'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
+            ];
+            
+            lines.forEach((line) => {
+                const parts = line.split(',');
+                if (parts.length >= 7) {
+                    const runNumber = parts[1].trim();
+                    const locationCode = parts[4].trim();
+                    const arrivalTime = parts[5].trim();
+                    const departureTime = parts[6].trim();
+                    
+                    if (!junctions.includes(locationCode)) {
+                        if (!runData[runNumber]) {
+                            runData[runNumber] = [];
+                        }
+                        
+                        let location = '';
+                        let platform = '';
+                        
+                        if (locationCode === 'BANH') {
+                            location = 'Bank Headshunt';
+                        } else {
+                            const codePrefix = locationCode.slice(0, 3);
+                            platform = locationCode.slice(3);
+                            
+                            if (locationMapping[codePrefix]) {
+                                location = locationMapping[codePrefix];
+                                if (['LEW', 'BEC', 'STI', 'WOA'].includes(codePrefix) || locationCode === 'STR4B') {
+                                    platform = '';
+                                }
+                            } else {
+                                location = locationCode;
+                                platform = '';
+                            }
+                        }
+                        
+                        runData[runNumber].push({
+                            location,
+                            platform,
+                            arrivalTime,
+                            departureTime,
+                            locationCode
+                        });
+                    }
+                }
+            });
+            
+            return runData;
+        }
+
+        // Sort timetables by applicability
+        function sortTimetablesByApplicability(entries) {
+            const operatingDateTime = getCurrentTimeInTimezone();
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            return entries.sort((a, b) => {
+                const aApplies = a.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+                const bApplies = b.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+                
+                const aHasSpecificDate = aApplies.some(range => !dayNames.includes(range));
+                const bHasSpecificDate = bApplies.some(range => !dayNames.includes(range));
+                
+                const aAppliesNow = aApplies.some(range => isDateInRange(operatingDateTime, range));
+                const bAppliesNow = bApplies.some(range => isDateInRange(operatingDateTime, range));
+                
+                if (aAppliesNow && bAppliesNow) {
+                    if (aHasSpecificDate && !bHasSpecificDate) return -1;
+                    if (!aHasSpecificDate && bHasSpecificDate) return 1;
+                }
+                
+                if (aAppliesNow && !bAppliesNow) return -1;
+                if (!aAppliesNow && bAppliesNow) return 1;
+                
+                return a.name.localeCompare(b.name);
+            });
+        }
+
+        function isDateInRange(date, rangeStr) {
+            const ranges = rangeStr.split(',').map(r => r.trim().replace(/['"]/g, ''));
+            return ranges.some(range => {
+                if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(range)) {
+                    return getDayName(date) === range;
+                }
+                const dateRange = parseDateRange(range);
+                return date >= dateRange.start && date <= dateRange.end;
+            });
+        }
+
+        function parseDateRange(dateStr) {
+            dateStr = dateStr.replace(/['"]/g, '');
+            if (dateStr.includes('/')) {
+                const [start, end] = dateStr.split('/').map(d => new Date(d.trim()));
+                return { start, end };
+            }
+            const date = new Date(dateStr);
+            return { start: date, end: date };
+        }
+
+        function getDayName(date) {
+            return date.toLocaleDateString('en-US', { weekday: 'long' });
+        }
+
+        // Show run details with timetable
+        function showRunDetails(runNumber, halfName, startTime, endTime) {
+            if (!runNumber || runNumber === "" || runNumber === "TR") return;
+            
+            const modal = document.getElementById('dutyModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            // Add history state for run details
+            history.pushState({modal: 'run-details'}, '', '');
+            
+            modalTitle.textContent = `${halfName}: Run ${runNumber}`;
+            
+            let content = `<button class="back-button" onclick="history.back()">← Back to Duty Details</button>`;
+            
+            if (parsedCsvData && parsedCsvData[runNumber]) {
+                const runStops = parsedCsvData[runNumber];
+                
+                content += `
+                    <div class="section">
+                        <div class="section-header">Run ${runNumber} Timetable</div>
+                        <div class="section-item">
+                            <span class="section-label">Duty times:</span>
+                            <span>${startTime} - ${endTime}</span>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-header">Station Stops</div>`;
+                
+                runStops.forEach((stop, index) => {
+                    const arrTime = stop.arrivalTime.substring(0, 5);
+                    const depTime = stop.departureTime.substring(0, 5);
+                    const timeDisplay = arrTime === depTime ? arrTime : `${arrTime}-${depTime}`;
+                    
+                    content += `
+                        <div class="section-item">
+                            <span class="section-label">${timeDisplay}</span>
+                            <span>${stop.location}${stop.platform ? ' Platform ' + stop.platform : ''}</span>
+                        </div>`;
+                });
+                
+                content += `</div>`;
+            } else {
+                content += `
+                    <div class="section">
+                        <div class="section-header">Run ${runNumber}</div>
+                        <div style="margin-left: 1rem; color: #888;">Timetable data not available for this run</div>
+                        <div class="section-item">
+                            <span class="section-label">Duty times:</span>
+                            <span>${startTime} - ${endTime}</span>
+                        </div>
+                    </div>`;
+            }
+            
+            modalBody.innerHTML = content;
+        }
+
         // Close modal when clicking outside
         document.getElementById('dutyModal').addEventListener('click', (e) => {
             if (e.target.id === 'dutyModal') {
-                closeDutyModal();
+                // Go back in history to close modal
+                history.back();
             }
         });
 
