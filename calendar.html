@@ -238,12 +238,22 @@
             font-size: clamp(2rem, 6vw, 3.5rem);
             font-weight: 300;
             margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .page-title-gradient {
             background: linear-gradient(to right, hsl(300, 80%, 70%), hsl(270, 80%, 61%), hsl(235, 85%, 55%), hsl(300, 80%, 70%));
             background-size: 300% 300%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradientCycle 5s linear infinite;
+            display: block;
+        }
+
+        .page-title-white {
+            color: #ffffff;
+            display: block;
         }
 
         @keyframes gradientCycle {
@@ -254,14 +264,22 @@
         }
 
         .nav-link {
-            display: inline-block;
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
             color: #667eea;
             text-decoration: none;
-            margin-bottom: 2rem;
             padding: 8px 16px;
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 8px;
             transition: all 0.3s ease;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-link-mobile {
+            display: none;
         }
 
         .nav-link:hover {
@@ -295,14 +313,33 @@
         }
 
         .duty-card.rest-day {
-            opacity: 0.6;
             cursor: default;
+        }
+
+        .duty-card.rest-day .duty-category {
+            display: none;
         }
 
         .duty-card.rest-day:hover {
             transform: none;
-            background: rgba(255, 255, 255, 0.05);
         }
+
+        .duty-card.rest-day.category-AL:hover { background: #22330B; }
+        .duty-card.rest-day.category-BH:hover { background: #2B1710; }
+        .duty-card.rest-day.category-LD:hover { background: #5E2405; }
+        .duty-card.rest-day.category-MRD:hover { background: #063004; }
+        .duty-card.rest-day.category-O:hover { background: #063004; }
+        .duty-card.rest-day.category-OAL:hover { background: #22330B; }
+        .duty-card.rest-day.category-RD:hover { background: #063004; }
+
+        /* Full background colors for all-day events */
+        .duty-card.rest-day.category-AL { background: #22330B; }
+        .duty-card.rest-day.category-BH { background: #2B1710; }
+        .duty-card.rest-day.category-LD { background: #5E2405; }
+        .duty-card.rest-day.category-MRD { background: #063004; }
+        .duty-card.rest-day.category-O { background: #063004; }
+        .duty-card.rest-day.category-OAL { background: #22330B; }
+        .duty-card.rest-day.category-RD { background: #063004; }
 
         .duty-date {
             font-size: 0.9rem;
@@ -341,13 +378,24 @@
         }
 
         /* Category colors */
-        .category-L { background: #03213A; }
-        .category-M { background: #043B3B; }
-        .category-E { background: #046986; }
-        .category-O { background: #0D5B0B; }
-        .category-AL { background: #415F16; }
-        .category-BH { background: #2D1A13; }
-        .category-LD { background: #5E2708; }
+        .category-AL { background: #22330B; }
+        .category-BH { background: #2B1710; }
+        .category-E { background: #004659; }
+        .category-EE { background: #004659; }
+        .category-EM { background: #003939; }
+        .category-IT { background: #80215D; }
+        .category-L { background: #002039; }
+        .category-LD { background: #5E2405; }
+        .category-LL { background: #002039; }
+        .category-M { background: #003939; }
+        .category-ML { background: #003939; }
+        .category-MRD { background: #063004; }
+        .category-O { background: #063004; }
+        .category-OAL { background: #22330B; }
+        .category-OT { background: #6E0811; }
+        .category-RD { background: #063004; }
+        .category-Swap { background: #3A2F00; }
+        .category-T { background: #80215D; }
 
         /* Duty detail modal */
         .duty-modal {
@@ -436,6 +484,33 @@
                 padding: 1rem;
             }
             
+            .nav-link {
+                display: none;
+            }
+            
+            .nav-link-mobile {
+                display: block;
+                color: #667eea;
+                text-decoration: none;
+                padding: 8px 16px;
+                border: 1px solid rgba(102, 126, 234, 0.3);
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                background: rgba(10, 10, 10, 0.8);
+                backdrop-filter: blur(8px);
+                margin: 0 auto 2rem auto;
+                width: fit-content;
+            }
+            
+            .nav-link-mobile:hover {
+                background: rgba(102, 126, 234, 0.1);
+                border-color: #667eea;
+            }
+            
+            .page-title {
+                font-size: clamp(2.5rem, 8vw, 4rem);
+            }
+            
             .calendar-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -475,9 +550,14 @@
 
     <!-- Main content -->
     <div class="container" id="mainContainer">
+        <a href="/" class="nav-link">Realtime</a>
+        
         <div class="header">
-            <a href="/" class="nav-link">← Back to Live Tracker</a>
-            <h1 class="page-title">Duty Calendar</h1>
+            <h1 class="page-title">
+                <span class="page-title-gradient">Omari's</span>
+                <span class="page-title-white">Duty Calendar</span>
+            </h1>
+            <a href="/" class="nav-link-mobile">Realtime</a>
         </div>
         
         <div class="calendar-grid" id="calendarGrid">
@@ -814,7 +894,7 @@
                         let firstHalf = '';
                         let secondHalf = '';
                         
-                        if (category && !['O', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
+                        if (category && !['O', 'RD', 'MRD', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
                             firstHalf = lines[i + 3]?.trim() || '';
                             secondHalf = lines[i + 4]?.trim() || '';
                         }
@@ -934,18 +1014,20 @@
             
             const dayNames = {
                 "O": "Rest day",
+                "RD": "Rest day", 
+                "MRD": "Rest day",
                 "AL": "Annual leave",
                 "OAL": "Owed annual leave",
                 "LD": "Lieu day",
                 "BH": "Bank holiday"
             };
             
-            if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(dutyInfo.category)) {
+            if (['O', 'RD', 'MRD', 'AL', 'OAL', 'LD', 'BH'].includes(dutyInfo.category)) {
                 card.classList.add('rest-day');
+                card.classList.add(`category-${dutyInfo.category}`);
                 card.innerHTML = `
                     <div class="duty-date">${dateStr}</div>
                     <div class="duty-main">${dayNames[dutyInfo.category] || dutyInfo.category}</div>
-                    <div class="duty-category category-${dutyInfo.category}">${dutyInfo.category}</div>
                 `;
                 return card;
             }
