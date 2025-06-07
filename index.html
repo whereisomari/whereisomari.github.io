@@ -1196,14 +1196,15 @@
                     dateCount++;
                     const date = line.slice(0, -1);
                     const category = lines[i + 1]?.trim();
+                    const dutyNumber = lines[i + 2]?.trim(); // New duty number line
                     
                     let firstHalf = '';
                     let secondHalf = '';
                     
                     // Only read duty details for working categories
                     if (category && !['O', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
-                        firstHalf = lines[i + 2]?.trim() || '';
-                        secondHalf = lines[i + 3]?.trim() || '';
+                        firstHalf = lines[i + 3]?.trim() || ''; // Shifted by 1
+                        secondHalf = lines[i + 4]?.trim() || ''; // Shifted by 1
                     }
                     
                     if (category && !['O', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
