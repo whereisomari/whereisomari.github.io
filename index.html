@@ -538,38 +538,47 @@
 			return new Promise((resolve, reject) => {
 				loginStatus.textContent = 'Loading duty tracker...';
 				
-				console.log('fetchDutyTracker starting...');
-				console.log('Current user:', firebase.auth().currentUser?.email);
-				console.log('Auth state:', firebase.auth().currentUser ? 'authenticated' : 'not authenticated');
+				// Reference to your storage bucket's tracker folder (EXACT same pattern as DLR app)
+				const storageRef = firebase.storage().ref('tracker');
 				
-				const storageRef = firebase.storage().ref('tracker/duty-tracker.txt');
-				console.log('Storage reference created for:', storageRef.fullPath);
-
-				// Use getBlob() method (available in older Firebase versions)
-				storageRef.getBlob()
-					.then(blob => {
-						console.log('Blob received:', blob.size, 'bytes, type:', blob.type);
+				// List all files in the tracker folder (EXACT same approach)
+				storageRef.listAll()
+					.then((result) => {
+						console.log('Files found in tracker folder:', result.items.length);
 						
-						// Convert blob to text
-						return blob.text();
+						if (result.items.length === 0) {
+							throw new Error('No files found in tracker folder');
+						}
+						
+						// Find the duty-tracker.txt file
+						const trackerFile = result.items.find(item => item.name === 'duty-tracker.txt');
+						if (!trackerFile) {
+							throw new Error('duty-tracker.txt not found in tracker folder');
+						}
+						
+						console.log('Found duty-tracker.txt, getting download URL...');
+						
+						// Get download URL and fetch (EXACT same pattern as DLR app)
+						return trackerFile.getDownloadURL();
+					})
+					.then((url) => {
+						console.log('Download URL obtained:', url);
+						
+						// Fetch the file content (EXACT same pattern as DLR app)
+						return fetch(url);
+					})
+					.then(response => {
+						console.log('Fetch response:', response.status, response.statusText);
+						if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+						return response.text();
 					})
 					.then(text => {
-						console.log('Text content received:', {
-							length: text.length,
-							firstLine: text.split('\n')[0],
-							preview: text.substring(0, 200) + (text.length > 200 ? '...' : '')
-						});
-						
+						console.log('Duty tracker loaded successfully. Length:', text.length);
 						dutyData = text;
-						console.log('Duty Tracker loaded from Firebase successfully.');
 						resolve();
 					})
 					.catch(error => {
-						console.error('fetchDutyTracker error:', {
-							message: error.message,
-							name: error.name,
-							stack: error.stack
-						});
+						console.error('Error fetching duty tracker:', error);
 						reject(error);
 					});
 			});
