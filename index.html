@@ -22,7 +22,7 @@
             overflow-x: hidden;
         }
         
-		/* Enhanced particle system */
+		        /* Enhanced particle system */
 		.particles {
 			position: fixed;
 			top: 0;
@@ -32,6 +32,115 @@
 			pointer-events: none;
 			z-index: 1;
 		}
+
+        /* --- NEW: Login Screen Styles --- */
+        .login-splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .login-content {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            font-size: 1rem;
+            font-weight: 300;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px 15px;
+            background: linear-gradient(90deg, #8A2BE2, #4B0082);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .login-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .login-status, .login-error {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+        }
+        .login-status { color: #888; }
+        .login-error { color: #ff6b6b; }
+        
+        #passwordResetLink {
+            font-size: 0.9rem;
+            color: #888;
+            text-decoration: none;
+            margin-top: 15px;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+        #passwordResetLink:hover {
+            color: #ccc;
+        }
+
+        #passwordResetModal {
+            display: none; /* Controlled by JS */
+        }
 
 		.particle {
 			position: absolute;
@@ -85,52 +194,12 @@
             position: relative;
             z-index: 10;
             min-height: 100vh;
-            display: flex;
+            display: none; /* Initially hidden until login */
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 2rem;
             text-align: center;
-        }
-        
-        /* Testing controls */
-        .test-controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            z-index: 100;
-        }
-        
-        .test-controls h3 {
-            margin-bottom: 15px;
-            font-size: 1rem;
-            color: #ccc;
-        }
-        
-        .file-input {
-            display: block;
-            margin: 10px 0;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 0.9rem;
-        }
-        
-        .time-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 8px;
-            color: white;
-            font-size: 0.9rem;
-            width: 100%;
-            margin: 5px 0;
         }
         
         /* Stylized "Omari is probably" */
@@ -284,129 +353,46 @@
                 padding: 1rem;
             }
             
-            .test-controls {
-                top: 10px;
-                right: 10px;
-                padding: 15px;
-                font-size: 0.8rem;
+            .login-content {
+                padding: 30px 20px;
             }
         }
-    
-/* Login Screen Styles */
-.login-splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.5s ease;
-}
-
-.login-content {
-    background: rgba(20, 20, 20, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 40px;
-    border-radius: 15px;
-    text-align: center;
-    width: 90%;
-    max-width: 380px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.login-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.login-subtitle {
-    font-size: 1rem;
-    font-weight: 300;
-    color: #aaa;
-    margin-bottom: 30px;
-}
-
-.login-input {
-    width: 100%;
-    padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    color: white;
-    font-size: 1rem;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-}
-
-.login-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
-}
-
-.login-button {
-    width: 100%;
-    padding: 12px 15px;
-    background: linear-gradient(90deg, #8A2BE2, #4B0082);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.login-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
-}
-
-.login-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.login-status, .login-error {
-    margin-top: 20px;
-    font-size: 0.9rem;
-    min-height: 1.2em;
-}
-.login-status { color: #888; }
-.login-error { color: #ff6b6b; }
-</style>
+    </style>
 </head>
 <body>
-<!-- Login Screen -->
-<div class="login-splash-screen" id="loginSplashScreen">
-    <div class="login-content">
-        <h1 class="login-title">Where is Omari?</h1>
-        <p class="login-subtitle">Please sign in to continue</p>
-        <div id="loginForm">
-            <input type="email" id="emailInput" class="login-input" placeholder="Email">
-            <input type="password" id="passwordInput" class="login-input" placeholder="Password">
-            <button id="loginButton" class="login-button" onclick="signIn()">Sign In</button>
-            <div id="loginError" class="login-error"></div>
-        </div>
-        <div id="loginStatus" class="login-status" style="display: none;"></div>
-    </div>
-</div>
-
     <!-- Enhanced particle background -->
     <div class="particles" id="particles"></div>
     
+    <!-- NEW: Login Screen -->
+    <div class="login-splash-screen" id="loginSplashScreen">
+        <div class="login-content">
+            <h1 class="login-title">Where is Omari?</h1>
+            <p class="login-subtitle">Please sign in to continue</p>
+            <div id="loginForm">
+                <input type="email" id="emailInput" class="login-input" placeholder="Email">
+                <input type="password" id="passwordInput" class="login-input" placeholder="Password">
+                <button id="loginButton" class="login-button" onclick="signIn()">Sign In</button>
+                <div id="loginError" class="login-error"></div>
+                <a href="#" id="passwordResetLink" onclick="showPasswordResetForm(); return false;">Forgot Password?</a>
+            </div>
+            <div id="loginStatus" class="login-status" style="display: none;"></div>
+        </div>
+    </div>
     
-    <!-- Main content -->
-    <div class="container">
+    <!-- NEW: Password Reset Modal (hidden by default) -->
+    <div class="login-splash-screen" id="passwordResetModal">
+        <div class="login-content">
+            <h1 class="login-title">Reset Password</h1>
+            <p class="login-subtitle">Enter your email to receive a reset link</p>
+            <input type="email" id="resetEmailInput" class="login-input" placeholder="Email Address">
+            <button class="login-button" onclick="sendPasswordReset()">Send Link</button>
+            <div id="resetMessage" class="login-status" style="min-height: 1.2em; margin-top: 15px;"></div>
+            <a href="#" id="cancelResetLink" onclick="hidePasswordResetForm(); return false;" style="font-size: 0.9rem; color: #888; text-decoration: none; margin-top: 15px; display: inline-block;">Cancel</a>
+        </div>
+    </div>
+
+    <!-- Main content (initially hidden) -->
+    <div class="container" id="mainContainer">
         <div class="status-prefix">Omari is probably</div>
         
         <div class="status-main" id="statusMain">
@@ -422,140 +408,7 @@
         
     </div>
 
-<script>
-// Global variables
-const mainContainer = document.querySelector('.container');
-const loginSplashScreen = document.getElementById('loginSplashScreen');
-const loginStatus = document.getElementById('loginStatus');
-const loginError = document.getElementById('loginError');
-const loginButton = document.getElementById('loginButton');
-const passwordInput = document.getElementById('passwordInput');
-
-// Authentication functions
-function signIn() {
-    const email = document.getElementById('emailInput').value;
-    const password = passwordInput.value;
-    
-    if (!email || !password) {
-        loginError.textContent = "Please enter both email and password.";
-        return;
-    }
-
-    loginButton.disabled = true;
-    loginError.textContent = '';
-    loginStatus.textContent = 'Authenticating...';
-    loginStatus.style.display = 'block';
-
-    firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            console.log('Sign in successful for:', userCredential.user.email);
-            loginStatus.textContent = 'Authentication successful...';
-        })
-        .catch((error) => {
-            console.error('Sign in error:', error);
-            loginStatus.style.display = 'none';
-            loginError.textContent = getUserFriendlyAuthError(error);
-            loginButton.disabled = false;
-        });
-}
-
-function getUserFriendlyAuthError(error) {
-    switch (error.code) {
-        case 'auth/invalid-login-credentials':
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-        case 'auth/invalid-email':
-            return "Incorrect email or password. Please try again.";
-        case 'auth/too-many-requests':
-            return "Access temporarily disabled. Please try again later.";
-        case 'auth/network-request-failed':
-            return "Network error. Please check your connection.";
-        default:
-            return "Login error: " + error.message;
-    }
-}
-
-// Add Enter key support for password input
-passwordInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        signIn();
-    }
-});
-
-// Main initialization function
-function initializeApp() {
-    console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
-    
-    loginStatus.textContent = 'Loading timetable...';
-    loginStatus.style.display = 'block';
-
-    // First load timetable, then duty tracker
-    fetchAndProcessTimetable()
-        .then(() => {
-            console.log('Timetable loaded successfully, now loading duty tracker...');
-            loginStatus.textContent = 'Loading duty tracker...';
-            return fetchDutyTracker();
-        })
-        .then(() => {
-            console.log('Both timetable and duty tracker loaded successfully');
-            loginStatus.textContent = 'Data loaded successfully!';
-            
-            // Hide login screen
-            loginSplashScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginSplashScreen.style.display = 'none';
-            }, 500);
-
-            // Show main container and start updates
-            mainContainer.style.display = 'flex';
-            startRealTimeUpdates();
-        })
-        .catch(error => {
-            console.error("Initialization failed:", error);
-            loginStatus.style.display = 'none';
-            loginError.textContent = 'Error loading data: ' + error.message;
-            loginButton.disabled = false;
-        });
-}
-
-// Fetch duty tracker from Firebase
-function fetchDutyTracker() {
-    return new Promise((resolve, reject) => {
-        const storageRef = firebase.storage().ref('tracker');
-        
-        storageRef.listAll()
-            .then((result) => {
-                console.log('Files found in tracker folder:', result.items.length);
-                
-                const trackerFile = result.items.find(item => item.name === 'duty-tracker.txt');
-                if (!trackerFile) {
-                    throw new Error('duty-tracker.txt not found in tracker folder');
-                }
-                
-                return trackerFile.getDownloadURL();
-            })
-            .then((url) => {
-                console.log('Download URL obtained:', url);
-                return fetch(url);
-            })
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                return response.text();
-            })
-            .then(text => {
-                console.log('Duty tracker loaded successfully. Length:', text.length);
-                dutyData = text;
-                resolve();
-            })
-            .catch(error => {
-                console.error('Error fetching duty tracker:', error);
-                reject(error);
-            });
-    });
-}
-
-// [KEEP ALL YOUR EXISTING FUNCTIONS HERE - just add the ones above]
+    <script>
         // Enhanced particle system
 		function createParticles() {
 			const particlesContainer = document.getElementById('particles');
@@ -654,6 +507,194 @@ function fetchDutyTracker() {
 				}
 			});
 		}
+        
+        // --- START: Firebase Integration and Authentication ---
+
+        const mainContainer = document.getElementById('mainContainer');
+        const loginSplashScreen = document.getElementById('loginSplashScreen');
+        const loginForm = document.getElementById('loginForm');
+        const loginStatus = document.getElementById('loginStatus');
+        const loginError = document.getElementById('loginError');
+        const loginButton = document.getElementById('loginButton');
+        const passwordInput = document.getElementById('passwordInput');
+
+		function signIn() {
+			const email = document.getElementById('emailInput').value;
+			const password = passwordInput.value;
+			
+			if (!email || !password) {
+				loginError.textContent = "Please enter both email and password.";
+				return;
+			}
+
+			loginButton.disabled = true;
+			loginError.textContent = '';
+			loginStatus.textContent = 'Authenticating...';
+			loginStatus.style.display = 'block';
+
+			console.log('Attempting to sign in user:', email);
+
+			firebase.auth().signInWithEmailAndPassword(email, password)
+				.then((userCredential) => {
+					console.log('Sign in successful for:', userCredential.user.email);
+					// Don't call initializeApp here - it will be called by onAuthStateChanged
+					loginStatus.textContent = 'Authentication successful...';
+				})
+				.catch((error) => {
+					console.error('Sign in error:', error);
+					loginStatus.style.display = 'none';
+					loginError.textContent = getUserFriendlyAuthError(error);
+					loginButton.disabled = false;
+				});
+		}
+        
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                signIn();
+            }
+        });
+
+        function getUserFriendlyAuthError(error) {
+            switch (error.code) {
+                case 'auth/invalid-login-credentials':
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-email':
+                    return "Incorrect email or password. Please try again.";
+                case 'auth/too-many-requests':
+                    return "Access temporarily disabled. Please try again later.";
+                case 'auth/network-request-failed':
+                    return "Network error. Please check your connection.";
+                default:
+                    return "Login error: " + error.message;
+            }
+        }
+
+        // Password Reset Functions
+        function showPasswordResetForm() {
+            document.getElementById('passwordResetModal').style.display = 'flex';
+        }
+        function hidePasswordResetForm() {
+            document.getElementById('passwordResetModal').style.display = 'none';
+        }
+        function sendPasswordReset() {
+            const email = document.getElementById('resetEmailInput').value;
+            const messageElement = document.getElementById('resetMessage');
+            if (!email) {
+                messageElement.textContent = "Please enter your email.";
+                return;
+            }
+            firebase.auth().sendPasswordResetEmail(email)
+                .then(() => {
+                    messageElement.textContent = "Password reset email sent!";
+                    setTimeout(() => hidePasswordResetForm(), 3000);
+                })
+                .catch((error) => {
+                    messageElement.textContent = "Error: " + error.message;
+                });
+        }
+        
+        // Main function to initialize app after login
+        function initializeApp() {
+			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
+			
+			loginStatus.textContent = 'Loading timetable...';
+			loginStatus.style.display = 'block';
+
+			// Fetch timetable first, then duty tracker (sequential, not parallel)
+			fetchAndProcessTimetable()
+				.then(() => {
+					console.log('Timetable loaded successfully, now loading duty tracker...');
+					loginStatus.textContent = 'Loading duty tracker...';
+					return fetchDutyTracker();
+				})
+				.then(() => {
+					console.log('Both timetable and duty tracker loaded successfully');
+					loginStatus.textContent = 'Data loaded successfully!';
+					
+					// Hide login screen with fade out
+					loginSplashScreen.style.opacity = '0';
+					setTimeout(() => {
+						loginSplashScreen.style.display = 'none';
+					}, 500);
+
+					// Show main container
+					mainContainer.style.display = 'flex';
+					
+					// Start the real-time updates
+					startRealTimeUpdates();
+				})
+				.catch(error => {
+					console.error("Initialization failed:", error);
+					
+					// Show error to user
+					loginStatus.style.display = 'none';
+					loginError.textContent = 'Error loading data: ' + error.message;
+					loginButton.disabled = false;
+					
+					// Log more details for debugging
+					console.error('Full error details:', {
+						message: error.message,
+						stack: error.stack,
+						name: error.name
+					});
+				});
+		}
+        
+        // Function to fetch duty tracker from Firebase
+		function fetchDutyTracker() {
+			return new Promise((resolve, reject) => {
+				loginStatus.textContent = 'Loading duty tracker...';
+				
+				// Reference to your storage bucket's tracker folder (EXACT same pattern as DLR app)
+				const storageRef = firebase.storage().ref('tracker');
+				
+				// List all files in the tracker folder (EXACT same approach)
+				storageRef.listAll()
+					.then((result) => {
+						console.log('Files found in tracker folder:', result.items.length);
+						
+						if (result.items.length === 0) {
+							throw new Error('No files found in tracker folder');
+						}
+						
+						// Find the duty-tracker.txt file
+						const trackerFile = result.items.find(item => item.name === 'duty-tracker.txt');
+						if (!trackerFile) {
+							throw new Error('duty-tracker.txt not found in tracker folder');
+						}
+						
+						console.log('Found duty-tracker.txt, getting download URL...');
+						
+						// Get download URL and fetch (EXACT same pattern as DLR app)
+						return trackerFile.getDownloadURL();
+					})
+					.then((url) => {
+						console.log('Download URL obtained:', url);
+						
+						// Fetch the file content (EXACT same pattern as DLR app)
+						return fetch(url);
+					})
+					.then(response => {
+						console.log('Fetch response:', response.status, response.statusText);
+						if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+						return response.text();
+					})
+					.then(text => {
+						console.log('Duty tracker loaded successfully. Length:', text.length);
+						dutyData = text;
+						resolve();
+					})
+					.catch(error => {
+						console.error('Error fetching duty tracker:', error);
+						reject(error);
+					});
+			});
+		}
+
+        // --- END: Firebase Integration and Authentication ---
+
         
         // Data storage
         let csvData = null;
@@ -821,58 +862,6 @@ function fetchDutyTracker() {
         
         // --- NEW TIMETABLE FETCHING LOGIC ---
 
-		async function fetchAndProcessTimetable() {
-			const pathsUrl = 'https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt';
-			
-			try {
-				// 1. Fetch paths.txt
-				const response = await fetch(pathsUrl, { cache: 'no-store' });
-				if (!response.ok) throw new Error(`Failed to fetch paths.txt: ${response.statusText}`);
-				const text = await response.text();
-				const lines = text.split('\n').filter(line => line.trim() !== '');
-
-				// 2. Parse paths.txt to get timetable entries
-				let currentEntry = {};
-				const timetableEntries = [];
-				for (const line of lines) {
-					const trimmedLine = line.trim();
-					if (trimmedLine.startsWith('Name:')) {
-						if (Object.keys(currentEntry).length > 0) timetableEntries.push({...currentEntry});
-						currentEntry = { name: trimmedLine.substring(5).trim() };
-					} else if (trimmedLine.startsWith('Applies:')) {
-						currentEntry.applies = trimmedLine.substring(8).trim();
-					} else if (trimmedLine.startsWith('URL:')) {
-						currentEntry.url = trimmedLine.substring(4).trim();
-					}
-				}
-				if (Object.keys(currentEntry).length > 0) timetableEntries.push(currentEntry);
-
-				if (timetableEntries.length === 0) {
-					throw new Error('No valid timetables found in paths.txt');
-				}
-
-				// 3. Determine the most applicable timetable
-				const sortedEntries = sortTimetablesByApplicability(timetableEntries);
-				const applicableTimetable = sortedEntries[0];
-				console.log(`[INFO] Using timetable: '${applicableTimetable.name}' from URL: ${applicableTimetable.url}`);
-
-				// 4. Fetch the applicable timetable CSV
-				const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
-				if (!csvResponse.ok) throw new Error(`Failed to fetch timetable CSV: ${csvResponse.statusText}`);
-				const csvText = await csvResponse.text();
-
-				// 5. Process the CSV data
-				csvData = csvText;
-				parsedCsvData = parseCSVData(csvData);
-				runTransitions = detectRunTransitions(csvData);
-				console.log('Timetable data loaded and parsed automatically.');
-
-			} catch (error) {
-				console.error('[ERROR] Automatic timetable fetching failed:', error);
-				throw error; // Rethrow for initializeApp to catch
-			}
-		}
-
         function parseDateRange(dateStr) {
 			dateStr = dateStr.replace(/['"]/g, '');
 			if (dateStr.includes('/')) {
@@ -923,9 +912,61 @@ function fetchDutyTracker() {
 				return a.name.localeCompare(b.name);
 			});
 		}
+
+        async function fetchAndProcessTimetable() {
+            const pathsUrl = 'https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt';
+            
+            try {
+                // 1. Fetch paths.txt
+                const response = await fetch(pathsUrl, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Failed to fetch paths.txt: ${response.statusText}`);
+                const text = await response.text();
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+
+                // 2. Parse paths.txt to get timetable entries
+                let currentEntry = {};
+				const timetableEntries = [];
+				for (const line of lines) {
+					const trimmedLine = line.trim();
+					if (trimmedLine.startsWith('Name:')) {
+						if (Object.keys(currentEntry).length > 0) timetableEntries.push({...currentEntry});
+						currentEntry = { name: trimmedLine.substring(5).trim() };
+					} else if (trimmedLine.startsWith('Applies:')) {
+						currentEntry.applies = trimmedLine.substring(8).trim();
+					} else if (trimmedLine.startsWith('URL:')) {
+						currentEntry.url = trimmedLine.substring(4).trim();
+					}
+				}
+				if (Object.keys(currentEntry).length > 0) timetableEntries.push(currentEntry);
+
+                if (timetableEntries.length === 0) {
+                    throw new Error('No valid timetables found in paths.txt');
+                }
+
+                // 3. Determine the most applicable timetable
+                const sortedEntries = sortTimetablesByApplicability(timetableEntries);
+                const applicableTimetable = sortedEntries[0];
+                console.log(`[INFO] Using timetable: '${applicableTimetable.name}' from URL: ${applicableTimetable.url}`);
+
+                // 4. Fetch the applicable timetable CSV
+                const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
+                if (!csvResponse.ok) throw new Error(`Failed to fetch timetable CSV: ${csvResponse.statusText}`);
+                const csvText = await csvResponse.text();
+
+                // 5. Process the CSV data
+                csvData = csvText;
+                parsedCsvData = parseCSVData(csvData);
+                runTransitions = detectRunTransitions(csvData);
+                console.log('Timetable data loaded and parsed automatically.');
+
+            } catch (error) {
+                console.error('[ERROR] Automatic timetable fetching failed:', error);
+                throw error;
+            }
+        }
         
         // --- END OF NEW LOGIC ---
-        
+
         // Parse CSV data like the timetable explorer
         function parseCSVData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
@@ -1917,54 +1958,59 @@ function fetchDutyTracker() {
 			}, 3000);
 		}
         
-// Initialize particles
-createParticles();
-</script>
+        // Initialize
+        createParticles();
+    </script>
 
-<!-- Firebase SDK -->
-<script>
-function loadFirebase() {
-    const loadScript = (src, callback) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = callback;
-        document.body.appendChild(script);
-    };
-    
-    loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
-        loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
-            loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
-                    authDomain: "owngoal-4f34f.firebaseapp.com",
-                    projectId: "owngoal-4f34f",
-                    storageBucket: "owngoal-4f34f.appspot.com",
-                    messagingSenderId: "270078133518",
-                    appId: "1:270078133518:web:36ef7431fda632bed1c35f"
-                };
-                firebase.initializeApp(firebaseConfig);
-                
-                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                    .catch(error => console.error("Persistence error:", error));
-                
-                firebase.auth().onAuthStateChanged((user) => {
-                    if (user) {
-                        console.log('User is signed in:', user.email);
-                        initializeApp();
-                    } else {
-                        console.log('User is signed out.');
-                        loginSplashScreen.style.display = 'flex';
-                        loginSplashScreen.style.opacity = '1';
-                        mainContainer.style.display = 'none';
-                        loginButton.disabled = false;
-                        loginStatus.style.display = 'none';
-                    }
-                });
-            });
-        });
-    });
-}
-loadFirebase();
-</script>
+    <!-- Firebase SDK Loader -->
+    <script>
+		function loadFirebase() {
+			const loadScript = (src, callback) => {
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = callback;
+				document.body.appendChild(script);
+			};
+			
+			loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
+				loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
+					loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
+						const firebaseConfig = {
+							apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
+							authDomain: "owngoal-4f34f.firebaseapp.com",
+							projectId: "owngoal-4f34f",
+							storageBucket: "owngoal-4f34f.firebasestorage.app",
+							messagingSenderId: "270078133518",
+							appId: "1:270078133518:web:36ef7431fda632bed1c35f"
+						};
+						firebase.initializeApp(firebaseConfig);
+						
+						// Set persistence
+						firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+							.catch(error => {
+								console.error("Persistence error:", error);
+							});
+						
+						// Authentication state handler
+						firebase.auth().onAuthStateChanged((user) => {
+							if (user) {
+								console.log('User is signed in:', user.email);
+								initializeApp();
+							} else {
+								console.log('User is signed out.');
+								loginSplashScreen.style.display = 'flex';
+								loginSplashScreen.style.opacity = '1';
+								mainContainer.style.display = 'none';
+								loginButton.disabled = false;
+								loginStatus.style.display = 'none';
+							}
+						});
+						
+					});
+				});
+			});
+		}
+		loadFirebase();
+    </script>
 </body>
 </html>
