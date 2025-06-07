@@ -146,16 +146,16 @@
 				transform: translateY(120vh) rotate(0deg);
 				opacity: 0;
 			}
-			5% {
+			3% {
 				opacity: 0;
 			}
-			15% {
+			8% {
 				opacity: 1;
 			}
-			85% {
+			92% {
 				opacity: 1;
 			}
-			95% {
+			97% {
 				opacity: 0;
 			}
 			100% {
@@ -222,9 +222,9 @@
             line-height: 1.1;
             margin-bottom: 2rem;
             opacity: 0;
-            animation: fadeInUp 1s ease-out 0.6s forwards;
             color: #ffffff;
             text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            transition: opacity 0.8s ease-out;
         }
         
         /* Status details */
@@ -233,7 +233,7 @@
             font-weight: 400;
             color: #aaa;
             opacity: 0;
-            animation: fadeInUp 1s ease-out 0.9s forwards;
+            transition: opacity 0.8s ease-out;
         }
         
         /* Loading state */
@@ -246,26 +246,30 @@
             color: #666;
         }
         
-        .simple-loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
             transition: opacity 0.8s ease-out;
         }
         
-        .loader-circle {
+        .simple-loader {
             width: 60px;
             height: 60px;
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             border-top: 3px solid;
-            border-top-color: hsl(270, 80%, 61%);
-            animation: slowSpin 3s linear infinite;
+            border-top-color: hsl(300, 80%, 70%);
+            animation: spin 1.5s linear infinite;
         }
         
-        @keyframes slowSpin {
+        @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -362,6 +366,11 @@
     <!-- Enhanced particle background -->
     <div class="particles" id="particles"></div>
     
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="simple-loader"></div>
+    </div>
+    
     <!-- NEW: Login Screen -->
     <div class="login-splash-screen" id="loginSplashScreen">
         <div class="login-content">
@@ -377,16 +386,7 @@
     <div class="container" id="mainContainer">
         <div class="status-prefix">Omari is probably</div>
         
-        <div class="status-main" id="statusMain">
-            <div class="modern-loader" id="loadingState">
-                <div class="loader-ring"></div>
-                <div class="loader-dots">
-                    <div class="loader-dot"></div>
-                    <div class="loader-dot"></div>
-                    <div class="loader-dot"></div>
-                </div>
-            </div>
-        </div>
+        <div class="status-main" id="statusMain"></div>
         
         <div class="status-details" id="statusDetails"></div>
         
@@ -578,60 +578,52 @@
 			fetchDutyTracker()
 				.then(() => {
 					console.log('Duty tracker loaded successfully');
-					
-					// Fade out loader
-					const simpleLoader = document.getElementById('simpleLoader');
-					if (simpleLoader) {
-						simpleLoader.style.opacity = '0';
+					// Fade out loading overlay
+					const loadingOverlay = document.getElementById('loadingOverlay');
+					if (loadingOverlay) {
+						loadingOverlay.style.opacity = '0';
 						setTimeout(() => {
-							simpleLoader.style.display = 'none';
+							loadingOverlay.style.display = 'none';
 						}, 800);
 					}
 					
-					// Fade in all text elements
-					setTimeout(() => {
-						const statusPrefix = document.getElementById('statusPrefix');
-						const statusMain = document.getElementById('statusMain');
-						const statusDetails = document.getElementById('statusDetails');
-						
-						if (statusPrefix) {
-							statusPrefix.style.opacity = '1';
-							statusPrefix.style.animation = 'fadeInUp 1s ease-out forwards, gradientCycle 5s linear infinite';
-						}
-						if (statusMain) statusMain.style.opacity = '1';
-						if (statusDetails) statusDetails.style.opacity = '1';
-					}, 400);
+					// Fade in all content
+					const statusPrefix = document.querySelector('.status-prefix');
+					const statusMain = document.getElementById('statusMain');
+					const statusDetails = document.getElementById('statusDetails');
+					
+					if (statusPrefix) statusPrefix.style.opacity = '1';
+					if (statusMain) statusMain.style.opacity = '1';
+					if (statusDetails) statusDetails.style.opacity = '1';
 					
 					// Start the real-time updates
-					setTimeout(() => {
-						startRealTimeUpdates();
-					}, 800);
+					startRealTimeUpdates();
 				})
 				.catch(error => {
 					console.error("Duty tracker loading failed:", error);
-					
-					// Hide loader and show error
-					const simpleLoader = document.getElementById('simpleLoader');
-					if (simpleLoader) {
-						simpleLoader.style.opacity = '0';
-						setTimeout(() => simpleLoader.style.display = 'none', 800);
+					// Hide loading overlay even on error
+					const loadingOverlay = document.getElementById('loadingOverlay');
+					if (loadingOverlay) {
+						loadingOverlay.style.opacity = '0';
+						setTimeout(() => {
+							loadingOverlay.style.display = 'none';
+						}, 800);
 					}
 					
-					setTimeout(() => {
-						const statusPrefix = document.getElementById('statusPrefix');
-						const statusMain = document.getElementById('statusMain');
-						const statusDetails = document.getElementById('statusDetails');
-						
-						if (statusPrefix) statusPrefix.style.opacity = '1';
-						if (statusMain) {
-							statusMain.style.opacity = '1';
-							statusMain.textContent = 'Error loading duty data';
-						}
-						if (statusDetails) {
-							statusDetails.style.opacity = '1';
-							statusDetails.textContent = error.message;
-						}
-					}, 400);
+					// Show error content
+					const statusPrefix = document.querySelector('.status-prefix');
+					const statusMain = document.getElementById('statusMain');
+					const statusDetails = document.getElementById('statusDetails');
+					
+					if (statusPrefix) statusPrefix.style.opacity = '1';
+					if (statusMain) {
+						statusMain.style.opacity = '1';
+						statusMain.textContent = 'Error loading duty data';
+					}
+					if (statusDetails) {
+						statusDetails.style.opacity = '1';
+						statusDetails.textContent = error.message;
+					}
 				});
 		}
         
@@ -1961,29 +1953,8 @@
                 console.error('Failed to load timetable on page load:', error);
                 // Show error in main container if it's visible
                 if (mainContainer.style.display === 'flex') {
-                    // Hide loader first
-                    const simpleLoader = document.getElementById('simpleLoader');
-                    if (simpleLoader) {
-                        simpleLoader.style.opacity = '0';
-                        setTimeout(() => simpleLoader.style.display = 'none', 800);
-                    }
-                    
-                    // Show error
-                    setTimeout(() => {
-                        const statusPrefix = document.getElementById('statusPrefix');
-                        const statusMain = document.getElementById('statusMain');
-                        const statusDetails = document.getElementById('statusDetails');
-                        
-                        if (statusPrefix) statusPrefix.style.opacity = '1';
-                        if (statusMain) {
-                            statusMain.style.opacity = '1';
-                            statusMain.textContent = 'Error loading timetable';
-                        }
-                        if (statusDetails) {
-                            statusDetails.style.opacity = '1';
-                            statusDetails.textContent = error.message;
-                        }
-                    }, 400);
+                    document.getElementById('statusMain').textContent = 'Error loading timetable';
+                    document.getElementById('statusDetails').textContent = error.message;
                 }
             });
     </script>
