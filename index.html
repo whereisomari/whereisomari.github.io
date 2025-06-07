@@ -221,10 +221,9 @@
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 2rem;
-            opacity: 0;
+            opacity: 1;
             color: #ffffff;
             text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-            transition: opacity 0.8s ease-out;
         }
         
         /* Status details */
@@ -232,8 +231,7 @@
             font-size: clamp(1rem, 3vw, 1.5rem);
             font-weight: 400;
             color: #aaa;
-            opacity: 0;
-            transition: opacity 0.8s ease-out;
+            opacity: 1;
         }
         
         /* Loading state */
@@ -257,6 +255,27 @@
             justify-content: center;
             z-index: 50;
             transition: opacity 0.8s ease-out;
+        }
+        
+        .text-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 40;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .particle-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #0a0a0a;
+            z-index: 2;
         }
         
         .simple-loader {
@@ -365,6 +384,12 @@
 <body>
     <!-- Enhanced particle background -->
     <div class="particles" id="particles"></div>
+    
+    <!-- Particle mask to hide stuck particles at top -->
+    <div class="particle-mask"></div>
+    
+    <!-- Text overlay to hide content during loading -->
+    <div class="text-overlay" id="textOverlay"></div>
     
     <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -578,7 +603,8 @@
 			fetchDutyTracker()
 				.then(() => {
 					console.log('Duty tracker loaded successfully');
-					// Fade out loading overlay
+					
+					// Start fade sequence: loading circle fades out first
 					const loadingOverlay = document.getElementById('loadingOverlay');
 					if (loadingOverlay) {
 						loadingOverlay.style.opacity = '0';
@@ -587,22 +613,27 @@
 						}, 800);
 					}
 					
-					// Fade in all content
-					const statusPrefix = document.querySelector('.status-prefix');
-					const statusMain = document.getElementById('statusMain');
-					const statusDetails = document.getElementById('statusDetails');
-					
-					if (statusPrefix) statusPrefix.style.opacity = '1';
-					if (statusMain) statusMain.style.opacity = '1';
-					if (statusDetails) statusDetails.style.opacity = '1';
+					// Wait 2 seconds after circle starts fading, then fade out text overlay
+					setTimeout(() => {
+						const textOverlay = document.getElementById('textOverlay');
+						if (textOverlay) {
+							textOverlay.style.opacity = '0';
+							setTimeout(() => {
+								textOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 2000);
 					
 					// Start the real-time updates
 					startRealTimeUpdates();
 				})
 				.catch(error => {
 					console.error("Duty tracker loading failed:", error);
-					// Hide loading overlay even on error
+					
+					// Hide overlays even on error
 					const loadingOverlay = document.getElementById('loadingOverlay');
+					const textOverlay = document.getElementById('textOverlay');
+					
 					if (loadingOverlay) {
 						loadingOverlay.style.opacity = '0';
 						setTimeout(() => {
@@ -610,20 +641,25 @@
 						}, 800);
 					}
 					
-					// Show error content
-					const statusPrefix = document.querySelector('.status-prefix');
-					const statusMain = document.getElementById('statusMain');
-					const statusDetails = document.getElementById('statusDetails');
-					
-					if (statusPrefix) statusPrefix.style.opacity = '1';
-					if (statusMain) {
-						statusMain.style.opacity = '1';
-						statusMain.textContent = 'Error loading duty data';
-					}
-					if (statusDetails) {
-						statusDetails.style.opacity = '1';
-						statusDetails.textContent = error.message;
-					}
+					setTimeout(() => {
+						if (textOverlay) {
+							textOverlay.style.opacity = '0';
+							setTimeout(() => {
+								textOverlay.style.display = 'none';
+							}, 800);
+						}
+						
+						// Show error content
+						const statusMain = document.getElementById('statusMain');
+						const statusDetails = document.getElementById('statusDetails');
+						
+						if (statusMain) {
+							statusMain.textContent = 'Error loading duty data';
+						}
+						if (statusDetails) {
+							statusDetails.textContent = error.message;
+						}
+					}, 2000);
 				});
 		}
         
