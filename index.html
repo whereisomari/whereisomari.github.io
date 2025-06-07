@@ -735,10 +735,17 @@
                 clearInterval(updateInterval);
             }
             
-            // Update immediately
-            updateStatusRealTime();
+            // Get initial status immediately (no delay, no animation)
+            const currentTimeInTimezone = getCurrentTimeInTimezone();
+            const timeStr = currentTimeInTimezone.toTimeString().substring(0, 8);
+            const operatingDate = getOperatingDate();
+            const status = calculateCurrentStatus(operatingDate, timeStr, currentTimeInTimezone);
             
-            // Then update every second
+            // Display initial status immediately
+            displayStatus(status.main, status.details, false, true); // immediate = true
+            previousStatus = { main: status.main, details: status.details };
+            
+            // Then update every second with normal behavior
             updateInterval = setInterval(updateStatusRealTime, 1000);
         }
         
