@@ -61,19 +61,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .login-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .login-subtitle {
-            font-size: 1rem;
-            font-weight: 300;
-            color: #aaa;
-            margin-bottom: 30px;
-        }
-
         .login-input {
             width: 100%;
             padding: 12px 15px;
@@ -117,29 +104,11 @@
             box-shadow: none;
         }
         
-        .login-status, .login-error {
+        .login-error {
             margin-top: 20px;
             font-size: 0.9rem;
             min-height: 1.2em;
-        }
-        .login-status { color: #888; }
-        .login-error { color: #ff6b6b; }
-        
-        #passwordResetLink {
-            font-size: 0.9rem;
-            color: #888;
-            text-decoration: none;
-            margin-top: 15px;
-            display: inline-block;
-            transition: color 0.3s;
-        }
-
-        #passwordResetLink:hover {
-            color: #ccc;
-        }
-
-        #passwordResetModal {
-            display: none; /* Controlled by JS */
+            color: #ff6b6b;
         }
 
 		.particle {
@@ -366,28 +335,11 @@
     <!-- NEW: Login Screen -->
     <div class="login-splash-screen" id="loginSplashScreen">
         <div class="login-content">
-            <h1 class="login-title">Where is Omari?</h1>
-            <p class="login-subtitle">Please sign in to continue</p>
             <div id="loginForm">
-                <input type="email" id="emailInput" class="login-input" placeholder="Email">
                 <input type="password" id="passwordInput" class="login-input" placeholder="Password">
                 <button id="loginButton" class="login-button" onclick="signIn()">Sign In</button>
                 <div id="loginError" class="login-error"></div>
-                <a href="#" id="passwordResetLink" onclick="showPasswordResetForm(); return false;">Forgot Password?</a>
             </div>
-            <div id="loginStatus" class="login-status" style="display: none;"></div>
-        </div>
-    </div>
-    
-    <!-- NEW: Password Reset Modal (hidden by default) -->
-    <div class="login-splash-screen" id="passwordResetModal">
-        <div class="login-content">
-            <h1 class="login-title">Reset Password</h1>
-            <p class="login-subtitle">Enter your email to receive a reset link</p>
-            <input type="email" id="resetEmailInput" class="login-input" placeholder="Email Address">
-            <button class="login-button" onclick="sendPasswordReset()">Send Link</button>
-            <div id="resetMessage" class="login-status" style="min-height: 1.2em; margin-top: 15px;"></div>
-            <a href="#" id="cancelResetLink" onclick="hidePasswordResetForm(); return false;" style="font-size: 0.9rem; color: #888; text-decoration: none; margin-top: 15px; display: inline-block;">Cancel</a>
         </div>
     </div>
 
@@ -512,37 +464,31 @@
 
         const mainContainer = document.getElementById('mainContainer');
         const loginSplashScreen = document.getElementById('loginSplashScreen');
-        const loginForm = document.getElementById('loginForm');
-        const loginStatus = document.getElementById('loginStatus');
         const loginError = document.getElementById('loginError');
         const loginButton = document.getElementById('loginButton');
         const passwordInput = document.getElementById('passwordInput');
 
 		function signIn() {
-			const email = document.getElementById('emailInput').value;
+			const email = 'standard@yourapp.local';
 			const password = passwordInput.value;
 			
-			if (!email || !password) {
-				loginError.textContent = "Please enter both email and password.";
+			if (!password) {
+				loginError.textContent = "Please enter your password.";
 				return;
 			}
 
 			loginButton.disabled = true;
 			loginError.textContent = '';
-			loginStatus.textContent = 'Authenticating...';
-			loginStatus.style.display = 'block';
 
 			console.log('Attempting to sign in user:', email);
 
 			firebase.auth().signInWithEmailAndPassword(email, password)
 				.then((userCredential) => {
 					console.log('Sign in successful for:', userCredential.user.email);
-					// Don't call initializeApp here - it will be called by onAuthStateChanged
-					loginStatus.textContent = 'Authentication successful...';
+					// Authentication successful - initializeApp will be called by onAuthStateChanged
 				})
 				.catch((error) => {
 					console.error('Sign in error:', error);
-					loginStatus.style.display = 'none';
 					loginError.textContent = getUserFriendlyAuthError(error);
 					loginButton.disabled = false;
 				});
@@ -561,7 +507,7 @@
                 case 'auth/user-not-found':
                 case 'auth/wrong-password':
                 case 'auth/invalid-email':
-                    return "Incorrect email or password. Please try again.";
+                    return "Incorrect password. Please try again.";
                 case 'auth/too-many-requests':
                     return "Access temporarily disabled. Please try again later.";
                 case 'auth/network-request-failed':
@@ -570,87 +516,41 @@
                     return "Login error: " + error.message;
             }
         }
-
-        // Password Reset Functions
-        function showPasswordResetForm() {
-            document.getElementById('passwordResetModal').style.display = 'flex';
-        }
-        function hidePasswordResetForm() {
-            document.getElementById('passwordResetModal').style.display = 'none';
-        }
-        function sendPasswordReset() {
-            const email = document.getElementById('resetEmailInput').value;
-            const messageElement = document.getElementById('resetMessage');
-            if (!email) {
-                messageElement.textContent = "Please enter your email.";
-                return;
-            }
-            firebase.auth().sendPasswordResetEmail(email)
-                .then(() => {
-                    messageElement.textContent = "Password reset email sent!";
-                    setTimeout(() => hidePasswordResetForm(), 3000);
-                })
-                .catch((error) => {
-                    messageElement.textContent = "Error: " + error.message;
-                });
-        }
         
         // Main function to initialize app after login
         function initializeApp() {
 			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
 			
-			loginStatus.textContent = 'Loading timetable...';
-			loginStatus.style.display = 'block';
+			// Hide login screen immediately
+			loginSplashScreen.style.opacity = '0';
+			setTimeout(() => {
+				loginSplashScreen.style.display = 'none';
+			}, 500);
 
-			// Fetch timetable first, then duty tracker (sequential, not parallel)
-			fetchAndProcessTimetable()
+			// Show main container immediately
+			mainContainer.style.display = 'flex';
+			
+			// Load duty tracker and start updates
+			fetchDutyTracker()
 				.then(() => {
-					console.log('Timetable loaded successfully, now loading duty tracker...');
-					loginStatus.textContent = 'Loading duty tracker...';
-					return fetchDutyTracker();
-				})
-				.then(() => {
-					console.log('Both timetable and duty tracker loaded successfully');
-					loginStatus.textContent = 'Data loaded successfully!';
-					
-					// Hide login screen with fade out
-					loginSplashScreen.style.opacity = '0';
-					setTimeout(() => {
-						loginSplashScreen.style.display = 'none';
-					}, 500);
-
-					// Show main container
-					mainContainer.style.display = 'flex';
-					
+					console.log('Duty tracker loaded successfully');
 					// Start the real-time updates
 					startRealTimeUpdates();
 				})
 				.catch(error => {
-					console.error("Initialization failed:", error);
-					
-					// Show error to user
-					loginStatus.style.display = 'none';
-					loginError.textContent = 'Error loading data: ' + error.message;
-					loginButton.disabled = false;
-					
-					// Log more details for debugging
-					console.error('Full error details:', {
-						message: error.message,
-						stack: error.stack,
-						name: error.name
-					});
+					console.error("Duty tracker loading failed:", error);
+					document.getElementById('statusMain').textContent = 'Error loading duty data';
+					document.getElementById('statusDetails').textContent = error.message;
 				});
 		}
         
         // Function to fetch duty tracker from Firebase
 		function fetchDutyTracker() {
 			return new Promise((resolve, reject) => {
-				loginStatus.textContent = 'Loading duty tracker...';
-				
-				// Reference to your storage bucket's tracker folder (EXACT same pattern as DLR app)
+				// Reference to your storage bucket's tracker folder
 				const storageRef = firebase.storage().ref('tracker');
 				
-				// List all files in the tracker folder (EXACT same approach)
+				// List all files in the tracker folder
 				storageRef.listAll()
 					.then((result) => {
 						console.log('Files found in tracker folder:', result.items.length);
@@ -667,13 +567,13 @@
 						
 						console.log('Found duty-tracker.txt, getting download URL...');
 						
-						// Get download URL and fetch (EXACT same pattern as DLR app)
+						// Get download URL and fetch
 						return trackerFile.getDownloadURL();
 					})
 					.then((url) => {
 						console.log('Download URL obtained:', url);
 						
-						// Fetch the file content (EXACT same pattern as DLR app)
+						// Fetch the file content
 						return fetch(url);
 					})
 					.then(response => {
@@ -1960,6 +1860,20 @@
         
         // Initialize
         createParticles();
+        
+        // Load timetable on page load (public file)
+        fetchAndProcessTimetable()
+            .then(() => {
+                console.log('Timetable loaded on page load');
+            })
+            .catch(error => {
+                console.error('Failed to load timetable on page load:', error);
+                // Show error in main container if it's visible
+                if (mainContainer.style.display === 'flex') {
+                    document.getElementById('statusMain').textContent = 'Error loading timetable';
+                    document.getElementById('statusDetails').textContent = error.message;
+                }
+            });
     </script>
 
     <!-- Firebase SDK Loader -->
@@ -2002,7 +1916,6 @@
 								loginSplashScreen.style.opacity = '1';
 								mainContainer.style.display = 'none';
 								loginButton.disabled = false;
-								loginStatus.style.display = 'none';
 							}
 						});
 						
