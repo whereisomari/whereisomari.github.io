@@ -504,7 +504,7 @@
         function fetchDutyTracker() {
             return new Promise((resolve, reject) => {
                 loginStatus.textContent = 'Loading duty tracker...';
-                const storageRef = firebase.storage().ref('tracker');
+                const storageRef = firebase.storage().ref('tracker/duty-tracker.txt');
 
                 storageRef.getDownloadURL()
                     .then(url => fetch(url, { cache: 'no-store' }))
