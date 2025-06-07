@@ -545,14 +545,15 @@
 				const storageRef = firebase.storage().ref('tracker/duty-tracker.txt');
 				console.log('Storage reference created for:', storageRef.fullPath);
 
-				// Use Firebase SDK's getBytes method instead of fetch
-				storageRef.getBytes()
-					.then(bytes => {
-						console.log('Bytes received:', bytes.byteLength);
+				// Use getBlob() method (available in older Firebase versions)
+				storageRef.getBlob()
+					.then(blob => {
+						console.log('Blob received:', blob.size, 'bytes, type:', blob.type);
 						
-						// Convert bytes to string
-						const text = new TextDecoder('utf-8').decode(bytes);
-						
+						// Convert blob to text
+						return blob.text();
+					})
+					.then(text => {
 						console.log('Text content received:', {
 							length: text.length,
 							firstLine: text.split('\n')[0],
