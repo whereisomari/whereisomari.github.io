@@ -409,27 +409,35 @@
         const loginButton = document.getElementById('loginButton');
         const passwordInput = document.getElementById('passwordInput');
 
-        function signIn() {
-            const email = document.getElementById('emailInput').value;
-            const password = passwordInput.value;
-            
-            if (!email || !password) {
-                loginError.textContent = "Please enter both email and password.";
-                return;
-            }
+		function signIn() {
+			const email = document.getElementById('emailInput').value;
+			const password = passwordInput.value;
+			
+			if (!email || !password) {
+				loginError.textContent = "Please enter both email and password.";
+				return;
+			}
 
-            loginButton.disabled = true;
-            loginError.textContent = '';
-            loginStatus.textContent = 'Authenticating...';
-            loginStatus.style.display = 'block';
+			loginButton.disabled = true;
+			loginError.textContent = '';
+			loginStatus.textContent = 'Authenticating...';
+			loginStatus.style.display = 'block';
 
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .catch((error) => {
-                    loginStatus.style.display = 'none';
-                    loginError.textContent = getUserFriendlyAuthError(error);
-                    loginButton.disabled = false;
-                });
-        }
+			console.log('Attempting to sign in user:', email);
+
+			firebase.auth().signInWithEmailAndPassword(email, password)
+				.then((userCredential) => {
+					console.log('Sign in successful for:', userCredential.user.email);
+					// Don't call initializeApp here - it will be called by onAuthStateChanged
+					loginStatus.textContent = 'Authentication successful...';
+				})
+				.catch((error) => {
+					console.error('Sign in error:', error);
+					loginStatus.style.display = 'none';
+					loginError.textContent = getUserFriendlyAuthError(error);
+					loginButton.disabled = false;
+				});
+		}
         
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -480,49 +488,114 @@
         
         // Main function to initialize app after login
         function initializeApp() {
-            loginStatus.textContent = 'Loading timetable...';
+			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
+			
+			loginStatus.textContent = 'Loading timetable...';
+			loginStatus.style.display = 'block';
 
-            Promise.all([fetchAndProcessTimetable(), fetchDutyTracker()])
-                .then(() => {
-                    loginSplashScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        loginSplashScreen.style.display = 'none';
-                    }, 500); // Wait for fade out transition
+			// Fetch timetable first, then duty tracker (sequential, not parallel)
+			fetchAndProcessTimetable()
+				.then(() => {
+					console.log('Timetable loaded successfully, now loading duty tracker...');
+					loginStatus.textContent = 'Loading duty tracker...';
+					return fetchDutyTracker();
+				})
+				.then(() => {
+					console.log('Both timetable and duty tracker loaded successfully');
+					loginStatus.textContent = 'Data loaded successfully!';
+					
+					// Hide login screen with fade out
+					loginSplashScreen.style.opacity = '0';
+					setTimeout(() => {
+						loginSplashScreen.style.display = 'none';
+					}, 500);
 
-                    mainContainer.style.display = 'flex';
-                    startRealTimeUpdates();
-                })
-                .catch(error => {
-                    console.error("Initialization failed:", error);
-                    loginStatus.style.display = 'none';
-                    loginError.textContent = 'Error loading data: ' + error.message;
-                    loginButton.disabled = false;
-                });
-        }
+					// Show main container
+					mainContainer.style.display = 'flex';
+					
+					// Start the real-time updates
+					startRealTimeUpdates();
+				})
+				.catch(error => {
+					console.error("Initialization failed:", error);
+					
+					// Show error to user
+					loginStatus.style.display = 'none';
+					loginError.textContent = 'Error loading data: ' + error.message;
+					loginButton.disabled = false;
+					
+					// Log more details for debugging
+					console.error('Full error details:', {
+						message: error.message,
+						stack: error.stack,
+						name: error.name
+					});
+				});
+		}
         
-        // New function to fetch duty tracker from Firebase
-        function fetchDutyTracker() {
-            return new Promise((resolve, reject) => {
-                loginStatus.textContent = 'Loading duty tracker...';
-                const storageRef = firebase.storage().ref('tracker/duty-tracker.txt');
+        // Function to fetch duty tracker from Firebase
+		function fetchDutyTracker() {
+			return new Promise((resolve, reject) => {
+				loginStatus.textContent = 'Loading duty tracker...';
+				
+				// Debug logging to see what's happening
+				console.log('fetchDutyTracker starting...');
+				console.log('Current user:', firebase.auth().currentUser?.email);
+				console.log('Auth state:', firebase.auth().currentUser ? 'authenticated' : 'not authenticated');
+				
+				const storageRef = firebase.storage().ref('tracker/duty-tracker.txt');
+				console.log('Storage reference created for:', storageRef.fullPath);
 
-                storageRef.getDownloadURL()
-                    .then(url => fetch(url, { cache: 'no-store' }))
-                    .then(response => {
-                        if (!response.ok) throw new Error(`Failed to fetch tracker: ${response.statusText}`);
-                        return response.text();
-                    })
-                    .then(text => {
-                        dutyData = text;
-                        console.log('Duty Tracker loaded from Firebase.');
-                        resolve();
-                    })
-                    .catch(error => {
-                        console.error('Error fetching duty tracker:', error);
-                        reject(error);
-                    });
-            });
-        }
+				storageRef.getDownloadURL()
+					.then(url => {
+						console.log('Download URL obtained:', url);
+						
+						// Use the same fetch pattern as the working DLR app
+						return fetch(url, {
+							cache: 'no-store',
+							mode: 'cors',
+							method: 'GET',
+							headers: {
+								'Accept': 'text/plain,*/*'
+							}
+						});
+					})
+					.then(response => {
+						console.log('Fetch response received:', {
+							status: response.status,
+							statusText: response.statusText,
+							ok: response.ok,
+							type: response.type,
+							url: response.url
+						});
+						
+						if (!response.ok) {
+							throw new Error(`Failed to fetch tracker: ${response.status} ${response.statusText}`);
+						}
+						
+						return response.text();
+					})
+					.then(text => {
+						console.log('Text content received:', {
+							length: text.length,
+							firstLine: text.split('\n')[0],
+							preview: text.substring(0, 200) + (text.length > 200 ? '...' : '')
+						});
+						
+						dutyData = text;
+						console.log('Duty Tracker loaded from Firebase successfully.');
+						resolve();
+					})
+					.catch(error => {
+						console.error('fetchDutyTracker error:', {
+							message: error.message,
+							name: error.name,
+							stack: error.stack
+						});
+						reject(error);
+					});
+			});
+		}
 
         // --- END: Firebase Integration and Authentication ---
 
@@ -1258,45 +1331,53 @@
 
     <!-- Firebase SDK Loader -->
     <script>
-        function loadFirebase() {
-            const loadScript = (src, callback) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = callback;
-                document.body.appendChild(script);
-            };
-            
-            loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
-                loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
-                    loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
-                        const firebaseConfig = {
-                            apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
-                            authDomain: "owngoal-4f34f.firebaseapp.com",
-                            projectId: "owngoal-4f34f",
-                            storageBucket: "owngoal-4f34f.firebasestorage.app",
-                            messagingSenderId: "270078133518",
-                            appId: "1:270078133518:web:36ef7431fda632bed1c35f"
-                        };
-                        firebase.initializeApp(firebaseConfig);
-                        
-                        firebase.auth().onAuthStateChanged((user) => {
-                            if (user) {
-                                console.log('User is signed in.');
-                                initializeApp();
-                            } else {
-                                console.log('User is signed out.');
-                                loginSplashScreen.style.display = 'flex';
-                                loginSplashScreen.style.opacity = '1';
-                                mainContainer.style.display = 'none';
-                                loginButton.disabled = false;
-                                loginStatus.style.display = 'none';
-                            }
-                        });
-                    });
-                });
-            });
-        }
-        loadFirebase();
+		function loadFirebase() {
+			const loadScript = (src, callback) => {
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = callback;
+				document.body.appendChild(script);
+			};
+			
+			loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
+				loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
+					loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
+						const firebaseConfig = {
+							apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
+							authDomain: "owngoal-4f34f.firebaseapp.com",
+							projectId: "owngoal-4f34f",
+							storageBucket: "owngoal-4f34f.firebasestorage.app", // FIXED: Changed from .appspot.com
+							messagingSenderId: "270078133518",
+							appId: "1:270078133518:web:36ef7431fda632bed1c35f"
+						};
+						firebase.initializeApp(firebaseConfig);
+						
+						// ADD: Set persistence like the working app
+						firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+							.catch(error => {
+								console.error("Persistence error:", error);
+							});
+						
+						// ADD THIS: Authentication state handler
+						firebase.auth().onAuthStateChanged((user) => {
+							if (user) {
+								console.log('User is signed in:', user.email);
+								initializeApp();
+							} else {
+								console.log('User is signed out.');
+								loginSplashScreen.style.display = 'flex';
+								loginSplashScreen.style.opacity = '1';
+								mainContainer.style.display = 'none';
+								loginButton.disabled = false;
+								loginStatus.style.display = 'none';
+							}
+						});
+						
+					});
+				});
+			});
+		}
+		loadFirebase();
     </script>
 </body>
 </html>
