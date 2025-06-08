@@ -401,7 +401,8 @@
             animation: zoomIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
         }
         .modal-closing .duty-modal-content {
-            animation: zoomOut 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+            /* FASTER aNIMATION */
+            animation: zoomOut 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
         }
 
         @keyframes zoomIn {
@@ -424,11 +425,11 @@
                 transform: scale(0.95);
             }
         }
-
-        /* Card-switching slide animations */
+        
+        /* Card-switching slide animations REFACTORED */
         .duty-modal-body {
-            height: calc(80vh - 65px); /* Set fixed height for body */
-            overflow-y: auto;
+            height: calc(80vh - 65px);
+            overflow: hidden;
         }
 
         .slide-container {
@@ -443,7 +444,7 @@
             height: 100%;
             top: 0;
             left: 0;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow-y: auto;
             padding: 1.5rem;
         }
@@ -451,21 +452,23 @@
         .slide-pane.timetable {
             padding: 0;
         }
-        
-        .slide-pane.slide-out-to-left {
-            transform: translateX(-100%);
-        }
-        .slide-pane.slide-in-from-right {
-            transform: translateX(100%);
-        }
-        .slide-pane.slide-center {
+
+        /* A pane that is 'in' the viewport and visible */
+        .slide-pane.is-center {
             transform: translateX(0);
+            opacity: 1;
         }
-        .slide-pane.slide-out-to-right {
-             transform: translateX(100%);
-        }
-        .slide-pane.slide-in-from-left {
+
+        /* A pane that is to the left of the viewport and hidden */
+        .slide-pane.is-left {
             transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        /* A pane that is to the right of the viewport and hidden */
+        .slide-pane.is-right {
+            transform: translateX(100%);
+            opacity: 0;
         }
 
 
@@ -478,7 +481,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative; /* Changed from sticky */
+            position: relative;
             z-index: 20;
             border-radius: 15px 15px 0 0;
             min-height: 65px;
@@ -1178,12 +1181,9 @@
                     dutyTimes = `<span>Book on: ${startTime}</span><span>Book off: ${endTime}</span>`;
                     
                     card.addEventListener('click', () => {
-                        // Set the current duty date for timetable lookup - use the duty's actual date!
-                        // Parse the duty date properly (dutyInfo.date should becameraContinuous-MM-DD format)
                         const dutyDateParts = dutyInfo.date.split('-');
                         currentDutyDate = new Date(dutyDateParts[0], dutyDateParts[1] - 1, dutyDateParts[2]);
                         
-                        // Clear any cached timetable data when switching duties
                         currentTimetableData = null;
                         showDutyDetails(versions[0], dutyInfo.dutyNumber);
                     });
@@ -1463,7 +1463,8 @@
             let timetablePane = document.getElementById('timetable-pane');
 
             // --- Slide out the duty pane ---
-            dutyPane.classList.add('slide-out-to-left');
+            dutyPane.classList.remove('is-center');
+            dutyPane.classList.add('is-left');
 
             // --- Change header details ---
             modalTitle.textContent = `${halfName}: Run ${runNumber}`;
@@ -1476,13 +1477,13 @@
             if (!timetablePane) {
                 timetablePane = document.createElement('div');
                 timetablePane.id = 'timetable-pane';
-                timetablePane.className = 'slide-pane timetable slide-in-from-right'; // Start off-screen
+                timetablePane.className = 'slide-pane timetable is-right'; // Start off-screen right
                 modalBody.querySelector('.slide-container').appendChild(timetablePane);
+            } else {
+                 timetablePane.className = 'slide-pane timetable is-right';
             }
             
             timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #888;">Loading timetable...</div>`;
-            timetablePane.classList.remove('slide-center', 'slide-out-to-right');
-            timetablePane.classList.add('slide-in-from-right');
             
             try {
                 // Get applicable timetable for the duty date
@@ -1538,8 +1539,8 @@
 
             // --- Slide in the new pane ---
             requestAnimationFrame(() => {
-                 timetablePane.classList.remove('slide-in-from-right');
-                 timetablePane.classList.add('slide-center');
+                 timetablePane.classList.remove('is-right');
+                 timetablePane.classList.add('is-center');
             });
         }
 
@@ -1554,9 +1555,8 @@
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             
-            // Store current duty data for navigation
             currentDutyData = versionInfo;
-            currentTimetableData = null; // Reset timetable cache
+            currentTimetableData = null; 
             
             const duty = versionInfo.duty;
             const dutyId = versionInfo.dutyId;
@@ -1588,14 +1588,10 @@
             `;
 
             if (duty.TypeOfDuty === "SPARE" || duty.TypeOfDuty === "TRAINING" || duty.TypeOfDuty === "PANEL") {
-                dutyContentHTML += `
-                    <div class="section">
-                        <div class="section-header">Duty Details</div>
-                        <div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>
-                    </div>`;
+                dutyContentHTML += `<div class="section"><div class="section-header">Duty Details</div><div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div></div>`;
             } else {
                 const canShowFirstHalf = isBaseDuty && duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR";
-                const dutyDateString = currentDutyDate.getFullYear() + ',' + currentDutyDate.getMonth() + ',' + currentDutyDate.getDate();
+                const dutyDateString = currentDutyDate.getFullYear() + ',' + (currentDutyDate.getMonth()) + ',' + currentDutyDate.getDate();
                 
                 dutyContentHTML += `
                     <div class="section">
@@ -1609,12 +1605,7 @@
                 if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
                     dutyContentHTML += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
                 } else {
-                    dutyContentHTML += `
-                        <div style="margin-left: 1rem;">
-                            <div class="section-item"><span class="section-label">Run:</span><span>${duty.FirstHalfRunNumber}</span></div>
-                            <div class="section-item"><span class="section-label">Pick up:</span><span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span></div>
-                            <div class="section-item"><span class="section-label">Relieved:</span><span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span></div>
-                        </div>`;
+                    dutyContentHTML += `<div style="margin-left: 1rem;"><div class="section-item"><span class="section-label">Run:</span><span>${duty.FirstHalfRunNumber}</span></div><div class="section-item"><span class="section-label">Pick up:</span><span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span></div><div class="section-item"><span class="section-label">Relieved:</span><span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span></div></div>`;
                 }
                 dutyContentHTML += `</div>`;
 
@@ -1635,12 +1626,7 @@
                 if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
                     dutyContentHTML += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
                 } else {
-                     dutyContentHTML += `
-                        <div style="margin-left: 1rem;">
-                           <div class="section-item"><span class="section-label">Run:</span><span>${duty.SecondHalfRunNumber}</span></div>
-                           <div class="section-item"><span class="section-label">Pick up:</span><span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span></div>
-                           <div class="section-item"><span class="section-label">Relieved:</span><span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span></div>
-                        </div>`;
+                     dutyContentHTML += `<div style="margin-left: 1rem;"><div class="section-item"><span class="section-label">Run:</span><span>${duty.SecondHalfRunNumber}</span></div><div class="section-item"><span class="section-label">Pick up:</span><span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span></div><div class="section-item"><span class="section-label">Relieved:</span><span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span></div></div>`;
                 }
                 dutyContentHTML += `</div>`;
             }
@@ -1649,7 +1635,7 @@
 
             modalBody.innerHTML = `
                 <div class="slide-container">
-                    <div id="duty-pane" class="slide-pane slide-center">${dutyContentHTML}</div>
+                    <div id="duty-pane" class="slide-pane is-center">${dutyContentHTML}</div>
                 </div>
             `;
             
@@ -1704,16 +1690,19 @@
             const closeBtn = document.querySelector('.close-modal');
 
             if (currentModalView === 'timetable') {
-                // --- Animate back to duty details ---
                 const dutyPane = document.getElementById('duty-pane');
                 const timetablePane = document.getElementById('timetable-pane');
                 
-                timetablePane.classList.add('slide-out-to-right');
-                dutyPane.classList.remove('slide-out-to-left');
-                dutyPane.classList.add('slide-center');
+                // Animate timetable out to the LEFT
+                timetablePane.classList.remove('is-center');
+                timetablePane.classList.add('is-left');
+                
+                // Animate duty details back in from the left
+                dutyPane.classList.remove('is-left');
+                dutyPane.classList.add('is-center');
 
-                // --- Restore header details ---
-                const { duty, dutyId } = currentDutyData;
+                // Restore header details
+                const { dutyId } = currentDutyData;
                 const [number, location, , startTime, endTime] = dutyId.split('-');
                 modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
                 closeBtn.innerHTML = '&times;';
@@ -1721,7 +1710,7 @@
                 closeBtn.style.fontWeight = 'normal';
                 currentModalView = 'duty';
             } else {
-                // --- Close the entire modal ---
+                // Close the entire modal
                 modal.classList.add('modal-closing');
                 modal.classList.remove('modal-opening');
                 setTimeout(() => {
@@ -1729,7 +1718,7 @@
                     modal.classList.remove('modal-closing');
                     currentModalView = 'duty';
                     currentDutyData = null;
-                }, 400); // Match animation duration
+                }, 200); // Match FASTER animation duration
             }
         }
 
