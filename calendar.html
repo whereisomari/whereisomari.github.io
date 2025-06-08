@@ -408,7 +408,7 @@
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 10;
             border-radius: 15px 15px 0 0;
         }
 
@@ -498,19 +498,36 @@
                 overflow-x: hidden;
             }
             
-            .duty-modal-content table {
-                font-size: 12px;
-            }
-            
-            .duty-modal-content td {
-                padding: 6px 8px !important;
-                height: 2.5em;
-                line-height: 1.25;
+            .duty-modal-header {
+                padding: 0.5rem 1rem; /* Reduced padding for mobile */
             }
 
-            .duty-modal-header {
-                padding: 0.5rem 1rem;
+            .timetable-header-row {
+                padding: 8px 10px !important;
             }
+            
+            .timetable-header-cell-location { width: 45% !important; }
+            .timetable-header-cell-plat { width: 12% !important; }
+            .timetable-header-cell-arrival { width: 21.5% !important; }
+            .timetable-header-cell-departure { width: 21.5% !important; }
+            
+            .timetable-data-row {
+                 min-height: 2.8em; /* Ensure consistent row height for 2 lines */
+                 display: flex;
+                 align-items: center;
+            }
+
+            .timetable-data-cell {
+                padding: 4px 6px !important;
+            }
+            
+            .timetable-data-cell-location { 
+                width: 45% !important; 
+                white-space: normal !important; /* Allow wrapping */
+            }
+            .timetable-data-cell-plat { width: 12% !important; }
+            .timetable-data-cell-arrival { width: 21.5% !important; }
+            .timetable-data-cell-departure { width: 21.5% !important; }
         }
     </style>
 </head>
@@ -1074,7 +1091,7 @@
                     
                     card.addEventListener('click', () => {
                         // Set the current duty date for timetable lookup - use the duty's actual date!
-                        // Parse the duty date properly (dutyInfo.date should be YYYY-MM-DD format)
+                        // Parse the duty date properly (dutyInfo.date should beSublcd-MM-DD format)
                         const dutyDateParts = dutyInfo.date.split('-');
                         currentDutyDate = new Date(dutyDateParts[0], dutyDateParts[1] - 1, dutyDateParts[2]);
                         
@@ -1278,8 +1295,8 @@
         }
 
         // Filter run data by time constraints
-        function filterRunByTime(runData, startTime, endTime) {
-            if (!runData || !startTime || !endTime) return runData;
+        function filterRunByTime(fullRunData, startTime, endTime) {
+            if (!fullRunData || !startTime || !endTime) return fullRunData;
             
             const parseTime = (timeStr) => {
                 const [hours, minutes, seconds] = timeStr.split(':').map(Number);
@@ -1287,24 +1304,27 @@
             };
             
             const startSeconds = parseTime(startTime + ':00');
-            // Add 2 hours buffer to end time to avoid cutting off last timing points
-            const endSeconds = parseTime(endTime + ':00') + (2 * 60 * 60);
+            const endSeconds = parseTime(endTime + ':00');
             
-            const filteredData = runData.filter(stop => {
+            let filteredStops = fullRunData.filter(stop => {
                 const arrivalSeconds = parseTime(stop.arrivalTime);
-                
-                // Include stop if arrival time is within the extended range
                 return arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds;
             });
-            
-            // Hard code: always show one additional row beyond what the current filtering shows
-            const lastIncludedIndex = runData.findIndex(stop => stop === filteredData[filteredData.length - 1]);
-            if (lastIncludedIndex !== -1 && lastIncludedIndex < runData.length - 1) {
-                filteredData.push(runData[lastIncludedIndex + 1]);
+
+            // If we found any stops, try to add one more
+            if (filteredStops.length > 0) {
+                const lastStopInFiltered = filteredStops[filteredStops.length - 1];
+                const lastStopIndexInFull = fullRunData.findIndex(stop => stop === lastStopInFiltered);
+
+                // If the last stop is not the very last stop in the full data, add the next one
+                if (lastStopIndexInFull > -1 && lastStopIndexInFull < fullRunData.length - 1) {
+                    filteredStops.push(fullRunData[lastStopIndexInFull + 1]);
+                }
             }
             
-            return filteredData;
+            return filteredStops;
         }
+
 
         // Add depot stops to run data
         function addDepotStops(runData, startLocation, endLocation, startTime, endTime) {
@@ -1377,22 +1397,21 @@
                 }
 
                 // Get and filter run data
-                let runData = currentTimetableData[runNumber];
-                runData = filterRunByTime(runData, startTime, endTime);
+                let fullRunData = currentTimetableData[runNumber];
+                let runData = filterRunByTime(fullRunData, startTime, endTime);
                 runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
 
                 // Create timetable HTML with separate sticky header
                 let timetableHTML = `
-                    <div style="position: sticky; top: 0; z-index: 15; background: rgba(26, 26, 26, 0.95); padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);">
-                        <div style="display: flex; padding: 0 12px; min-width: 0;">
-                            <div style="width: 45%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
-                            <div style="width: 10%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Plat.</div>
-                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Arrival</div>
-                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Departure</div>
+                    <div class="timetable-header-container" style="position: sticky; top: 0; z-index: 5; background: #1a1a1a;">
+                         <div class="timetable-header-row" style="display: flex; padding: 8px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="timetable-header-cell-location" style="width: 40%; font-weight: 600; font-size: 14px; color: #888;">Location</div>
+                            <div class="timetable-header-cell-plat" style="width: 15%; font-weight: 600; font-size: 14px; color: #888;">Plat.</div>
+                            <div class="timetable-header-cell-arrival" style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888;">Arrival</div>
+                            <div class="timetable-header-cell-departure" style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888;">Departure</div>
                         </div>
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; min-width: 0;">
-                        <tbody>
+                    <div class="timetable-body-container">
                 `;
 
                 runData.forEach(stop => {
@@ -1401,19 +1420,16 @@
                     const nameColor = isDepot ? 'color: #1e88e5;' : 'color: #ffffff;';
                     
                     timetableHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 45%; min-width: 0; white-space: normal; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.location}</td>
-                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 10%; min-width: 0; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.platform}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.arrivalTime}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.departureTime}</td>
-                        </tr>
+                        <div class="timetable-data-row" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
+                            <div class="timetable-data-cell timetable-data-cell-location" style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 40%; text-overflow: ellipsis; white-space: nowrap;">${stop.location}</div>
+                            <div class="timetable-data-cell timetable-data-cell-plat" style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 15%;">${stop.platform}</div>
+                            <div class="timetable-data-cell timetable-data-cell-arrival" style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%;">${stop.arrivalTime}</div>
+                            <div class="timetable-data-cell timetable-data-cell-departure" style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%;">${stop.departureTime}</div>
+                        </div>
                     `;
                 });
 
-                timetableHTML += `
-                        </tbody>
-                    </table>
-                `;
+                timetableHTML += `</div>`;
 
                 modalBody.innerHTML = timetableHTML;
                 
@@ -1724,7 +1740,7 @@
                             apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
                             authDomain: "owngoal-4f34f.firebaseapp.com",
                             projectId: "owngoal-4f34f",
-                            storageBucket: "owngoal-4f34f.firebasestorage.app",
+                            storageBucket: "owngoal-4f34f.appspot.com",
                             messagingSenderId: "270078133518",
                             appId: "1:270078133518:web:36ef7431fda632bed1c35f"
                         };
