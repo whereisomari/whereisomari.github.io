@@ -400,7 +400,7 @@
         .duty-modal-header {
             background: linear-gradient(90deg, #8A2BE2, #4B0082);
             color: white;
-            padding: 0.6rem 1rem;
+            padding: 0.8rem 1.2rem;
             font-size: 1.2rem;
             font-weight: bold;
             display: flex;
@@ -408,7 +408,7 @@
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 20;
             border-radius: 15px 15px 0 0;
         }
 
@@ -504,12 +504,12 @@
             
             .duty-modal-content td {
                 padding: 6px 8px !important;
-                height: 2.2em !important;
+                height: 2.5em;
+                line-height: 1.25;
             }
-            
+
             .duty-modal-header {
-                padding: 0.5rem 0.8rem !important;
-                font-size: 1.1rem !important;
+                padding: 0.5rem 1rem;
             }
         }
     </style>
@@ -1290,14 +1290,20 @@
             // Add 2 hours buffer to end time to avoid cutting off last timing points
             const endSeconds = parseTime(endTime + ':00') + (2 * 60 * 60);
             
-            return runData.filter(stop => {
+            const filteredData = runData.filter(stop => {
                 const arrivalSeconds = parseTime(stop.arrivalTime);
-                const departureSeconds = parseTime(stop.departureTime);
                 
-                // Include stop if arrival time is within the extended range OR if departure time is after start
-                return (arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds) ||
-                       (departureSeconds >= startSeconds);
+                // Include stop if arrival time is within the extended range
+                return arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds;
             });
+            
+            // Hard code: always show one additional row beyond what the current filtering shows
+            const lastIncludedIndex = runData.findIndex(stop => stop === filteredData[filteredData.length - 1]);
+            if (lastIncludedIndex !== -1 && lastIncludedIndex < runData.length - 1) {
+                filteredData.push(runData[lastIncludedIndex + 1]);
+            }
+            
+            return filteredData;
         }
 
         // Add depot stops to run data
@@ -1377,12 +1383,12 @@
 
                 // Create timetable HTML with separate sticky header
                 let timetableHTML = `
-                    <div style="position: sticky; top: 44px; z-index: 5; background: rgba(255, 255, 255, 0.05); padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div style="position: sticky; top: 0; z-index: 15; background: rgba(26, 26, 26, 0.95); padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);">
                         <div style="display: flex; padding: 0 12px; min-width: 0;">
-                            <div style="width: 50%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
+                            <div style="width: 45%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
                             <div style="width: 10%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Plat.</div>
-                            <div style="width: 20%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Arrival</div>
-                            <div style="width: 20%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Departure</div>
+                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Arrival</div>
+                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Departure</div>
                         </div>
                     </div>
                     <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; min-width: 0;">
@@ -1396,10 +1402,10 @@
                     
                     timetableHTML += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 50%; min-width: 0; height: 2.5em; vertical-align: top; line-height: 1.2;">${stop.location}</td>
-                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 10%; min-width: 0; height: 2.5em; vertical-align: top;">${stop.platform}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 20%; min-width: 0; height: 2.5em; vertical-align: top;">${stop.arrivalTime}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 20%; min-width: 0; height: 2.5em; vertical-align: top;">${stop.departureTime}</td>
+                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 45%; min-width: 0; white-space: normal; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.location}</td>
+                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 10%; min-width: 0; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.platform}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.arrivalTime}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0; height: 2.5em; line-height: 1.25; vertical-align: top;">${stop.departureTime}</td>
                         </tr>
                     `;
                 });
