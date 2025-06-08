@@ -1472,7 +1472,8 @@
             
             // Store current duty data for navigation
             currentDutyData = versionInfo;
-            currentDutyDate = new Date(); // This should be the actual duty date from the calendar
+            // DON'T reset currentDutyDate here - it should already be set by the card click!
+            console.log('📋 DEBUG: showDutyDetails - currentDutyDate should already be set:', currentDutyDate);
             currentTimetableData = null; // Reset timetable cache
             
             const duty = versionInfo.duty;
