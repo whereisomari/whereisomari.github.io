@@ -312,11 +312,6 @@
             transform: none;
         }
 
-        .duty-card.rest-day .duty-category {
-            background: #666 !important;
-            color: white;
-        }
-
         .duty-date {
             font-size: 0.9rem;
             color: #888;
@@ -387,6 +382,7 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            touch-action: none;
         }
 
         .duty-modal-content {
@@ -397,14 +393,14 @@
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
-            overscroll-behavior: contain;
             position: relative;
+            touch-action: pan-y;
         }
 
         .duty-modal-header {
             background: linear-gradient(90deg, #8A2BE2, #4B0082);
             color: white;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             font-size: 1.2rem;
             font-weight: bold;
             display: flex;
@@ -413,6 +409,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            border-radius: 15px 15px 0 0;
         }
 
         .close-modal {
@@ -423,12 +420,11 @@
             cursor: pointer;
             padding: 4px 8px;
             border-radius: 4px;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease;
         }
 
         .close-modal:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.1);
         }
 
         .duty-modal-body {
@@ -846,7 +842,7 @@
         }
 
         // Parse duty tracker to get next 21 days
-        function parseNext20Days() {
+        function parseNext21Days() {
             if (!dutyTrackerData) return [];
             
             const lines = dutyTrackerData.split('\n');
@@ -958,7 +954,7 @@
 
         // Populate calendar
         function populateCalendar() {
-            const duties = parseNext20Days();
+            const duties = parseNext21Days();
             const grid = document.getElementById('calendarGrid');
             
             if (duties.length === 0) {
@@ -1249,30 +1245,15 @@
             const startSeconds = parseTime(startTime + ':00');
             const endSeconds = parseTime(endTime + ':00');
             
-            // Find first stop at or after start time
-            const firstStopIndex = runData.findIndex(stop => {
+            return runData.filter(stop => {
                 const arrivalSeconds = parseTime(stop.arrivalTime);
                 const departureSeconds = parseTime(stop.departureTime);
-                return arrivalSeconds >= startSeconds || departureSeconds >= startSeconds;
+                
+                // Include stop if either arrival or departure is within the time range, or if arrival is before start and departure is after start
+                return (arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds) ||
+                       (departureSeconds >= startSeconds && departureSeconds <= endSeconds) ||
+                       (arrivalSeconds <= startSeconds && departureSeconds >= startSeconds);
             });
-            
-            // Find last stop at or before end time
-            let lastStopIndex = runData.length - 1;
-            for (let i = runData.length - 1; i >= 0; i--) {
-                const arrivalSeconds = parseTime(runData[i].arrivalTime);
-                const departureSeconds = parseTime(runData[i].departureTime);
-                if (arrivalSeconds <= endSeconds || departureSeconds <= endSeconds) {
-                    lastStopIndex = i;
-                    break;
-                }
-            }
-            
-            // Include one extra stop beyond the end time if it exists
-            if (lastStopIndex < runData.length - 1) {
-                lastStopIndex++;
-            }
-            
-            return runData.slice(Math.max(0, firstStopIndex), lastStopIndex + 1);
         }
 
         // Add depot stops to run data
@@ -1352,17 +1333,16 @@
 
                 // Create timetable HTML
                 let timetableHTML = `
-                    <div style="overflow-x: auto; max-width: 100%;">
-                        <table style="width: 100%; border-collapse: collapse; margin: 0; min-width: 400px;">
-                            <thead style="position: sticky; top: 0; z-index: 5;">
-                                <tr style="background: rgba(255, 255, 255, 0.05);">
-                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Location</th>
-                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Plat.</th>
-                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Arrival</th>
-                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Departure</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <table style="width: 100%; border-collapse: collapse; margin: 0; max-width: 100%; table-layout: fixed;">
+                        <thead>
+                            <tr style="background: rgba(255, 255, 255, 0.05); position: sticky; top: 0; z-index: 5;">
+                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 50%;">Location</th>
+                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 15%;">Plat.</th>
+                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 17.5%;">Arrival</th>
+                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 17.5%;">Departure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                 `;
 
                 runData.forEach(stop => {
@@ -1372,18 +1352,17 @@
                     
                     timetableHTML += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor}">${stop.location}</td>
-                            <td style="padding: 8px 12px; color: #888; font-size: 14px;">${stop.platform}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px;">${stop.arrivalTime}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px;">${stop.departureTime}</td>
+                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden;">${stop.location}</td>
+                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden;">${stop.platform}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden;">${stop.arrivalTime}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden;">${stop.departureTime}</td>
                         </tr>
                     `;
                 });
 
                 timetableHTML += `
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 `;
 
                 modalBody.innerHTML = timetableHTML;
@@ -1466,7 +1445,7 @@
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>First Half (${duty.FirstHalfLength})</span>
                                 </div>
-                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>'}
+                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : (duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR" ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>' : '')}
                             </div>
                         </div>`;
 
@@ -1488,6 +1467,10 @@
                                 <span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span>
                             </div>
                         </div>`;
+                    
+                    if (!canShowFirstHalf) {
+                        content += '';
+                    }
                 }
                 content += `</div>`;
 
@@ -1513,7 +1496,7 @@
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>Second Half (${duty.SecondHalfLength})</span>
                                 </div>
-                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>'}
+                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : (duty.SecondHalfRunNumber && duty.SecondHalfRunNumber !== "" && duty.SecondHalfRunNumber !== "TR" ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>' : '')}
                             </div>
                         </div>`;
 
@@ -1535,6 +1518,10 @@
                                 <span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span>
                             </div>
                         </div>`;
+                    
+                    if (!canShowSecondHalf) {
+                        content += '';
+                    }
                 }
                 content += `</div>`;
             }
