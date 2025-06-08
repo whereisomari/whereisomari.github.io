@@ -472,9 +472,9 @@
             position: sticky;
             top: 65px;
             z-index: 15;
+            background: #1a1a1a; /* FIX: Moved background here */
         }
         .timetable-sticky-header th {
-             background: #1a1a1a;
              border: none;
         }
 
@@ -543,7 +543,7 @@
             .duty-modal-content td {
                 padding: 8px 6px !important;
                 height: 48px !important;
-                vertical-align: middle !important; /* FIX: Changed to middle */
+                vertical-align: middle !important;
             }
         }
     </style>
@@ -1427,7 +1427,7 @@
                 let timetableHTML = `
                     <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
                         <thead class="timetable-sticky-header">
-                            <tr style="background: #1a1a1a; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                                 <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
                                 <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
                                 <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
