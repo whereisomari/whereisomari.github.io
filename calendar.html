@@ -383,7 +383,7 @@
             justify-content: center;
             padding: 2rem;
         }
-
+        
         .duty-modal-content {
             background: #1a1a1a;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -391,11 +391,83 @@
             max-width: 600px;
             width: 100%;
             max-height: 80vh;
-            overflow-y: auto;
+            overflow: hidden; /* Important for slide animation */
             position: relative;
-            overflow-x: hidden;
             min-width: 0;
         }
+
+        /* Modal open/close animations */
+        .modal-opening .duty-modal-content {
+            animation: zoomIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        .modal-closing .duty-modal-content {
+            animation: zoomOut 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes zoomOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        /* Card-switching slide animations */
+        .duty-modal-body {
+            height: calc(80vh - 65px); /* Set fixed height for body */
+            overflow-y: auto;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide-pane {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .slide-pane.timetable {
+            padding: 0;
+        }
+        
+        .slide-pane.slide-out-to-left {
+            transform: translateX(-100%);
+        }
+        .slide-pane.slide-in-from-right {
+            transform: translateX(100%);
+        }
+        .slide-pane.slide-center {
+            transform: translateX(0);
+        }
+        .slide-pane.slide-out-to-right {
+             transform: translateX(100%);
+        }
+        .slide-pane.slide-in-from-left {
+            transform: translateX(-100%);
+        }
+
 
         .duty-modal-header {
             background: linear-gradient(90deg, #8A2BE2, #4B0082);
@@ -406,8 +478,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
+            position: relative; /* Changed from sticky */
             z-index: 20;
             border-radius: 15px 15px 0 0;
             min-height: 65px;
@@ -433,31 +504,7 @@
         .close-modal:hover {
             background: rgba(255, 255, 255, 0.1);
         }
-
-        .duty-modal-body {
-            padding: 1.5rem;
-            transition: opacity 0.25s ease-in-out;
-        }
-
-        .timetable-loader-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 200px;
-            gap: 1rem;
-            color: #888;
-        }
-
-        .timetable-loader {
-            width: 32px;
-            height: 32px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: #667eea;
-            animation: spin 1s linear infinite;
-        }
-
+        
         .section {
             margin-bottom: 1.5rem;
         }
@@ -490,7 +537,7 @@
         
         .timetable-sticky-header {
             position: sticky;
-            top: 65px;
+            top: 0;
             z-index: 15;
             background: #1a1a1a;
         }
@@ -532,30 +579,34 @@
             .duty-modal-content {
                 margin: 0 auto;
                 max-width: calc(100vw - 2rem);
-                overflow-x: hidden;
             }
             
             .duty-modal-header {
                 padding: 0.5rem 1rem;
                 font-size: 1.1rem;
                 min-height: 50px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
+            }
+            .duty-modal-body {
+                height: calc(80vh - 50px);
             }
             
             .close-modal {
-                display: flex;
-                align-items: center;
-                justify-content: center;
                 min-height: 40px;
                 padding: 4px 8px;
             }
             
             .timetable-sticky-header {
-                top: 50px;
+                top: 0;
             }
             
+            .slide-pane {
+                 padding: 1rem;
+            }
+            
+            .slide-pane.timetable {
+                padding: 0;
+            }
+
             .duty-modal-content table {
                 font-size: 12px;
             }
@@ -619,7 +670,7 @@
                 <button class="close-modal" onclick="closeDutyModal()">&times;</button>
             </div>
             <div class="duty-modal-body" id="modalBody">
-                <!-- Duty details will be populated here -->
+                <!-- Slide panes will be populated here -->
             </div>
         </div>
     </div>
@@ -1405,60 +1456,54 @@
 
         // Show timetable view
         async function showTimetableView(halfName, runNumber, startTime, endTime, startLocation, endLocation, dutyDate = currentDutyDate) {
-            const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             const closeBtn = document.querySelector('.close-modal');
+            const dutyPane = document.getElementById('duty-pane');
+            let timetablePane = document.getElementById('timetable-pane');
 
-            // --- Start Fade Out and Show Loader ---
-            modalBody.style.opacity = '0';
+            // --- Slide out the duty pane ---
+            dutyPane.classList.add('slide-out-to-left');
+
+            // --- Change header details ---
+            modalTitle.textContent = `${halfName}: Run ${runNumber}`;
+            closeBtn.innerHTML = '←';
+            closeBtn.style.fontSize = '1.5rem';
+            closeBtn.style.fontWeight = 'normal';
+            currentModalView = 'timetable';
+
+            // --- Prepare the timetable pane (off-screen) ---
+            if (!timetablePane) {
+                timetablePane = document.createElement('div');
+                timetablePane.id = 'timetable-pane';
+                timetablePane.className = 'slide-pane timetable slide-in-from-right'; // Start off-screen
+                modalBody.querySelector('.slide-container').appendChild(timetablePane);
+            }
             
-            setTimeout(() => {
-                // Change close button to back arrow
-                closeBtn.innerHTML = '←';
-                closeBtn.style.fontSize = '1.5rem';
-                closeBtn.style.fontWeight = 'normal';
-                currentModalView = 'timetable';
-
-                modalTitle.textContent = `${halfName}: Run ${runNumber}`;
-                modalBody.innerHTML = `
-                    <div class="timetable-loader-container">
-                        <div class="timetable-loader"></div>
-                        <div>Loading Calling Points...</div>
-                    </div>`;
-                modalBody.style.padding = '0'; // Adjust padding for loader
-                
-                // --- Fade In Loader ---
-                modalBody.style.opacity = '1';
-            }, 250); // This timeout matches the CSS transition duration
-
-
+            timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #888;">Loading timetable...</div>`;
+            timetablePane.classList.remove('slide-center', 'slide-out-to-right');
+            timetablePane.classList.add('slide-in-from-right');
+            
             try {
                 // Get applicable timetable for the duty date
                 const applicableTimetable = getApplicableTimetable(dutyDate);
-                if (!applicableTimetable) {
-                    throw new Error('No applicable timetable found for this date');
-                }
+                if (!applicableTimetable) throw new Error('No applicable timetable found for this date');
 
                 // Fetch timetable data if not already cached
-                if (!currentTimetableData) {
-                    currentTimetableData = await fetchTimetableData(applicableTimetable);
-                }
+                if (!currentTimetableData) currentTimetableData = await fetchTimetableData(applicableTimetable);
 
-                if (!currentTimetableData || !currentTimetableData[runNumber]) {
-                    throw new Error('Run not found in timetable');
-                }
+                if (!currentTimetableData || !currentTimetableData[runNumber]) throw new Error('Run not found in timetable');
 
                 // Get and filter run data
                 let runData = currentTimetableData[runNumber];
                 runData = filterRunByTime(runData, startTime, endTime);
                 runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
 
-                // Create timetable HTML with proper table structure
+                // Create timetable HTML
                 let timetableHTML = `
                     <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
                         <thead class="timetable-sticky-header">
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <tr>
                                 <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
                                 <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
                                 <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
@@ -1483,34 +1528,19 @@
                     `;
                 });
 
-                timetableHTML += `
-                        </tbody>
-                    </table>
-                `;
+                timetableHTML += `</tbody></table>`;
+                timetablePane.innerHTML = timetableHTML;
                 
-                // --- Fade out loader and fade in table ---
-                setTimeout(() => {
-                    modalBody.style.opacity = '0';
-                    setTimeout(() => {
-                        modalBody.innerHTML = timetableHTML;
-                        modalBody.style.opacity = '1';
-                    }, 250);
-                }, 500); // Add a minimum display time for the loader
-                
-
             } catch (error) {
                 console.error('Error loading timetable:', error);
-                const errorMessageHTML = `<div class="timetable-loader-container" style="color: #e53935;">${error.message}</div>`;
-                
-                // Fade out loader and fade in error
-                setTimeout(() => {
-                    modalBody.style.opacity = '0';
-                    setTimeout(() => {
-                        modalBody.innerHTML = errorMessageHTML;
-                        modalBody.style.opacity = '1';
-                    }, 250);
-                }, 500);
+                timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #e53935;">${error.message}</div>`;
             }
+
+            // --- Slide in the new pane ---
+            requestAnimationFrame(() => {
+                 timetablePane.classList.remove('slide-in-from-right');
+                 timetablePane.classList.add('slide-center');
+            });
         }
 
         // Check if duty is base type (can show timetable)
@@ -1523,14 +1553,6 @@
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
-            const closeBtn = document.querySelector('.close-modal');
-            
-            // Reset modal state
-            currentModalView = 'duty';
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.fontSize = '1.5rem';
-            closeBtn.style.fontWeight = 'normal';
-            modalBody.style.padding = '1.5rem';
             
             // Store current duty data for navigation
             currentDutyData = versionInfo;
@@ -1544,7 +1566,7 @@
             
             const isBaseDuty = isDutyBaseType(versionInfo);
             
-            let content = `
+            let dutyContentHTML = `
                 <div class="section">
                     <div class="section-item">
                         <span class="section-label">Type:</span>
@@ -1566,121 +1588,75 @@
             `;
 
             if (duty.TypeOfDuty === "SPARE" || duty.TypeOfDuty === "TRAINING" || duty.TypeOfDuty === "PANEL") {
-                content += `
+                dutyContentHTML += `
                     <div class="section">
                         <div class="section-header">Duty Details</div>
                         <div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>
                     </div>`;
             } else {
-                // First Half
                 const canShowFirstHalf = isBaseDuty && duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR";
-                
-                // Create date string for onclick - capture the current date NOW
                 const dutyDateString = currentDutyDate.getFullYear() + ',' + currentDutyDate.getMonth() + ',' + currentDutyDate.getDate();
                 
-                content += `
+                dutyContentHTML += `
                     <div class="section">
                         <div class="section-header">
                             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowFirstHalf ? 'cursor: pointer;' : ''}" ${canShowFirstHalf ? `onclick="showTimetableView('First Half', '${duty.FirstHalfRunNumber}', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${duty.FirstHalfStartLocation}', '${duty.FirstHalfEndLocation}', new Date(${dutyDateString}))"` : ''}>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span>First Half (${duty.FirstHalfLength})</span>
-                                </div>
-                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : (duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR" ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>' : '')}
+                                <span>First Half (${duty.FirstHalfLength})</span>
+                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888;">View Calling Points →</div>' : ''}
                             </div>
                         </div>`;
 
                 if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
-                    content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
+                    dutyContentHTML += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
                 } else {
-                    content += `
+                    dutyContentHTML += `
                         <div style="margin-left: 1rem;">
-                            <div class="section-item">
-                                <span class="section-label">Run:</span>
-                                <span>${duty.FirstHalfRunNumber}</span>
-                            </div>
-                            <div class="section-item">
-                                <span class="section-label">Pick up:</span>
-                                <span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span>
-                            </div>
-                            <div class="section-item">
-                                <span class="section-label">Relieved:</span>
-                                <span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span>
-                            </div>
+                            <div class="section-item"><span class="section-label">Run:</span><span>${duty.FirstHalfRunNumber}</span></div>
+                            <div class="section-item"><span class="section-label">Pick up:</span><span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span></div>
+                            <div class="section-item"><span class="section-label">Relieved:</span><span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span></div>
                         </div>`;
-                    
-                    if (!canShowFirstHalf) {
-                        content += '';
-                    }
                 }
-                content += `</div>`;
+                dutyContentHTML += `</div>`;
 
-                // Break Details
                 if (duty.FirstHalfEndTime && duty.SecondHalfStartTime) {
-                    content += `
-                        <div class="section">
-                            <div class="section-header">Break Details</div>
-                            <div class="section-item">
-                                <span class="section-label">Duration:</span>
-                                <span>${calculateBreakDetails(duty)}</span>
-                            </div>
-                        </div>`;
+                    dutyContentHTML += `<div class="section"><div class="section-header">Break Details</div><div class="section-item"><span class="section-label">Duration:</span><span>${calculateBreakDetails(duty)}</span></div></div>`;
                 }
 
-                // Second Half
                 const canShowSecondHalf = isBaseDuty && duty.SecondHalfRunNumber && duty.SecondHalfRunNumber !== "" && duty.SecondHalfRunNumber !== "TR";
-                
-                content += `
+                dutyContentHTML += `
                     <div class="section">
-                        <div class="section-header">
+                         <div class="section-header">
                             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowSecondHalf ? 'cursor: pointer;' : ''}" ${canShowSecondHalf ? `onclick="showTimetableView('Second Half', '${duty.SecondHalfRunNumber}', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${duty.SecondHalfStartLocation}', '${duty.SecondHalfEndLocation}', new Date(${dutyDateString}))"` : ''}>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span>Second Half (${duty.SecondHalfLength})</span>
-                                </div>
-                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : (duty.SecondHalfRunNumber && duty.SecondHalfRunNumber !== "" && duty.SecondHalfRunNumber !== "TR" ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>' : '')}
+                                <span>Second Half (${duty.SecondHalfLength})</span>
+                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888;">View Calling Points →</div>' : ''}
                             </div>
                         </div>`;
 
                 if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
-                    content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
+                    dutyContentHTML += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
                 } else {
-                    content += `
+                     dutyContentHTML += `
                         <div style="margin-left: 1rem;">
-                            <div class="section-item">
-                                <span class="section-label">Run:</span>
-                                <span>${duty.SecondHalfRunNumber}</span>
-                            </div>
-                            <div class="section-item">
-                                <span class="section-label">Pick up:</span>
-                                <span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span>
-                            </div>
-                            <div class="section-item">
-                                <span class="section-label">Relieved:</span>
-                                <span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span>
-                            </div>
+                           <div class="section-item"><span class="section-label">Run:</span><span>${duty.SecondHalfRunNumber}</span></div>
+                           <div class="section-item"><span class="section-label">Pick up:</span><span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span></div>
+                           <div class="section-item"><span class="section-label">Relieved:</span><span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span></div>
                         </div>`;
-                    
-                    if (!canShowSecondHalf) {
-                        content += '';
-                    }
                 }
-                content += `</div>`;
+                dutyContentHTML += `</div>`;
             }
 
-            content += `
-                <div class="section">
-                    <div class="section-item">
-                        <span class="section-label">Book off:</span>
-                        <span>${endTime}${endLocation ? ` at ${endLocation}` : ''}</span>
-                    </div>
-                </div>`;
+            dutyContentHTML += `<div class="section"><div class="section-item"><span class="section-label">Book off:</span><span>${endTime}${endLocation ? ` at ${endLocation}` : ''}</span></div></div>`;
 
-            currentDutyContent = content;
-            modalBody.innerHTML = content;
-            
-            // Add history state for browser back button support
-            history.pushState({ modal: 'duty' }, '', '');
+            modalBody.innerHTML = `
+                <div class="slide-container">
+                    <div id="duty-pane" class="slide-pane slide-center">${dutyContentHTML}</div>
+                </div>
+            `;
             
             modal.style.display = 'flex';
+            modal.classList.add('modal-opening');
+            
+            history.pushState({ modal: 'duty' }, '', '');
         }
 
         // Calculate break details
@@ -1725,31 +1701,35 @@
         function closeDutyModal() {
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
             const closeBtn = document.querySelector('.close-modal');
 
             if (currentModalView === 'timetable') {
-                // Go back to duty view
-                currentModalView = 'duty';
+                // --- Animate back to duty details ---
+                const dutyPane = document.getElementById('duty-pane');
+                const timetablePane = document.getElementById('timetable-pane');
+                
+                timetablePane.classList.add('slide-out-to-right');
+                dutyPane.classList.remove('slide-out-to-left');
+                dutyPane.classList.add('slide-center');
+
+                // --- Restore header details ---
+                const { duty, dutyId } = currentDutyData;
+                const [number, location, , startTime, endTime] = dutyId.split('-');
+                modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
                 closeBtn.innerHTML = '&times;';
                 closeBtn.style.fontSize = '1.5rem';
                 closeBtn.style.fontWeight = 'normal';
-                modalBody.style.padding = '1.5rem';
-                
-                // Restore duty content
-                if (currentDutyData) {
-                    const dutyId = currentDutyData.dutyId;
-                    const [number, location, , startTime, endTime] = dutyId.split('-');
-                    modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
-                    modalBody.innerHTML = currentDutyContent;
-                }
-            } else {
-                // Close modal entirely
-                modal.style.display = 'none';
                 currentModalView = 'duty';
-                currentDutyData = null;
-                currentDutyContent = '';
-                currentTimetableData = null;
+            } else {
+                // --- Close the entire modal ---
+                modal.classList.add('modal-closing');
+                modal.classList.remove('modal-opening');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    modal.classList.remove('modal-closing');
+                    currentModalView = 'duty';
+                    currentDutyData = null;
+                }, 400); // Match animation duration
             }
         }
 
@@ -1757,29 +1737,14 @@
         window.addEventListener('popstate', (event) => {
             const modal = document.getElementById('dutyModal');
             if (modal && modal.style.display === 'flex') {
-                if (currentModalView === 'timetable') {
-                    // Go back to duty view instead of closing
-                    closeDutyModal();
-                } else {
-                    // Close modal
-                    modal.style.display = 'none';
-                    currentModalView = 'duty';
-                    currentDutyData = null;
-                    currentDutyContent = '';
-                    currentTimetableData = null;
-                }
+                closeDutyModal();
             }
         });
 
-        // Close modal when clicking outside
+        // Close modal when clicking outside (on the backdrop)
         document.getElementById('dutyModal').addEventListener('click', (e) => {
             if (e.target.id === 'dutyModal') {
-                const modal = document.getElementById('dutyModal');
-                modal.style.display = 'none';
-                currentModalView = 'duty';
-                currentDutyData = null;
-                currentDutyContent = '';
-                currentTimetableData = null;
+                closeDutyModal();
             }
         });
 
@@ -1793,8 +1758,6 @@
         // Initialize
         createParticles();
         
-        // Load timetable on page load
-        // (Calendar doesn't need timetable data, only duty data)
     </script>
 
     <!-- Firebase SDK Loader -->
