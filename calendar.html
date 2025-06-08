@@ -437,15 +437,6 @@
         .duty-modal-body {
             padding: 1.5rem;
         }
-        
-        .duty-modal-body table {
-            border-collapse: separate; /* FIX: Use separate model */
-            border-spacing: 0;
-        }
-
-        .timetable-row {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
 
         .section {
             margin-bottom: 1.5rem;
@@ -481,8 +472,7 @@
             position: sticky;
             top: 65px;
             z-index: 15;
-            background: #1a1a1a;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: #1a1a1a; /* FIX: Moved background here */
         }
         .timetable-sticky-header th {
              border: none;
@@ -1435,9 +1425,9 @@
 
                 // Create timetable HTML with proper table structure
                 let timetableHTML = `
-                    <table style="width: 100%; margin: 0; table-layout: fixed;">
+                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
                         <thead class="timetable-sticky-header">
-                            <tr>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                                 <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
                                 <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
                                 <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
@@ -1453,7 +1443,7 @@
                     const nameColor = isDepot ? 'color: #1e88e5;' : 'color: #ffffff;';
                     
                     timetableHTML += `
-                        <tr class="timetable-row" style="${rowStyle}">
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
                             <td style="padding: 12px; font-weight: 500; font-size: 14px; ${nameColor} vertical-align: middle;">${stop.location}</td>
                             <td style="padding: 12px; color: #888; font-size: 14px; text-align: center; vertical-align: middle;">${stop.platform}</td>
                             <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.arrivalTime}</td>
