@@ -230,21 +230,20 @@
 
         /* Header */
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 3rem;
-            position: relative;
         }
 
         .nav-link {
-            position: absolute;
-            top: 0;
-            left: 0;
             color: #667eea;
             text-decoration: none;
             padding: 8px 16px;
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 8px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .nav-link:hover {
@@ -252,10 +251,16 @@
             border-color: #667eea;
         }
 
+        .title-section {
+            flex: 1;
+            text-align: center;
+        }
+
         .page-title {
             font-size: clamp(2rem, 6vw, 3.5rem);
             font-weight: 300;
-            margin-bottom: 1rem;
+            margin: 0;
+            line-height: 1.2;
         }
 
         .page-title .gradient-text {
@@ -269,7 +274,6 @@
 
         .page-title .white-text {
             color: #ffffff;
-            display: block;
         }
 
         @keyframes gradientCycle {
@@ -310,10 +314,12 @@
 
         .duty-card.rest-day:hover {
             transform: none;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .duty-card.rest-day .duty-category {
             background: #666 !important;
+            color: white;
         }
 
         .duty-date {
@@ -435,6 +441,130 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .clickable-half {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clickable-half:hover {
+            color: #8A2BE2;
+            transform: translateX(2px);
+        }
+
+        .clickable-half::after {
+            content: "→";
+            font-size: 14px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .clickable-half:hover::after {
+            opacity: 1;
+            transform: translateX(2px);
+        }
+
+        .timetable-container {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .timetable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .timetable-validation {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .validation-base {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .validation-temp {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .station-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .station-stop {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .station-stop:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .stop-time {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 80px;
+            font-size: 14px;
+        }
+
+        .stop-location {
+            flex: 1;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .stop-platform {
+            color: #888;
+            font-size: 12px;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .timeline-connector {
+            width: 2px;
+            background: linear-gradient(to bottom, #667eea, #8A2BE2);
+            margin: 0 16px;
+            border-radius: 1px;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         .section-item {
             margin-bottom: 0.5rem;
             display: flex;
@@ -444,60 +574,6 @@
         .section-label {
             color: #888;
             min-width: 80px;
-        }
-
-        .clickable-half {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-
-        .clickable-half:hover {
-            color: #8A2BE2;
-            background: rgba(138, 43, 226, 0.1);
-            padding: 0.5rem;
-            margin: -0.25rem;
-            border-radius: 4px;
-        }
-
-        .click-indicator {
-            float: right;
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .timetable-view {
-            max-height: 400px;
-            overflow-y: auto;
-            background: #2a2a2a;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .timetable-stop {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem;
-            border-bottom: 1px solid #444;
-            transition: background 0.2s ease;
-        }
-
-        .timetable-stop:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .timetable-stop:last-child {
-            border-bottom: none;
-        }
-
-        .stop-name {
-            font-weight: 500;
-        }
-
-        .stop-time {
-            color: #888;
-            font-family: monospace;
         }
 
         .error-message {
@@ -514,19 +590,22 @@
             }
             
             .header {
-                margin-bottom: 2rem;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
             
-            .nav-link {
-                position: static;
-                display: block;
-                margin: 1rem auto 0;
-                width: fit-content;
+            .title-section {
+                order: 1;
+                margin-bottom: 1rem;
             }
             
             .page-title {
-                font-size: clamp(2.5rem, 8vw, 4rem);
-                margin-bottom: 0;
+                font-size: clamp(2.5rem, 10vw, 4rem);
+            }
+            
+            .nav-link {
+                order: 2;
             }
             
             .calendar-grid {
@@ -570,10 +649,13 @@
     <div class="container" id="mainContainer">
         <div class="header">
             <a href="/" class="nav-link">View Realtime</a>
-            <h1 class="page-title">
-                <span class="gradient-text">Omari's</span>
-                <span class="white-text">Duty Calendar</span>
-            </h1>
+            <div class="title-section">
+                <h1 class="page-title">
+                    <span class="gradient-text">Omari's</span><br>
+                    <span class="white-text">Duty Calendar</span>
+                </h1>
+            </div>
+            <div></div> <!-- Spacer for flexbox -->
         </div>
         
         <div class="calendar-grid" id="calendarGrid">
@@ -588,7 +670,7 @@
         <div class="duty-modal-content">
             <div class="duty-modal-header">
                 <span id="modalTitle">Duty Details</span>
-                <button class="close-modal" onclick="closeDutyModal()">&times;</button>
+                <button class="close-modal" id="modalCloseBtn" onclick="history.back()">&times;</button>
             </div>
             <div class="duty-modal-body" id="modalBody">
                 <!-- Duty details will be populated here -->
@@ -604,6 +686,8 @@
             singleTemp: {},
             rangeTemp: []
         };
+        let timetableData = null;
+        let parsedCsvData = null;
 
         // Authentication variables
         const mainContainer = document.getElementById('mainContainer');
@@ -711,10 +795,11 @@
 
             mainContainer.style.display = 'flex';
             
-            // Load both duty tracker and duty lookup data
+            // Load duty tracker, duty lookup data, and timetable
             Promise.all([
                 fetchDutyTracker(),
-                fetchDutyLookupData()
+                fetchDutyLookupData(),
+                fetchTimetable()
             ])
             .then(() => {
                 console.log('All data loaded successfully');
@@ -1038,15 +1123,19 @@
             
             if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(dutyInfo.category)) {
                 card.classList.add('rest-day');
-                // Set card background to category color
+                
+                // Get category color for background
                 const categoryColors = {
                     'AL': '#22330B',
                     'BH': '#2B1710', 
+                    'LD': '#5E2405',
                     'O': '#063004',
-                    'OAL': '#22330B',
-                    'LD': '#5E2405'
+                    'OAL': '#22330B'
                 };
-                card.style.background = categoryColors[dutyInfo.category] || '#063004';
+                
+                const bgColor = categoryColors[dutyInfo.category] || '#333';
+                card.style.background = bgColor;
+                
                 card.innerHTML = `
                     <div class="duty-date">${dateStr}</div>
                     <div class="duty-main">${dayNames[dutyInfo.category] || dutyInfo.category}</div>
@@ -1102,18 +1191,9 @@
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
-            const closeButton = document.querySelector('.close-modal');
-            
-            // Store for back navigation
-            currentDutyInfo = versionInfo;
-            currentDutyNumber = dutyNumber;
-            
-            // Reset close button to X
-            closeButton.innerHTML = '&times;';
-            closeButton.onclick = () => closeDutyModal();
             
             // Add history state for modal
-            history.pushState({modal: 'duty', dutyNumber}, '', '');
+            history.pushState({modal: 'duty-details'}, '', '');
             
             const duty = versionInfo.duty;
             const dutyId = versionInfo.dutyId;
@@ -1149,15 +1229,10 @@
                         <div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>
                     </div>`;
             } else {
-                // First Half - make clickable if base duty
-                const isBaseDuty = versionInfo.type === 'base';
-                const firstHalfClickable = isBaseDuty && duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "TR";
-                
+                // First Half
                 content += `
                     <div class="section">
-                        <div class="section-header ${firstHalfClickable ? 'clickable-half' : ''}" ${firstHalfClickable ? `onclick="showTimetableDetails('first', '${duty.FirstHalfRunNumber}', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${duty.FirstHalfStartLocation}', '${duty.FirstHalfEndLocation}')"` : ''}>
-                            First Half (${duty.FirstHalfLength}) ${firstHalfClickable ? '<span class="click-indicator">→</span>' : ''}
-                        </div>`;
+                        <div class="section-header clickable-half" onclick="showRunDetails('${duty.FirstHalfRunNumber}', 'First Half', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${versionInfo.type}')">First Half (${duty.FirstHalfLength})</div>`;
 
                 if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
                     content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
@@ -1190,14 +1265,10 @@
                         </div>`;
                 }
 
-                // Second Half - make clickable if base duty
-                const secondHalfClickable = isBaseDuty && duty.SecondHalfRunNumber && duty.SecondHalfRunNumber !== "TR";
-                
+                // Second Half
                 content += `
                     <div class="section">
-                        <div class="section-header ${secondHalfClickable ? 'clickable-half' : ''}" ${secondHalfClickable ? `onclick="showTimetableDetails('second', '${duty.SecondHalfRunNumber}', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${duty.SecondHalfStartLocation}', '${duty.SecondHalfEndLocation}')"` : ''}>
-                            Second Half (${duty.SecondHalfLength}) ${secondHalfClickable ? '<span class="click-indicator">→</span>' : ''}
-                        </div>`;
+                        <div class="section-header clickable-half" onclick="showRunDetails('${duty.SecondHalfRunNumber}', 'Second Half', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${versionInfo.type}')">Second Half (${duty.SecondHalfLength})</div>`;
 
                 if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
                     content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
@@ -1272,124 +1343,295 @@
         // Close modal
         function closeDutyModal() {
             document.getElementById('dutyModal').style.display = 'none';
-            // Clear any modal history states
-            if (history.state && history.state.modal) {
-                history.back();
-            }
         }
 
-        // Handle browser back button
-        window.addEventListener('popstate', (event) => {
+        // Browser history management
+        window.addEventListener('popstate', function(event) {
+            const closeBtn = document.getElementById('modalCloseBtn');
+            
             if (event.state && event.state.modal) {
-                if (event.state.modal === 'timetable') {
-                    // Go back to duty view
-                    showDutyDetails(currentDutyInfo, currentDutyNumber);
+                if (event.state.modal === 'run-details') {
+                    // Going back from run details to duty details - restore close button
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.style.fontSize = '1.5rem';
                 }
+                closeDutyModal();
             } else {
-                // Close modal if no state
-                document.getElementById('dutyModal').style.display = 'none';
+                // Reset close button when modal is closed completely
+                closeBtn.innerHTML = '&times;';
+                closeBtn.style.fontSize = '1.5rem';
             }
         });
 
-        // Store current duty info for back navigation
-        let currentDutyInfo = null;
-        let currentDutyNumber = null;
+        // Fetch timetable data
+        function fetchTimetable() {
+            return new Promise(async (resolve, reject) => {
+                const pathsUrl = 'https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt';
+                
+                try {
+                    const response = await fetch(pathsUrl, { cache: 'no-store' });
+                    if (!response.ok) throw new Error(`Failed to fetch paths.txt: ${response.statusText}`);
+                    const text = await response.text();
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
 
-        // Show timetable details
-        function showTimetableDetails(half, runNumber, startTime, endTime, startLocation, endLocation) {
-            // Store current duty info and add history state
-            history.pushState({modal: 'timetable', half}, '', '');
+                    let currentEntry = {};
+                    const timetableEntries = [];
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('Name:')) {
+                            if (Object.keys(currentEntry).length > 0) timetableEntries.push({...currentEntry});
+                            currentEntry = { name: trimmedLine.substring(5).trim() };
+                        } else if (trimmedLine.startsWith('Applies:')) {
+                            currentEntry.applies = trimmedLine.substring(8).trim();
+                        } else if (trimmedLine.startsWith('URL:')) {
+                            currentEntry.url = trimmedLine.substring(4).trim();
+                        }
+                    }
+                    if (Object.keys(currentEntry).length > 0) timetableEntries.push(currentEntry);
+
+                    if (timetableEntries.length === 0) {
+                        throw new Error('No valid timetables found in paths.txt');
+                    }
+
+                    const sortedEntries = sortTimetablesByApplicability(timetableEntries);
+                    const applicableTimetable = sortedEntries[0];
+
+                    const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
+                    if (!csvResponse.ok) throw new Error(`Failed to fetch timetable CSV: ${csvResponse.statusText}`);
+                    const csvText = await csvResponse.text();
+
+                    timetableData = csvText;
+                    parsedCsvData = parseCSVData(csvText);
+                    console.log('Timetable data loaded');
+                    resolve();
+
+                } catch (error) {
+                    console.error('Error fetching timetable:', error);
+                    resolve(); // Don't reject - timetable is optional
+                }
+            });
+        }
+
+        // Location mapping from main site
+        const locationMapping = {
+            'ABR': 'Abbey Road', 'ALS': 'All Saints', 'BAN': 'Bank', 'BEC': 'Beckton', 
+            'BEP': 'Beckton Park', 'BLA': 'Blackwall', 'BOC': 'Bow Church', 'CAW': 'Canary Wharf',
+            'CAT': 'Canning Town', 'CRO': 'Crossharbour', 'CUH': 'Custom House', 'CUS': 'Cutty Sark',
+            'CYP': 'Cyprus', 'DEB': 'Deptford Bridge', 'DER': 'Devons Road', 'EAI': 'East India',
+            'ELR': 'Elverson Road', 'GAR': 'Gallions Reach', 'GRE': 'Greenwich', 'HEQ': 'Heron Quays',
+            'ISG': 'Island Gardens', 'KGV': 'King George V', 'LAP': 'Langdon Park', 'LEW': 'Lewisham',
+            'LIM': 'Limehouse', 'LCA': 'London City Airport', 'MUD': 'Mudchute', 'PDK': 'Pontoon Dock',
+            'POP': 'Poplar', 'PRR': 'Prince Regent', 'PML': 'Pudding Mill Lane', 'ROA': 'Royal Albert',
+            'ROV': 'Royal Victoria', 'SHA': 'Shadwell', 'SOQ': 'South Quay', 'STL': 'Star Lane',
+            'SHS': 'Stratford High Street', 'STI': 'Stratford International', 'STR': 'Stratford',
+            'TOG': 'Tower Gateway', 'WEH': 'West Ham', 'WIQ': 'West India Quay', 'WST': 'West Silvertown',
+            'WES': 'Westferry', 'WOA': 'Woolwich Arsenal'
+        };
+
+        // Parse CSV data (from main site)
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const runData = {};
+            
+            const junctions = [
+                'JRMS', 'JRMX', 'JCAW', 'JWEM', 'JCRO', 'JC2M', 'JC3M',
+                'JC4M', 'JROM', 'JWEX', 'JCTM', 'JCTX', 'JWIQ', 'JNQX',
+                'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
+            ];
+            
+            lines.forEach((line) => {
+                const parts = line.split(',');
+                if (parts.length >= 7) {
+                    const runNumber = parts[1].trim();
+                    const locationCode = parts[4].trim();
+                    const arrivalTime = parts[5].trim();
+                    const departureTime = parts[6].trim();
+                    
+                    if (!junctions.includes(locationCode)) {
+                        if (!runData[runNumber]) {
+                            runData[runNumber] = [];
+                        }
+                        
+                        let location = '';
+                        let platform = '';
+                        
+                        if (locationCode === 'BANH') {
+                            location = 'Bank Headshunt';
+                        } else {
+                            const codePrefix = locationCode.slice(0, 3);
+                            platform = locationCode.slice(3);
+                            
+                            if (locationMapping[codePrefix]) {
+                                location = locationMapping[codePrefix];
+                                if (['LEW', 'BEC', 'STI', 'WOA'].includes(codePrefix) || locationCode === 'STR4B') {
+                                    platform = '';
+                                }
+                            } else {
+                                location = locationCode;
+                                platform = '';
+                            }
+                        }
+                        
+                        runData[runNumber].push({
+                            location,
+                            platform,
+                            arrivalTime,
+                            departureTime,
+                            locationCode
+                        });
+                    }
+                }
+            });
+            
+            return runData;
+        }
+
+        // Sort timetables by applicability
+        function sortTimetablesByApplicability(entries) {
+            const operatingDateTime = getCurrentTimeInTimezone();
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            return entries.sort((a, b) => {
+                const aApplies = a.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+                const bApplies = b.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+                
+                const aHasSpecificDate = aApplies.some(range => !dayNames.includes(range));
+                const bHasSpecificDate = bApplies.some(range => !dayNames.includes(range));
+                
+                const aAppliesNow = aApplies.some(range => isDateInRange(operatingDateTime, range));
+                const bAppliesNow = bApplies.some(range => isDateInRange(operatingDateTime, range));
+                
+                if (aAppliesNow && bAppliesNow) {
+                    if (aHasSpecificDate && !bHasSpecificDate) return -1;
+                    if (!aHasSpecificDate && bHasSpecificDate) return 1;
+                }
+                
+                if (aAppliesNow && !bAppliesNow) return -1;
+                if (!aAppliesNow && bAppliesNow) return 1;
+                
+                return a.name.localeCompare(b.name);
+            });
+        }
+
+        function isDateInRange(date, rangeStr) {
+            const ranges = rangeStr.split(',').map(r => r.trim().replace(/['"]/g, ''));
+            return ranges.some(range => {
+                if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(range)) {
+                    return getDayName(date) === range;
+                }
+                const dateRange = parseDateRange(range);
+                return date >= dateRange.start && date <= dateRange.end;
+            });
+        }
+
+        function parseDateRange(dateStr) {
+            dateStr = dateStr.replace(/['"]/g, '');
+            if (dateStr.includes('/')) {
+                const [start, end] = dateStr.split('/').map(d => new Date(d.trim()));
+                return { start, end };
+            }
+            const date = new Date(dateStr);
+            return { start: date, end: date };
+        }
+
+        function getDayName(date) {
+            return date.toLocaleDateString('en-US', { weekday: 'long' });
+        }
+
+        // Show run details with timetable
+        function showRunDetails(runNumber, halfName, startTime, endTime, dutyType) {
+            if (!runNumber || runNumber === "" || runNumber === "TR") return;
             
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
-            const closeButton = document.querySelector('.close-modal');
+            const closeBtn = document.getElementById('modalCloseBtn');
             
-            // Change X to back arrow
-            closeButton.innerHTML = '←';
-            closeButton.onclick = () => {
-                history.back();
-            };
+            // Change close button to back arrow
+            closeBtn.innerHTML = '←';
+            closeBtn.style.fontSize = '20px';
             
-            modalTitle.textContent = `Run ${runNumber} - ${half} Half`;
+            // Add history state for run details
+            history.pushState({modal: 'run-details'}, '', '');
             
-            // Create mock timetable data (in real app this would fetch from timetable data)
-            const timetableData = generateMockTimetableData(runNumber, startTime, endTime, startLocation, endLocation);
+            modalTitle.textContent = `${halfName}: Run ${runNumber}`;
             
-            let content = `
-                <div class="section">
-                    <div class="section-header">Timetable - Run ${runNumber}</div>
-                    <div class="timetable-view">
-            `;
+            // Determine if this is a base duty (matches timetable)
+            const isBaseDuty = dutyType === 'base';
             
-            timetableData.forEach(stop => {
-                content += `
-                    <div class="timetable-stop">
-                        <span class="stop-name">${stop.name}</span>
-                        <span class="stop-time">${stop.time}</span>
-                    </div>
-                `;
-            });
+            let content = '';
             
-            content += `
-                    </div>
-                </div>
-                <div class="section">
-                    <div class="section-item">
-                        <span class="section-label">Total time:</span>
-                        <span>${calculateTimeDifference(startTime, endTime)}</span>
-                    </div>
-                </div>
-            `;
-            
-            modalBody.innerHTML = content;
-        }
-
-        // Generate mock timetable data (replace with real timetable fetch)
-        function generateMockTimetableData(runNumber, startTime, endTime, startLocation, endLocation) {
-            // This is placeholder - in real implementation would fetch from timetable data
-            const stations = [
-                'Bank', 'Shadwell', 'Limehouse', 'Westferry', 'Canary Wharf', 
-                'Heron Quays', 'South Quay', 'Crossharbour', 'Mudchute', 
-                'Island Gardens', 'Cutty Sark', 'Greenwich'
-            ];
-            
-            const mockData = [];
-            const [startHour, startMin] = startTime.split(':').map(Number);
-            let currentTime = startHour * 60 + startMin;
-            
-            // Add departure from start
-            mockData.push({
-                name: startLocation,
-                time: startTime
-            });
-            
-            // Add intermediate stops (mock)
-            for (let i = 0; i < 3; i++) {
-                currentTime += 2; // 2 minutes between stops
-                const hours = Math.floor(currentTime / 60);
-                const minutes = currentTime % 60;
-                const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            if (parsedCsvData && parsedCsvData[runNumber]) {
+                const runStops = parsedCsvData[runNumber];
                 
-                mockData.push({
-                    name: stations[Math.floor(Math.random() * stations.length)],
-                    time: timeStr
+                content += `
+                    <div class="timetable-container">
+                        <div class="timetable-header">
+                            <div>
+                                <h3 style="margin: 0; color: #667eea;">Run ${runNumber} Timetable</h3>
+                                <div style="color: #888; font-size: 14px; margin-top: 4px;">
+                                    Duty times: ${startTime} - ${endTime}
+                                </div>
+                            </div>
+                            <div class="timetable-validation ${isBaseDuty ? 'validation-base' : 'validation-temp'}">
+                                <span>${isBaseDuty ? '✓' : '⚠'}</span>
+                                <span>${isBaseDuty ? 'Base Duty' : 'Temporary'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="station-timeline">`;
+                
+                runStops.forEach((stop, index) => {
+                    const arrTime = stop.arrivalTime.substring(0, 5);
+                    const depTime = stop.departureTime.substring(0, 5);
+                    const timeDisplay = arrTime === depTime ? arrTime : `${arrTime}-${depTime}`;
+                    
+                    content += `
+                        <div class="station-stop">
+                            <div class="stop-time">${timeDisplay}</div>
+                            <div class="stop-location">${stop.location}</div>
+                            <div class="stop-platform">${stop.platform ? 'Plat ' + stop.platform : ''}</div>
+                        </div>`;
                 });
+                
+                content += `
+                        </div>
+                    </div>`;
+            } else {
+                // No timetable data available
+                content += `
+                    <div class="timetable-container">
+                        <div class="timetable-header">
+                            <div>
+                                <h3 style="margin: 0; color: #667eea;">Run ${runNumber}</h3>
+                                <div style="color: #888; font-size: 14px; margin-top: 4px;">
+                                    Duty times: ${startTime} - ${endTime}
+                                </div>
+                            </div>
+                            <div class="timetable-validation validation-temp">
+                                <span>ℹ</span>
+                                <span>No Timetable</span>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 20px; text-align: center; color: #888;">
+                            <div style="font-size: 48px; margin-bottom: 12px;">🚇</div>
+                            <div>Timetable data not available for this run</div>
+                            <div style="font-size: 12px; margin-top: 8px;">
+                                This may be a depot movement or special working
+                            </div>
+                        </div>
+                    </div>`;
             }
             
-            // Add arrival at end
-            mockData.push({
-                name: endLocation,
-                time: endTime
-            });
-            
-            return mockData;
+            modalBody.innerHTML = content;
         }
 
         // Close modal when clicking outside
         document.getElementById('dutyModal').addEventListener('click', (e) => {
             if (e.target.id === 'dutyModal') {
-                closeDutyModal();
+                // Go back in history to close modal
+                history.back();
             }
         });
 
