@@ -710,6 +710,10 @@
         const loginButton = document.getElementById('loginButton');
         const passwordInput = document.getElementById('passwordInput');
 
+        // Store previous modal content for back navigation
+        let previousModalContent = '';
+        let previousModalTitle = '';
+
         // Enhanced particle system
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
@@ -1249,14 +1253,15 @@
                     </div>`;
             } else {
                 // First Half
+                const firstHalfHasData = (versionInfo.type === 'base' && duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR");
                 content += `
                     <div class="section">
                         <div class="section-header">
-                            <div class="clickable-half${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? ' unavailable' : ''}" onclick="${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? 'void(0)' : `showRunDetails('${duty.FirstHalfRunNumber}', 'First Half', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${versionInfo.type}')`}">
+                            <div class="clickable-half${!firstHalfHasData ? ' unavailable' : ''}" onclick="${!firstHalfHasData ? 'void(0)' : `showRunDetails('${duty.FirstHalfRunNumber}', 'First Half', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${versionInfo.type}')`}">
                                 <div class="half-info">
                                     <span>First Half (${duty.FirstHalfLength})</span>
                                 </div>
-                                <div class="view-points ${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? 'unavailable' : 'clickable'}">${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? 'Calling Points Unavailable' : 'View Calling Points'}</div>
+                                <div class="view-points ${!firstHalfHasData ? 'unavailable' : 'clickable'}">${!firstHalfHasData ? 'Calling Points Unavailable' : 'View Calling Points'}</div>
                             </div>
                         </div>`;
 
@@ -1294,14 +1299,15 @@
                 }
 
                 // Second Half
+                const secondHalfHasData = (versionInfo.type === 'base' && duty.SecondHalfRunNumber && duty.SecondHalfRunNumber !== "" && duty.SecondHalfRunNumber !== "TR");
                 content += `
                     <div class="section">
                         <div class="section-header">
-                            <div class="clickable-half${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? ' unavailable' : ''}" onclick="${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? 'void(0)' : `showRunDetails('${duty.SecondHalfRunNumber}', 'Second Half', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${versionInfo.type}')`}">
+                            <div class="clickable-half${!secondHalfHasData ? ' unavailable' : ''}" onclick="${!secondHalfHasData ? 'void(0)' : `showRunDetails('${duty.SecondHalfRunNumber}', 'Second Half', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${versionInfo.type}')`}">
                                 <div class="half-info">
                                     <span>Second Half (${duty.SecondHalfLength})</span>
                                 </div>
-                                <div class="view-points ${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? 'unavailable' : 'clickable'}">${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? 'Calling Points Unavailable' : 'View Calling Points'}</div>
+                                <div class="view-points ${!secondHalfHasData ? 'unavailable' : 'clickable'}">${!secondHalfHasData ? 'Calling Points Unavailable' : 'View Calling Points'}</div>
                             </div>
                         </div>`;
 
@@ -1380,13 +1386,15 @@
         // Handle modal close button - either go back to duty view or close modal
         function handleModalClose() {
             const modalBody = document.getElementById('modalBody');
+            const modalTitle = document.getElementById('modalTitle');
             const closeBtn = document.getElementById('modalCloseBtn');
             
             // If modal body has no padding, we're in timetable view - go back to duty view
-            if (modalBody.style.padding === '0px') {
+            if (modalBody.style.padding === '0px' && previousModalContent) {
                 modalBody.style.padding = '1.5rem';
+                modalBody.innerHTML = previousModalContent;
+                modalTitle.textContent = previousModalTitle;
                 closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
-                history.back();
             } else {
                 // Close modal entirely
                 closeDutyModal();
@@ -1402,26 +1410,15 @@
             const closeBtn = document.getElementById('modalCloseBtn');
             modalBody.style.padding = '1.5rem';
             closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
+            
+            // Clear stored content
+            previousModalContent = '';
+            previousModalTitle = '';
         }
 
         // Browser history management
         window.addEventListener('popstate', function(event) {
-            const closeBtn = document.getElementById('modalCloseBtn');
-            const modalBody = document.getElementById('modalBody');
-            
-            if (event.state && event.state.modal === 'run-details') {
-                // Going back from run details to duty details - restore duty view
-                closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
-                modalBody.style.padding = '1.5rem';
-                
-                // Re-trigger the duty details view
-                history.back();
-            } else if (event.state && event.state.modal) {
-                closeDutyModal();
-            } else {
-                // Reset close button when modal is closed completely
-                closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
-                modalBody.style.padding = '1.5rem';
+            if (event.state && event.state.modal) {
                 closeDutyModal();
             }
         });
@@ -1702,14 +1699,16 @@
             if (e.target.id === 'dutyModal') {
                 // Check if we're in timetable view and need to go back to duty view
                 const modalBody = document.getElementById('modalBody');
+                const modalTitle = document.getElementById('modalTitle');
                 const closeBtn = document.getElementById('modalCloseBtn');
                 
                 // If modal body has no padding, we're in timetable view
-                if (modalBody.style.padding === '0px') {
+                if (modalBody.style.padding === '0px' && previousModalContent) {
                     // Go back to duty view
                     modalBody.style.padding = '1.5rem';
+                    modalBody.innerHTML = previousModalContent;
+                    modalTitle.textContent = previousModalTitle;
                     closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
-                    history.back();
                 } else {
                     // Close modal entirely
                     closeDutyModal();
