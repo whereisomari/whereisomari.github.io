@@ -375,23 +375,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            /* MODIFICATION: Lighter, slower fade */
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             z-index: 1000;
-            display: flex; /* Always flex for alignment */
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            /* MODIFICATION: Hide with visibility and opacity for transitions */
             visibility: hidden;
             opacity: 0;
-            transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+            transition: opacity 0.5s ease, visibility 0s linear 0.5s;
         }
         
         .duty-modal.is-visible {
             visibility: visible;
             opacity: 1;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.5s ease;
         }
 
         .duty-modal-content {
@@ -502,9 +502,8 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1.5rem;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 8px;
             border-radius: 4px;
             transition: background-color 0.2s ease;
             display: flex;
@@ -512,8 +511,11 @@
             justify-content: center;
             min-width: 40px;
             min-height: 40px;
-            /* MODIFICATION: Helps center characters vertically */
-            line-height: 1;
+        }
+        
+        .close-modal svg {
+            width: 24px;
+            height: 24px;
         }
 
         .close-modal:hover {
@@ -682,7 +684,7 @@
         <div class="duty-modal-content">
             <div class="duty-modal-header">
                 <span id="modalTitle">Duty Details</span>
-                <button class="close-modal" onclick="closeDutyModal()">&times;</button>
+                <button class="close-modal" onclick="closeDutyModal()"></button>
             </div>
             <div class="duty-modal-body" id="modalBody">
                 <!-- Slide panes will be populated here -->
@@ -705,6 +707,10 @@
         const loginError = document.getElementById('loginError');
         const loginButton = document.getElementById('loginButton');
         const passwordInput = document.getElementById('passwordInput');
+        
+        // MODIFICATION: SVG Icons
+        const closeIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        const backIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`;
 
         // Enhanced particle system
         function createParticles() {
@@ -1480,9 +1486,8 @@
 
             // --- Change header details ---
             modalTitle.textContent = `${halfName}: Run ${runNumber}`;
-            closeBtn.innerHTML = '←';
-            closeBtn.style.fontSize = '1.5rem';
-            closeBtn.style.fontWeight = 'normal';
+            // MODIFICATION: Set back arrow icon
+            closeBtn.innerHTML = backIconSVG;
             currentModalView = 'timetable';
 
             // --- Prepare the timetable pane (off-screen on the LEFT) ---
@@ -1566,6 +1571,7 @@
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
+            const closeBtn = document.querySelector('.close-modal');
             
             currentDutyData = versionInfo;
             currentTimetableData = null; 
@@ -1575,6 +1581,8 @@
             const [number, location, endLocation, startTime, endTime] = dutyId.split('-');
             
             modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
+            // MODIFICATION: Set close icon
+            closeBtn.innerHTML = closeIconSVG;
             
             const isBaseDuty = isDutyBaseType(versionInfo);
             
@@ -1651,7 +1659,6 @@
                 </div>
             `;
             
-            // MODIFICATION: Use class to show modal for transition
             modal.classList.add('is-visible');
             modal.classList.add('modal-opening');
             
@@ -1718,22 +1725,20 @@
                 const { dutyId } = currentDutyData;
                 const [number, location, , startTime, endTime] = dutyId.split('-');
                 modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
-                closeBtn.innerHTML = '&times;';
-                closeBtn.style.fontSize = '1.5rem';
-                closeBtn.style.fontWeight = 'normal';
+                // MODIFICATION: Set close icon
+                closeBtn.innerHTML = closeIconSVG;
                 currentModalView = 'duty';
             } else {
                 // Close the entire modal
                 modal.classList.add('modal-closing');
                 modal.classList.remove('modal-opening');
-                // MODIFICATION: Use class to hide modal for transition
                 modal.classList.remove('is-visible');
                 
                 setTimeout(() => {
                     modal.classList.remove('modal-closing');
                     currentModalView = 'duty';
                     currentDutyData = null;
-                }, 400); // Wait for backdrop fade to finish
+                }, 500); // Match backdrop fade duration
             }
         }
 
