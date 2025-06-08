@@ -382,7 +382,6 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            touch-action: none;
         }
 
         .duty-modal-content {
@@ -394,7 +393,8 @@
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
-            touch-action: pan-y;
+            overflow-x: hidden;
+            min-width: 0;
         }
 
         .duty-modal-header {
@@ -490,6 +490,20 @@
             .page-title {
                 font-size: clamp(2.5rem, 8vw, 4rem);
                 margin-bottom: 0.5rem;
+            }
+            
+            .duty-modal-content {
+                margin: 0 auto;
+                max-width: calc(100vw - 2rem);
+                overflow-x: hidden;
+            }
+            
+            .duty-modal-content table {
+                font-size: 12px;
+            }
+            
+            .duty-modal-content td {
+                padding: 6px 8px !important;
             }
         }
     </style>
@@ -1001,6 +1015,30 @@
             if (nonWorkingCategories.includes(dutyInfo.category)) {
                 card.classList.add('rest-day');
                 
+                // Set the card background to the category color with transparency
+                const categoryColors = {
+                    "AL": "rgba(34, 51, 11, 0.7)",
+                    "BH": "rgba(43, 23, 16, 0.7)", 
+                    "E": "rgba(0, 70, 89, 0.7)",
+                    "EE": "rgba(0, 70, 89, 0.7)",
+                    "EM": "rgba(0, 57, 57, 0.7)",
+                    "IT": "rgba(128, 33, 93, 0.7)",
+                    "L": "rgba(0, 32, 57, 0.7)",
+                    "LD": "rgba(94, 36, 5, 0.7)",
+                    "LL": "rgba(0, 32, 57, 0.7)",
+                    "M": "rgba(0, 57, 57, 0.7)",
+                    "ML": "rgba(0, 57, 57, 0.7)",
+                    "MRD": "rgba(6, 48, 4, 0.7)",
+                    "O": "rgba(6, 48, 4, 0.7)",
+                    "OAL": "rgba(34, 51, 11, 0.7)",
+                    "OT": "rgba(110, 8, 17, 0.7)",
+                    "RD": "rgba(6, 48, 4, 0.7)",
+                    "Swap": "rgba(58, 47, 0, 0.7)",
+                    "T": "rgba(128, 33, 93, 0.7)"
+                };
+                
+                card.style.background = categoryColors[dutyInfo.category] || 'rgba(51, 51, 51, 0.7)';
+                
                 card.innerHTML = `
                     <div class="duty-date">${dateStr}</div>
                     <div class="duty-main">${dayNames[dutyInfo.category] || dutyInfo.category}</div>
@@ -1243,16 +1281,14 @@
             };
             
             const startSeconds = parseTime(startTime + ':00');
-            const endSeconds = parseTime(endTime + ':00');
+            // Add 2 hours buffer to end time to avoid cutting off last timing points
+            const endSeconds = parseTime(endTime + ':00') + (2 * 60 * 60);
             
             return runData.filter(stop => {
                 const arrivalSeconds = parseTime(stop.arrivalTime);
-                const departureSeconds = parseTime(stop.departureTime);
                 
-                // Include stop if either arrival or departure is within the time range, or if arrival is before start and departure is after start
-                return (arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds) ||
-                       (departureSeconds >= startSeconds && departureSeconds <= endSeconds) ||
-                       (arrivalSeconds <= startSeconds && departureSeconds >= startSeconds);
+                // Include stop if arrival time is within the extended range
+                return arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds;
             });
         }
 
@@ -1331,17 +1367,17 @@
                 runData = filterRunByTime(runData, startTime, endTime);
                 runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
 
-                // Create timetable HTML
+                // Create timetable HTML with separate sticky header
                 let timetableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; margin: 0; max-width: 100%; table-layout: fixed;">
-                        <thead>
-                            <tr style="background: rgba(255, 255, 255, 0.05); position: sticky; top: 0; z-index: 5;">
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 50%;">Location</th>
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 15%;">Plat.</th>
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 17.5%;">Arrival</th>
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); width: 17.5%;">Departure</th>
-                            </tr>
-                        </thead>
+                    <div style="position: sticky; top: 0; z-index: 5; background: rgba(255, 255, 255, 0.05); padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div style="display: flex; padding: 0 12px; min-width: 0;">
+                            <div style="width: 40%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
+                            <div style="width: 15%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Plat.</div>
+                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Arrival</div>
+                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0;">Departure</div>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; min-width: 0;">
                         <tbody>
                 `;
 
@@ -1352,10 +1388,10 @@
                     
                     timetableHTML += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden;">${stop.location}</td>
-                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden;">${stop.platform}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden;">${stop.arrivalTime}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden;">${stop.departureTime}</td>
+                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 40%; min-width: 0; text-overflow: ellipsis; white-space: nowrap;">${stop.location}</td>
+                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 15%; min-width: 0;">${stop.platform}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0;">${stop.arrivalTime}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0;">${stop.departureTime}</td>
                         </tr>
                     `;
                 });
