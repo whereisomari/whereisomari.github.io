@@ -423,6 +423,11 @@
             padding: 4px 8px;
             border-radius: 4px;
             transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            min-height: 40px;
         }
 
         .close-modal:hover {
@@ -504,6 +509,9 @@
                 padding: 0.5rem 1rem;
                 font-size: 1.1rem;
                 min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
             }
             
             .close-modal {
@@ -511,6 +519,7 @@
                 align-items: center;
                 justify-content: center;
                 min-height: 40px;
+                padding: 4px 8px;
             }
             
             .duty-modal-content .timetable-header {
@@ -1382,8 +1391,8 @@
 
             // Change close button to back arrow
             closeBtn.innerHTML = '←';
-            closeBtn.style.fontSize = '2rem';
-            closeBtn.style.fontWeight = '900';
+            closeBtn.style.fontSize = '1.5rem';
+            closeBtn.style.fontWeight = 'normal';
             currentModalView = 'timetable';
 
             modalTitle.textContent = `${halfName}: Run ${runNumber}`;
@@ -1415,7 +1424,7 @@
 
                 // Create timetable HTML with separate sticky header
                 let timetableHTML = `
-                    <div class="timetable-header" style="position: fixed; top: 65px; left: 0; right: 0; z-index: 15; background: #1a1a1a; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin: 0 1px;">
+                    <div class="timetable-header" style="position: sticky; top: 65px; z-index: 15; background: #1a1a1a; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                         <div style="display: flex; padding: 0 12px; min-width: 0;">
                             <div style="width: 35%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
                             <div style="width: 15%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Plat.</div>
@@ -1423,7 +1432,6 @@
                             <div style="width: 25%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Departure</div>
                         </div>
                     </div>
-                    <div style="height: 45px;"></div>
                     <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; min-width: 0;">
                         <tbody>
                 `;
