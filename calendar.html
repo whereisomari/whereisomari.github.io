@@ -426,7 +426,7 @@
             }
         }
         
-        /* Card-switching slide animations REFACTORED */
+        /* NEW Card-switching slide animations */
         .duty-modal-body {
             height: calc(80vh - 65px);
             overflow: hidden;
@@ -1462,9 +1462,9 @@
             const dutyPane = document.getElementById('duty-pane');
             let timetablePane = document.getElementById('timetable-pane');
 
-            // --- Slide out the duty pane ---
+            // --- Slide out the duty pane to the RIGHT ---
             dutyPane.classList.remove('is-center');
-            dutyPane.classList.add('is-left');
+            dutyPane.classList.add('is-right');
 
             // --- Change header details ---
             modalTitle.textContent = `${halfName}: Run ${runNumber}`;
@@ -1473,14 +1473,14 @@
             closeBtn.style.fontWeight = 'normal';
             currentModalView = 'timetable';
 
-            // --- Prepare the timetable pane (off-screen) ---
+            // --- Prepare the timetable pane (off-screen on the LEFT) ---
             if (!timetablePane) {
                 timetablePane = document.createElement('div');
                 timetablePane.id = 'timetable-pane';
-                timetablePane.className = 'slide-pane timetable is-right'; // Start off-screen right
+                timetablePane.className = 'slide-pane timetable is-left'; // Start off-screen left
                 modalBody.querySelector('.slide-container').appendChild(timetablePane);
             } else {
-                 timetablePane.className = 'slide-pane timetable is-right';
+                 timetablePane.className = 'slide-pane timetable is-left';
             }
             
             timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #888;">Loading timetable...</div>`;
@@ -1537,9 +1537,9 @@
                 timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #e53935;">${error.message}</div>`;
             }
 
-            // --- Slide in the new pane ---
+            // --- Slide in the new pane from the LEFT ---
             requestAnimationFrame(() => {
-                 timetablePane.classList.remove('is-right');
+                 timetablePane.classList.remove('is-left');
                  timetablePane.classList.add('is-center');
             });
         }
@@ -1697,8 +1697,8 @@
                 timetablePane.classList.remove('is-center');
                 timetablePane.classList.add('is-left');
                 
-                // Animate duty details back in from the left
-                dutyPane.classList.remove('is-left');
+                // Animate duty details back in from the RIGHT
+                dutyPane.classList.remove('is-right');
                 dutyPane.classList.add('is-center');
 
                 // Restore header details
