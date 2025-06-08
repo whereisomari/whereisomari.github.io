@@ -952,39 +952,69 @@
             }
         }
 
-        // Get current time in timezone
-        function getCurrentTimeInTimezone() {
+        // **FIXED DATE LOGIC**
+        // Get operating date, robustly handling timezones.
+        function getOperatingDate() {
             const now = new Date();
+            
             try {
-                const localTimeString = now.toLocaleString("en-US", {
-                    timeZone: "Europe/London",
+                // Use Intl.DateTimeFormat to reliably get date/time parts for the London timezone.
+                const options = {
+                    timeZone: 'Europe/London',
                     year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: 'numeric',
                     hour12: false
+                };
+                
+                // Use a locale that gives predictable part names (e.g., 'en-US')
+                const formatter = new Intl.DateTimeFormat('en-US', options);
+                const parts = formatter.formatToParts(now);
+                
+                let year, month, day, hour;
+                
+                // Extract parts by their type name for reliability.
+                parts.forEach(part => {
+                    switch (part.type) {
+                        case 'year':
+                            year = parseInt(part.value, 10);
+                            break;
+                        case 'month':
+                            month = parseInt(part.value, 10);
+                            break;
+                        case 'day':
+                            day = parseInt(part.value, 10);
+                            break;
+                        case 'hour':
+                            // In some environments, hour for midnight is 24.
+                            hour = parseInt(part.value, 10) % 24;
+                            break;
+                    }
                 });
-                
-                const [datePart, timePart] = localTimeString.split(', ');
-                const [month, day, year] = datePart.split('/');
-                const [hour, minute, second] = timePart.split(':');
-                
-                return new Date(year, month - 1, day, hour, minute, second);
-            } catch (error) {
-                console.error('getCurrentTimeInTimezone failed:', error);
-                return new Date();
-            }
-        }
 
-        // Get operating date
-        function getOperatingDate(dateTime = null) {
-            const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
-            if (localDateTime.getHours() < 3) {
-                localDateTime.setDate(localDateTime.getDate() - 1);
+                // Create a UTC date object to avoid local timezone interference.
+                // Note: month is 1-based from formatter, but 0-based for Date.UTC.
+                const londonDate = new Date(Date.UTC(year, month - 1, day));
+                
+                // The cutoff is 3 AM London time.
+                if (hour < 3) {
+                    // If it's before 3 AM, the operating date is the previous day.
+                    londonDate.setUTCDate(londonDate.getUTCDate() - 1);
+                }
+                
+                // Return the date in YYYY-MM-DD format.
+                return londonDate.toISOString().split('T')[0];
+
+            } catch (error) {
+                console.error("Failed to determine operating date. Falling back to simple calculation.", error);
+                // Fallback for older browsers that might not support Intl.DateTimeFormat fully.
+                const fallbackDate = new Date();
+                if (fallbackDate.getUTCHours() < 2) { // Approximate fallback, assumes BST/GMT difference
+                    fallbackDate.setUTCDate(fallbackDate.getUTCDate() - 1);
+                }
+                return fallbackDate.toISOString().split('T')[0];
             }
-            return localDateTime.toISOString().split('T')[0];
         }
 
         // Parse duty tracker to get next 21 days
