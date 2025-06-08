@@ -410,6 +410,8 @@
             top: 0;
             z-index: 20;
             border-radius: 15px 15px 0 0;
+            min-height: 65px;
+            box-sizing: border-box;
         }
 
         .close-modal {
@@ -501,6 +503,19 @@
             .duty-modal-header {
                 padding: 0.5rem 1rem;
                 font-size: 1.1rem;
+                min-height: 50px;
+            }
+            
+            .close-modal {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+            }
+            
+            .duty-modal-content .timetable-header {
+                top: 50px !important;
+                padding: 6px 0 !important;
             }
             
             .duty-modal-content table {
@@ -1400,14 +1415,15 @@
 
                 // Create timetable HTML with separate sticky header
                 let timetableHTML = `
-                    <div class="timetable-header" style="position: sticky; top: 65px; z-index: 15; background: rgba(26, 26, 26, 0.95); padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);">
+                    <div class="timetable-header" style="position: fixed; top: 65px; left: 0; right: 0; z-index: 15; background: #1a1a1a; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin: 0 1px;">
                         <div style="display: flex; padding: 0 12px; min-width: 0;">
-                            <div style="width: 45%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
-                            <div style="width: 10%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Plat.</div>
-                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Arrival</div>
-                            <div style="width: 22.5%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Departure</div>
+                            <div style="width: 35%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; overflow: hidden;">Location</div>
+                            <div style="width: 15%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Plat.</div>
+                            <div style="width: 25%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Arrival</div>
+                            <div style="width: 25%; font-weight: 600; font-size: 14px; color: #888; min-width: 0; text-align: center;">Departure</div>
                         </div>
                     </div>
+                    <div style="height: 45px;"></div>
                     <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; min-width: 0;">
                         <tbody>
                 `;
@@ -1419,10 +1435,10 @@
                     
                     timetableHTML += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 45%; min-width: 0; white-space: normal; line-height: 1.3; height: 48px; vertical-align: top;">${stop.location}</td>
-                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 10%; min-width: 0; text-align: center; height: 48px; vertical-align: top;">${stop.platform}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0; text-align: center; height: 48px; vertical-align: top;">${stop.arrivalTime}</td>
-                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 22.5%; min-width: 0; text-align: center; height: 48px; vertical-align: top;">${stop.departureTime}</td>
+                            <td style="padding: 8px 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; overflow: hidden; width: 35%; min-width: 0; white-space: normal; line-height: 1.3; height: 48px; vertical-align: middle;">${stop.location}</td>
+                            <td style="padding: 8px 12px; color: #888; font-size: 14px; overflow: hidden; width: 15%; min-width: 0; text-align: center; height: 48px; vertical-align: middle;">${stop.platform}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 25%; min-width: 0; text-align: center; height: 48px; vertical-align: middle;">${stop.arrivalTime}</td>
+                            <td style="padding: 8px 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; overflow: hidden; width: 25%; min-width: 0; text-align: center; height: 48px; vertical-align: middle;">${stop.departureTime}</td>
                         </tr>
                     `;
                 });
