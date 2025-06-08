@@ -378,12 +378,22 @@
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             z-index: 1000;
-            display: none;
+            display: flex; /* Always flex for alignment */
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            /* MODIFICATION: Hide with visibility and opacity for transitions */
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.4s ease, visibility 0s linear 0.4s;
         }
         
+        .duty-modal.is-visible {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
         .duty-modal-content {
             background: #1a1a1a;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -401,7 +411,7 @@
             animation: zoomIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
         }
         .modal-closing .duty-modal-content {
-            /* FASTER aNIMATION */
+            /* FASTER ANIMATION */
             animation: zoomOut 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
         }
 
@@ -502,6 +512,8 @@
             justify-content: center;
             min-width: 40px;
             min-height: 40px;
+            /* MODIFICATION: Helps center characters vertically */
+            line-height: 1;
         }
 
         .close-modal:hover {
@@ -1639,7 +1651,8 @@
                 </div>
             `;
             
-            modal.style.display = 'flex';
+            // MODIFICATION: Use class to show modal for transition
+            modal.classList.add('is-visible');
             modal.classList.add('modal-opening');
             
             history.pushState({ modal: 'duty' }, '', '');
@@ -1713,19 +1726,21 @@
                 // Close the entire modal
                 modal.classList.add('modal-closing');
                 modal.classList.remove('modal-opening');
+                // MODIFICATION: Use class to hide modal for transition
+                modal.classList.remove('is-visible');
+                
                 setTimeout(() => {
-                    modal.style.display = 'none';
                     modal.classList.remove('modal-closing');
                     currentModalView = 'duty';
                     currentDutyData = null;
-                }, 200); // Match FASTER animation duration
+                }, 400); // Wait for backdrop fade to finish
             }
         }
 
         // Handle browser back button
         window.addEventListener('popstate', (event) => {
             const modal = document.getElementById('dutyModal');
-            if (modal && modal.style.display === 'flex') {
+            if (modal.classList.contains('is-visible')) {
                 closeDutyModal();
             }
         });
