@@ -443,110 +443,66 @@
 
         .clickable-half {
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
+            transition: color 0.3s ease;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
         }
 
         .clickable-half:hover {
             color: #8A2BE2;
-            transform: translateX(2px);
         }
 
-        .clickable-half::after {
-            content: "→";
-            font-size: 14px;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-
-        .clickable-half:hover::after {
-            opacity: 1;
-            transform: translateX(2px);
-        }
-
-        .timetable-container {
-            background: #0a0a0a;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 12px;
-        }
-
-        .timetable-header {
+        .clickable-half .timetable-link {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
+            gap: 8px;
+            font-size: 12px;
+            color: #888;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .clickable-half:hover .timetable-link {
+            opacity: 1;
+        }
+
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .timetable-table th {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #667eea;
             border-bottom: 1px solid #333;
         }
 
-        .timetable-validation {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .timetable-table td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
         }
 
-        .validation-base {
-            background-color: rgba(76, 175, 80, 0.2);
-            color: #4caf50;
-        }
-
-        .validation-temp {
-            background-color: rgba(255, 152, 0, 0.2);
-            color: #ff9800;
-        }
-
-        .station-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .station-stop {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
-        }
-
-        .station-stop:hover {
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .stop-time {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            color: #667eea;
-            min-width: 80px;
-            font-size: 14px;
-        }
-
-        .stop-location {
-            flex: 1;
-            color: #ffffff;
+        .station-name {
             font-weight: 500;
+            color: #ffffff;
         }
 
-        .stop-platform {
+        .platform-info {
             color: #888;
             font-size: 12px;
-            min-width: 60px;
-            text-align: right;
         }
 
-        .timeline-connector {
-            width: 2px;
-            background: linear-gradient(to bottom, #667eea, #8A2BE2);
-            margin: 0 16px;
-            border-radius: 1px;
+        .time-info {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #667eea;
         }
 
         .back-button {
@@ -1625,6 +1581,116 @@
             }
             
             modalBody.innerHTML = content;
+        }
+
+        // Parse CSV data (from main site)
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const runData = {};
+            
+            const junctions = [
+                'JRMS', 'JRMX', 'JCAW', 'JWEM', 'JCRO', 'JC2M', 'JC3M',
+                'JC4M', 'JROM', 'JWEX', 'JCTM', 'JCTX', 'JWIQ', 'JNQX',
+                'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
+            ];
+            
+            lines.forEach((line) => {
+                const parts = line.split(',');
+                if (parts.length >= 7) {
+                    const runNumber = parts[1].trim();
+                    const locationCode = parts[4].trim();
+                    const arrivalTime = parts[5].trim();
+                    const departureTime = parts[6].trim();
+                    
+                    if (!junctions.includes(locationCode)) {
+                        if (!runData[runNumber]) {
+                            runData[runNumber] = [];
+                        }
+                        
+                        let location = '';
+                        let platform = '';
+                        
+                        if (locationCode === 'BANH') {
+                            location = 'Bank Headshunt';
+                        } else {
+                            const codePrefix = locationCode.slice(0, 3);
+                            platform = locationCode.slice(3);
+                            
+                            if (stationNames[codePrefix]) {
+                                location = stationNames[codePrefix];
+                                if (['LEW', 'BEC', 'STI', 'WOA'].includes(codePrefix) || locationCode === 'STR4B') {
+                                    platform = '';
+                                }
+                            } else {
+                                location = locationCode;
+                                platform = '';
+                            }
+                        }
+                        
+                        runData[runNumber].push({
+                            location,
+                            platform,
+                            arrivalTime,
+                            departureTime,
+                            locationCode
+                        });
+                    }
+                }
+            });
+            
+            return runData;
+        }
+
+        // Sort timetables by applicability
+        function sortTimetablesByApplicability(entries) {
+            const operatingDateTime = getCurrentTimeInTimezone();
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            return entries.sort((a, b) => {
+                const aApplies = a.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+                const bApplies = b.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+                
+                const aHasSpecificDate = aApplies.some(range => !dayNames.includes(range));
+                const bHasSpecificDate = bApplies.some(range => !dayNames.includes(range));
+                
+                const aAppliesNow = aApplies.some(range => isDateInRange(operatingDateTime, range));
+                const bAppliesNow = bApplies.some(range => isDateInRange(operatingDateTime, range));
+                
+                if (aAppliesNow && bAppliesNow) {
+                    if (aHasSpecificDate && !bHasSpecificDate) return -1;
+                    if (!aHasSpecificDate && bHasSpecificDate) return 1;
+                }
+                
+                if (aAppliesNow && !bAppliesNow) return -1;
+                if (!aAppliesNow && bAppliesNow) return 1;
+                
+                return a.name.localeCompare(b.name);
+            });
+        }
+
+        function isDateInRange(date, rangeStr) {
+            const ranges = rangeStr.split(',').map(r => r.trim().replace(/['"]/g, ''));
+            return ranges.some(range => {
+                if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(range)) {
+                    return getDayName(date) === range;
+                }
+                const dateRange = parseDateRange(range);
+                return date >= dateRange.start && date <= dateRange.end;
+            });
+        }
+
+        function parseDateRange(dateStr) {
+            dateStr = dateStr.replace(/['"]/g, '');
+            if (dateStr.includes('/')) {
+                const [start, end] = dateStr.split('/').map(d => new Date(d.trim()));
+                return { start, end };
+            }
+            const date = new Date(dateStr);
+            return { start, date, end: date };
+        }
+
+        function getDayName(date) {
+            return date.toLocaleDateString('en-US', { weekday: 'long' });
         }
 
         // Close modal when clicking outside
