@@ -1047,14 +1047,9 @@
                     
                     card.addEventListener('click', () => {
                         // Set the current duty date for timetable lookup - use the duty's actual date!
-                        console.log('🎯 DEBUG: Duty card clicked, dutyInfo.date:', dutyInfo.date);
-                        
                         // Parse the duty date properly (dutyInfo.date should be YYYY-MM-DD format)
                         const dutyDateParts = dutyInfo.date.split('-');
                         currentDutyDate = new Date(dutyDateParts[0], dutyDateParts[1] - 1, dutyDateParts[2]);
-                        
-                        console.log('🎯 DEBUG: Parsed currentDutyDate:', currentDutyDate);
-                        console.log('🎯 DEBUG: Day of week:', currentDutyDate.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Europe/London' }));
                         
                         // Clear any cached timetable data when switching duties
                         currentTimetableData = null;
@@ -1107,11 +1102,9 @@
 
         // Initialize timetable paths on load
         async function initializeTimetablePaths() {
-            console.log('📋 DEBUG: Initializing timetable paths...');
             try {
                 const response = await fetch('https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt', { cache: 'no-store' });
                 const text = await response.text();
-                console.log('📋 DEBUG: Fetched paths.txt content:', text.substring(0, 200) + '...');
                 
                 const lines = text.split('\n').filter(line => line.trim() !== '');
                 
@@ -1144,38 +1137,27 @@
                     timetablePaths[entry.fileName] = entry;
                 });
 
-                console.log('📋 DEBUG: Processed timetable entries:', timetableEntries);
-                console.log('📋 DEBUG: Final timetablePaths:', timetablePaths);
-                console.log('✅ DEBUG: Timetable paths initialized:', Object.keys(timetablePaths).length, 'timetables');
+                console.log('✅ Timetable paths initialized:', Object.keys(timetablePaths).length, 'timetables');
                 
             } catch (error) {
-                console.error('❌ DEBUG: Error fetching timetable paths:', error);
+                console.error('❌ Error fetching timetable paths:', error);
             }
         }
 
         // Get applicable timetable for a date
         function getApplicableTimetable(date) {
-            console.log('🔍 DEBUG: Getting timetable for date:', date);
-            console.log('🔍 DEBUG: Available timetables:', Object.keys(timetablePaths));
-            
             const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const dayName = date.toLocaleDateString('en-US', { 
                 weekday: 'long',
                 timeZone: 'Europe/London'
             });
             
-            console.log('🔍 DEBUG: Calculated day name:', dayName);
-            
             for (const [fileName, timetableInfo] of Object.entries(timetablePaths)) {
-                console.log('🔍 DEBUG: Checking timetable:', fileName, 'applies:', timetableInfo.applies);
-                
                 const applies = timetableInfo.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
-                console.log('🔍 DEBUG: Parsed applies array:', applies);
                 
                 for (const range of applies) {
                     if (dayNames.includes(range) && range === dayName) {
-                        console.log('✅ DEBUG: MATCHED day name!', range, '===', dayName);
-                        console.log('✅ DEBUG: Selected timetable:', fileName, timetableInfo.url);
+                        console.log('✅ Selected timetable:', fileName, 'for', dayName);
                         return timetableInfo;
                     }
                     
@@ -1188,8 +1170,7 @@
                         const compareDate = new Date(date);
                         compareDate.setHours(0, 0, 0, 0);
                         if (compareDate >= start && compareDate <= end) {
-                            console.log('✅ DEBUG: MATCHED date range!', range);
-                            console.log('✅ DEBUG: Selected timetable:', fileName, timetableInfo.url);
+                            console.log('✅ Selected timetable:', fileName, 'for date range');
                             return timetableInfo;
                         }
                     } else if (!dayNames.includes(range)) {
@@ -1198,29 +1179,24 @@
                         const compareDate = new Date(date);
                         compareDate.setHours(0, 0, 0, 0);
                         if (+compareDate === +rangeDate) {
-                            console.log('✅ DEBUG: MATCHED specific date!', range);
-                            console.log('✅ DEBUG: Selected timetable:', fileName, timetableInfo.url);
+                            console.log('✅ Selected timetable:', fileName, 'for specific date');
                             return timetableInfo;
                         }
                     }
                 }
             }
             
-            console.log('❌ DEBUG: No matching timetable found!');
+            console.log('❌ No matching timetable found for:', dayName);
             return null;
         }
 
         // Fetch and parse timetable data
         async function fetchTimetableData(timetableInfo) {
-            console.log('📥 DEBUG: fetchTimetableData called with:', timetableInfo);
             try {
                 const response = await fetch(timetableInfo.url);
                 const csvText = await response.text();
-                console.log('📥 DEBUG: CSV length:', csvText.length, 'characters');
                 
                 const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                console.log('📥 DEBUG: CSV lines:', lines.length);
-                
                 const runData = {};
 
                 const junctions = [
@@ -1229,11 +1205,7 @@
                     'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
                 ];
 
-                let lineCount = 0;
                 lines.forEach((line, index) => {
-                    lineCount++;
-                    if (lineCount <= 5) console.log(`📥 DEBUG: Sample line ${lineCount}:`, line);
-                    
                     const parts = line.split(',');
                     if (parts.length >= 7) {
                         const runNumber = parts[1].trim();
@@ -1278,16 +1250,11 @@
                 });
 
                 const runNumbers = Object.keys(runData);
-                console.log('📥 DEBUG: Parsed', runNumbers.length, 'unique runs');
-                console.log('📥 DEBUG: First 20 run numbers:', runNumbers.slice(0, 20));
-                console.log('📥 DEBUG: Last 20 run numbers:', runNumbers.slice(-20));
-                console.log('📥 DEBUG: Sample run 453 exists:', !!runData['453']);
-                console.log('📥 DEBUG: Sample run 703 exists:', !!runData['703']);
-                console.log('📥 DEBUG: Sample run 705 exists:', !!runData['705']);
+                console.log('✅ Parsed', runNumbers.length, 'unique runs from timetable');
 
                 return runData;
             } catch (error) {
-                console.error('❌ DEBUG: Error fetching timetable data:', error);
+                console.error('❌ Error fetching timetable data:', error);
                 return null;
             }
         }
@@ -1351,12 +1318,7 @@
         }
 
         // Show timetable view
-        async function showTimetableView(halfName, runNumber, startTime, endTime, startLocation, endLocation) {
-            console.log('🚀 DEBUG: showTimetableView called with:', {
-                halfName, runNumber, startTime, endTime, startLocation, endLocation,
-                currentDutyDate: currentDutyDate
-            });
-            
+        async function showTimetableView(halfName, runNumber, startTime, endTime, startLocation, endLocation, dutyDate = currentDutyDate) {
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
@@ -1374,40 +1336,27 @@
 
             try {
                 // Get applicable timetable for the duty date
-                const applicableTimetable = getApplicableTimetable(currentDutyDate);
+                const applicableTimetable = getApplicableTimetable(dutyDate);
                 if (!applicableTimetable) {
                     modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">No applicable timetable found for this date</div>';
                     return;
                 }
 
-                console.log('📋 DEBUG: Selected timetable:', applicableTimetable);
-
                 // Fetch timetable data if not already cached
                 if (!currentTimetableData) {
-                    console.log('📥 DEBUG: Fetching timetable data from:', applicableTimetable.url);
                     currentTimetableData = await fetchTimetableData(applicableTimetable);
-                    console.log('📥 DEBUG: Fetched run data keys:', Object.keys(currentTimetableData || {}));
                 }
 
                 if (!currentTimetableData || !currentTimetableData[runNumber]) {
-                    console.log('❌ DEBUG: Run not found!', {
-                        runNumber: runNumber,
-                        availableRuns: Object.keys(currentTimetableData || {}),
-                        searchedRun: runNumber,
-                        runExists: !!currentTimetableData?.[runNumber]
-                    });
+                    console.log('❌ Run', runNumber, 'not found in timetable');
                     modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">Run not found in timetable</div>';
                     return;
                 }
-
-                console.log('✅ DEBUG: Found run data:', currentTimetableData[runNumber]);
 
                 // Get and filter run data
                 let runData = currentTimetableData[runNumber];
                 runData = filterRunByTime(runData, startTime, endTime);
                 runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
-
-                console.log('🎯 DEBUG: Final filtered run data:', runData);
 
                 // Create timetable HTML
                 let timetableHTML = `
@@ -1446,7 +1395,7 @@
                 modalBody.innerHTML = timetableHTML;
                 
             } catch (error) {
-                console.error('💥 DEBUG: Error loading timetable:', error);
+                console.error('💥 Error loading timetable:', error);
                 modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">Error loading timetable data</div>';
             }
         }
@@ -1472,8 +1421,6 @@
             
             // Store current duty data for navigation
             currentDutyData = versionInfo;
-            // DON'T reset currentDutyDate here - it should already be set by the card click!
-            console.log('📋 DEBUG: showDutyDetails - currentDutyDate should already be set:', currentDutyDate);
             currentTimetableData = null; // Reset timetable cache
             
             const duty = versionInfo.duty;
@@ -1515,10 +1462,13 @@
                 // First Half
                 const canShowFirstHalf = isBaseDuty && duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR";
                 
+                // Create date string for onclick - capture the current date NOW
+                const dutyDateString = currentDutyDate.getFullYear() + ',' + currentDutyDate.getMonth() + ',' + currentDutyDate.getDate();
+                
                 content += `
                     <div class="section">
                         <div class="section-header">
-                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowFirstHalf ? 'cursor: pointer;' : ''}" ${canShowFirstHalf ? `onclick="showTimetableView('First Half', '${duty.FirstHalfRunNumber}', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${duty.FirstHalfStartLocation}', '${duty.FirstHalfEndLocation}')"` : ''}>
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowFirstHalf ? 'cursor: pointer;' : ''}" ${canShowFirstHalf ? `onclick="showTimetableView('First Half', '${duty.FirstHalfRunNumber}', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${duty.FirstHalfStartLocation}', '${duty.FirstHalfEndLocation}', new Date(${dutyDateString}))"` : ''}>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>First Half (${duty.FirstHalfLength})</span>
                                 </div>
@@ -1569,7 +1519,7 @@
                 content += `
                     <div class="section">
                         <div class="section-header">
-                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowSecondHalf ? 'cursor: pointer;' : ''}" ${canShowSecondHalf ? `onclick="showTimetableView('Second Half', '${duty.SecondHalfRunNumber}', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${duty.SecondHalfStartLocation}', '${duty.SecondHalfEndLocation}')"` : ''}>
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowSecondHalf ? 'cursor: pointer;' : ''}" ${canShowSecondHalf ? `onclick="showTimetableView('Second Half', '${duty.SecondHalfRunNumber}', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${duty.SecondHalfStartLocation}', '${duty.SecondHalfEndLocation}', new Date(${dutyDateString}))"` : ''}>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>Second Half (${duty.SecondHalfLength})</span>
                                 </div>
