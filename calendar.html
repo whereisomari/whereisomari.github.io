@@ -397,18 +397,22 @@
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
+            overscroll-behavior: contain;
             position: relative;
         }
 
         .duty-modal-header {
             background: linear-gradient(90deg, #8A2BE2, #4B0082);
             color: white;
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
             font-size: 1.2rem;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .close-modal {
@@ -418,6 +422,13 @@
             font-size: 1.5rem;
             cursor: pointer;
             padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
         }
 
         .duty-modal-body {
@@ -834,7 +845,7 @@
             return localDateTime.toISOString().split('T')[0];
         }
 
-        // Parse duty tracker to get next 20 days
+        // Parse duty tracker to get next 21 days
         function parseNext20Days() {
             if (!dutyTrackerData) return [];
             
@@ -846,7 +857,7 @@
             let i = 0;
             
             // Find starting date
-            while (i < lines.length && dateCount < 20) {
+            while (i < lines.length && dateCount < 21) {
                 const line = lines[i].trim();
                 if (line.endsWith(':')) {
                     const date = line.slice(0, -1);
@@ -994,30 +1005,6 @@
             if (nonWorkingCategories.includes(dutyInfo.category)) {
                 card.classList.add('rest-day');
                 
-                // Set the card background to the category color
-                const categoryColors = {
-                    "AL": "#22330B",
-                    "BH": "#2B1710", 
-                    "E": "#004659",
-                    "EE": "#004659",
-                    "EM": "#003939",
-                    "IT": "#80215D",
-                    "L": "#002039",
-                    "LD": "#5E2405",
-                    "LL": "#002039",
-                    "M": "#003939",
-                    "ML": "#003939",
-                    "MRD": "#063004",
-                    "O": "#063004",
-                    "OAL": "#22330B",
-                    "OT": "#6E0811",
-                    "RD": "#063004",
-                    "Swap": "#3A2F00",
-                    "T": "#80215D"
-                };
-                
-                card.style.background = categoryColors[dutyInfo.category] || '#333';
-                
                 card.innerHTML = `
                     <div class="duty-date">${dateStr}</div>
                     <div class="duty-main">${dayNames[dutyInfo.category] || dutyInfo.category}</div>
@@ -1136,11 +1123,9 @@
                 timetableEntries.forEach(entry => {
                     timetablePaths[entry.fileName] = entry;
                 });
-
-                console.log('✅ Timetable paths initialized:', Object.keys(timetablePaths).length, 'timetables');
                 
             } catch (error) {
-                console.error('❌ Error fetching timetable paths:', error);
+                console.error('Error fetching timetable paths:', error);
             }
         }
 
@@ -1157,7 +1142,6 @@
                 
                 for (const range of applies) {
                     if (dayNames.includes(range) && range === dayName) {
-                        console.log('✅ Selected timetable:', fileName, 'for', dayName);
                         return timetableInfo;
                     }
                     
@@ -1170,7 +1154,6 @@
                         const compareDate = new Date(date);
                         compareDate.setHours(0, 0, 0, 0);
                         if (compareDate >= start && compareDate <= end) {
-                            console.log('✅ Selected timetable:', fileName, 'for date range');
                             return timetableInfo;
                         }
                     } else if (!dayNames.includes(range)) {
@@ -1179,14 +1162,12 @@
                         const compareDate = new Date(date);
                         compareDate.setHours(0, 0, 0, 0);
                         if (+compareDate === +rangeDate) {
-                            console.log('✅ Selected timetable:', fileName, 'for specific date');
                             return timetableInfo;
                         }
                     }
                 }
             }
             
-            console.log('❌ No matching timetable found for:', dayName);
             return null;
         }
 
@@ -1249,12 +1230,9 @@
                     }
                 });
 
-                const runNumbers = Object.keys(runData);
-                console.log('✅ Parsed', runNumbers.length, 'unique runs from timetable');
-
                 return runData;
             } catch (error) {
-                console.error('❌ Error fetching timetable data:', error);
+                console.error('Error fetching timetable data:', error);
                 return null;
             }
         }
@@ -1271,15 +1249,30 @@
             const startSeconds = parseTime(startTime + ':00');
             const endSeconds = parseTime(endTime + ':00');
             
-            return runData.filter(stop => {
+            // Find first stop at or after start time
+            const firstStopIndex = runData.findIndex(stop => {
                 const arrivalSeconds = parseTime(stop.arrivalTime);
                 const departureSeconds = parseTime(stop.departureTime);
-                
-                // Include stop if either arrival or departure is within the time range
-                return (arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds) ||
-                       (departureSeconds >= startSeconds && departureSeconds <= endSeconds) ||
-                       (arrivalSeconds <= startSeconds && departureSeconds >= endSeconds);
+                return arrivalSeconds >= startSeconds || departureSeconds >= startSeconds;
             });
+            
+            // Find last stop at or before end time
+            let lastStopIndex = runData.length - 1;
+            for (let i = runData.length - 1; i >= 0; i--) {
+                const arrivalSeconds = parseTime(runData[i].arrivalTime);
+                const departureSeconds = parseTime(runData[i].departureTime);
+                if (arrivalSeconds <= endSeconds || departureSeconds <= endSeconds) {
+                    lastStopIndex = i;
+                    break;
+                }
+            }
+            
+            // Include one extra stop beyond the end time if it exists
+            if (lastStopIndex < runData.length - 1) {
+                lastStopIndex++;
+            }
+            
+            return runData.slice(Math.max(0, firstStopIndex), lastStopIndex + 1);
         }
 
         // Add depot stops to run data
@@ -1348,7 +1341,6 @@
                 }
 
                 if (!currentTimetableData || !currentTimetableData[runNumber]) {
-                    console.log('❌ Run', runNumber, 'not found in timetable');
                     modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">Run not found in timetable</div>';
                     return;
                 }
@@ -1360,16 +1352,17 @@
 
                 // Create timetable HTML
                 let timetableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; margin: 0;">
-                        <thead>
-                            <tr style="background: rgba(255, 255, 255, 0.05);">
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Location</th>
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Platform</th>
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Arrival</th>
-                                <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Departure</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div style="overflow-x: auto; max-width: 100%;">
+                        <table style="width: 100%; border-collapse: collapse; margin: 0; min-width: 400px;">
+                            <thead style="position: sticky; top: 0; z-index: 5;">
+                                <tr style="background: rgba(255, 255, 255, 0.05);">
+                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Location</th>
+                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Plat.</th>
+                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Arrival</th>
+                                    <th style="padding: 8px 12px; text-align: left; font-weight: 600; font-size: 14px; color: #888; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: #1a1a1a;">Departure</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
 
                 runData.forEach(stop => {
@@ -1388,14 +1381,15 @@
                 });
 
                 timetableHTML += `
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 `;
 
                 modalBody.innerHTML = timetableHTML;
                 
             } catch (error) {
-                console.error('💥 Error loading timetable:', error);
+                console.error('Error loading timetable:', error);
                 modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">Error loading timetable data</div>';
             }
         }
@@ -1472,7 +1466,7 @@
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>First Half (${duty.FirstHalfLength})</span>
                                 </div>
-                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : ''}
+                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>'}
                             </div>
                         </div>`;
 
@@ -1494,10 +1488,6 @@
                                 <span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span>
                             </div>
                         </div>`;
-                    
-                    if (!canShowFirstHalf) {
-                        content += `<div style="margin-left: 1rem; color: #666; font-style: italic; font-size: 12px;">Calling Points Unavailable (Temporary Duty)</div>`;
-                    }
                 }
                 content += `</div>`;
 
@@ -1523,7 +1513,7 @@
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>Second Half (${duty.SecondHalfLength})</span>
                                 </div>
-                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : ''}
+                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; transition: all 0.3s ease;">View Calling Points →</div>' : '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; font-style: italic;">Calling Points Unavailable</div>'}
                             </div>
                         </div>`;
 
@@ -1545,10 +1535,6 @@
                                 <span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span>
                             </div>
                         </div>`;
-                    
-                    if (!canShowSecondHalf) {
-                        content += `<div style="margin-left: 1rem; color: #666; font-style: italic; font-size: 12px;">Calling Points Unavailable (Temporary Duty)</div>`;
-                    }
                 }
                 content += `</div>`;
             }
