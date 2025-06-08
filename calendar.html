@@ -408,7 +408,7 @@
         .duty-modal-header {
             background: linear-gradient(90deg, #8A2BE2, #4B0082);
             color: white;
-            padding: 1.5rem;
+            padding: 12px 20px;
             font-size: 1.2rem;
             font-weight: bold;
             display: flex;
@@ -420,9 +420,29 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1.5rem;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .close-modal svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .duty-modal-body {
@@ -444,21 +464,35 @@
         .clickable-half {
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
         }
 
         .clickable-half:hover {
             color: #8A2BE2;
         }
 
-        .clickable-half .half-title {
-            flex: 1;
+        .clickable-half:hover .view-points.clickable {
+            color: #8A2BE2;
         }
 
-        .clickable-half .view-timetable {
+        .clickable-half.unavailable {
+            cursor: default;
+        }
+
+        .clickable-half.unavailable:hover {
+            color: #667eea;
+        }
+
+        .half-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-points {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -467,62 +501,66 @@
             transition: all 0.3s ease;
         }
 
-        .clickable-half:hover .view-timetable {
-            color: #8A2BE2;
+        .view-points.clickable::after {
+            content: "→";
+            font-size: 14px;
         }
 
-        .clickable-half.no-timetable {
-            cursor: default;
-        }
-
-        .clickable-half.no-timetable .view-timetable {
+        .view-points.unavailable {
             color: #666;
             font-style: italic;
         }
 
-        .clickable-half.no-timetable:hover {
-            color: inherit;
-        }
-
+        /* Table-style timetable */
         .timetable-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 16px;
+            margin: 0;
         }
 
         .timetable-table th {
             background: rgba(255, 255, 255, 0.05);
-            color: #667eea;
-            padding: 12px 8px;
+            padding: 8px 12px;
             text-align: left;
             font-weight: 600;
             font-size: 14px;
-            border-bottom: 1px solid #333;
+            color: #888;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .timetable-table td {
-            padding: 10px 8px;
+            padding: 8px 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 14px;
         }
 
-        .timetable-table .time-cell {
-            font-family: 'Courier New', monospace;
-            color: #667eea;
-            font-weight: bold;
-            min-width: 80px;
+        .timetable-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
         }
 
-        .timetable-table .station-cell {
-            color: #ffffff;
+        .station-name {
             font-weight: 500;
+            color: #ffffff;
         }
 
-        .timetable-table .platform-cell {
+        .platform-info {
             color: #888;
-            font-size: 12px;
-            text-align: center;
-            width: 80px;
+            font-size: 14px;
+        }
+
+        .time-info {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .depot-stop {
+            background: rgba(30, 136, 229, 0.1);
+        }
+
+        .depot-stop .station-name {
+            color: #1e88e5;
         }
 
         .back-button {
@@ -646,7 +684,7 @@
         <div class="duty-modal-content">
             <div class="duty-modal-header">
                 <span id="modalTitle">Duty Details</span>
-                <button class="close-modal" id="modalCloseBtn" onclick="history.back()">&times;</button>
+                <button class="close-modal" id="modalCloseBtn" onclick="handleModalClose()">&times;</button>
             </div>
             <div class="duty-modal-body" id="modalBody">
                 <!-- Duty details will be populated here -->
@@ -1167,6 +1205,11 @@
             const modal = document.getElementById('dutyModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
+            const closeBtn = document.getElementById('modalCloseBtn');
+            
+            // Reset to close button with SVG
+            closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
+            modalBody.style.padding = '1.5rem';
             
             // Add history state for modal
             history.pushState({modal: 'duty-details'}, '', '');
@@ -1208,23 +1251,32 @@
                 // First Half
                 content += `
                     <div class="section">
-                        <div class="section-header clickable-half" onclick="showRunDetails('${duty.FirstHalfRunNumber}', 'First Half', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${versionInfo.type}')">First Half (${duty.FirstHalfLength})</div>`;
+                        <div class="section-header">
+                            <div class="clickable-half${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? ' unavailable' : ''}" onclick="${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? 'void(0)' : `showRunDetails('${duty.FirstHalfRunNumber}', 'First Half', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${versionInfo.type}')`}">
+                                <div class="half-info">
+                                    <span>First Half (${duty.FirstHalfLength})</span>
+                                </div>
+                                <div class="view-points ${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? 'unavailable' : 'clickable'}">${duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR" ? 'Calling Points Unavailable' : 'View Calling Points'}</div>
+                            </div>
+                        </div>`;
 
                 if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
                     content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
                 } else {
                     content += `
-                        <div class="section-item">
-                            <span class="section-label">Run:</span>
-                            <span>${duty.FirstHalfRunNumber}</span>
-                        </div>
-                        <div class="section-item">
-                            <span class="section-label">Pick up:</span>
-                            <span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span>
-                        </div>
-                        <div class="section-item">
-                            <span class="section-label">Relieved:</span>
-                            <span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span>
+                        <div class="section-content" style="margin-left: 16px;">
+                            <div class="section-item">
+                                <span class="section-label">Run:</span>
+                                <span>${duty.FirstHalfRunNumber}</span>
+                            </div>
+                            <div class="section-item">
+                                <span class="section-label">Pick up:</span>
+                                <span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span>
+                            </div>
+                            <div class="section-item">
+                                <span class="section-label">Relieved:</span>
+                                <span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span>
+                            </div>
                         </div>`;
                 }
                 content += `</div>`;
@@ -1244,23 +1296,32 @@
                 // Second Half
                 content += `
                     <div class="section">
-                        <div class="section-header clickable-half" onclick="showRunDetails('${duty.SecondHalfRunNumber}', 'Second Half', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${versionInfo.type}')">Second Half (${duty.SecondHalfLength})</div>`;
+                        <div class="section-header">
+                            <div class="clickable-half${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? ' unavailable' : ''}" onclick="${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? 'void(0)' : `showRunDetails('${duty.SecondHalfRunNumber}', 'Second Half', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${versionInfo.type}')`}">
+                                <div class="half-info">
+                                    <span>Second Half (${duty.SecondHalfLength})</span>
+                                </div>
+                                <div class="view-points ${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? 'unavailable' : 'clickable'}">${duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR" ? 'Calling Points Unavailable' : 'View Calling Points'}</div>
+                            </div>
+                        </div>`;
 
                 if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
                     content += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
                 } else {
                     content += `
-                        <div class="section-item">
-                            <span class="section-label">Run:</span>
-                            <span>${duty.SecondHalfRunNumber}</span>
-                        </div>
-                        <div class="section-item">
-                            <span class="section-label">Pick up:</span>
-                            <span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span>
-                        </div>
-                        <div class="section-item">
-                            <span class="section-label">Relieved:</span>
-                            <span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span>
+                        <div class="section-content" style="margin-left: 16px;">
+                            <div class="section-item">
+                                <span class="section-label">Run:</span>
+                                <span>${duty.SecondHalfRunNumber}</span>
+                            </div>
+                            <div class="section-item">
+                                <span class="section-label">Pick up:</span>
+                                <span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span>
+                            </div>
+                            <div class="section-item">
+                                <span class="section-label">Relieved:</span>
+                                <span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span>
+                            </div>
                         </div>`;
                 }
                 content += `</div>`;
@@ -1316,37 +1377,53 @@
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
         }
 
+        // Handle modal close button - either go back to duty view or close modal
+        function handleModalClose() {
+            const modalBody = document.getElementById('modalBody');
+            const closeBtn = document.getElementById('modalCloseBtn');
+            
+            // If modal body has no padding, we're in timetable view - go back to duty view
+            if (modalBody.style.padding === '0px') {
+                modalBody.style.padding = '1.5rem';
+                closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
+                history.back();
+            } else {
+                // Close modal entirely
+                closeDutyModal();
+            }
+        }
+
         // Close modal
         function closeDutyModal() {
             document.getElementById('dutyModal').style.display = 'none';
+            
+            // Reset modal body padding and close button
+            const modalBody = document.getElementById('modalBody');
+            const closeBtn = document.getElementById('modalCloseBtn');
+            modalBody.style.padding = '1.5rem';
+            closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
         }
 
         // Browser history management
         window.addEventListener('popstate', function(event) {
             const closeBtn = document.getElementById('modalCloseBtn');
+            const modalBody = document.getElementById('modalBody');
             
             if (event.state && event.state.modal === 'run-details') {
-                // We're going back from run details to duty details
-                // This happens when the back arrow is clicked
-                closeBtn.innerHTML = '&times;';
-                closeBtn.style.fontSize = '1.5rem';
+                // Going back from run details to duty details - restore duty view
+                closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
+                modalBody.style.padding = '1.5rem';
                 
-                // Don't close the modal, just let the history navigation happen
-                // The previous state should restore the duty details
-                return;
+                // Re-trigger the duty details view
+                history.back();
+            } else if (event.state && event.state.modal) {
+                closeDutyModal();
+            } else {
+                // Reset close button when modal is closed completely
+                closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
+                modalBody.style.padding = '1.5rem';
+                closeDutyModal();
             }
-            
-            if (event.state && event.state.modal === 'duty-details') {
-                // We're still showing duty details, ensure close button is correct
-                closeBtn.innerHTML = '&times;';
-                closeBtn.style.fontSize = '1.5rem';
-                return;
-            }
-            
-            // No modal state, close the modal
-            closeDutyModal();
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.fontSize = '1.5rem';
         });
 
         // Fetch timetable data
@@ -1398,41 +1475,7 @@
             });
         }
 
-        // Location code conversion
-        function convertLocationCode(locationCode) {
-            if (!locationCode) return '';
-            
-            if (locationCode === 'BED' || locationCode === 'BEDP') {
-                return 'Beckton Depot';
-            }
-            if (locationCode === 'POD' || locationCode === 'PODP') {
-                return 'Poplar Depot';
-            }
-            
-            // Check if it's a platform code (e.g., POP4, BAN1)
-            const match = locationCode.match(/^([A-Z]{3})(\d+)$/);
-            if (match) {
-                const [, stationCode, platform] = match;
-                const stationName = locationMapping[stationCode];
-                if (stationName) {
-                    return `${stationName} Plat. ${platform}`;
-                }
-            }
-            
-            // Check if it's just a station code
-            const stationName = locationMapping[locationCode];
-            if (stationName) {
-                return stationName;
-            }
-            
-            return locationCode;
-        }
-
-        // Check if run has timetable data
-        function hasRunTimetable(runNumber) {
-            if (!runNumber || runNumber === "" || runNumber === "TR") return false;
-            return parsedCsvData && parsedCsvData[runNumber];
-        }
+        // Location mapping from main site
         const locationMapping = {
             'ABR': 'Abbey Road', 'ALS': 'All Saints', 'BAN': 'Bank', 'BEC': 'Beckton', 
             'BEP': 'Beckton Park', 'BLA': 'Blackwall', 'BOC': 'Bow Church', 'CAW': 'Canary Wharf',
@@ -1567,98 +1610,86 @@
             const modalBody = document.getElementById('modalBody');
             const closeBtn = document.getElementById('modalCloseBtn');
             
-            // Change close button to back arrow and update click handler
-            closeBtn.innerHTML = '←';
-            closeBtn.style.fontSize = '20px';
-            closeBtn.onclick = function() {
-                // Return to duty details instead of closing
-                if (currentDutyDetails) {
-                    showDutyDetails(currentDutyDetails.versionInfo, currentDutyDetails.dutyNumber);
-                }
-            };
+            // Change close button to back arrow
+            closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6"/></svg>`;
             
-            currentModalState = 'run-details';
+            // Add history state for run details
+            history.pushState({modal: 'run-details'}, '', '');
+            
             modalTitle.textContent = `${halfName}: Run ${runNumber}`;
+            
+            // Remove padding from modal body for timetable view
+            modalBody.style.padding = '0';
             
             let content = '';
             
             if (parsedCsvData && parsedCsvData[runNumber]) {
-                const runStops = [...parsedCsvData[runNumber]];
-                
-                // Add depot timing points if needed
-                if (startTime && (runStops.length === 0 || !runStops[0].arrivalTime.startsWith(startTime.substring(0, 2)))) {
-                    // Check if this run might start from depot
-                    if (runStops.length > 0) {
-                        const firstStop = runStops[0];
-                        if (firstStop.location && (firstStop.location.includes('Poplar') || firstStop.location.includes('Beckton'))) {
-                            const depotLocation = firstStop.location.includes('Poplar') ? 'Poplar Depot' : 'Beckton Depot';
-                            runStops.unshift({
-                                location: depotLocation,
-                                platform: '',
-                                arrivalTime: startTime + ':00',
-                                departureTime: startTime + ':00',
-                                locationCode: firstStop.location.includes('Poplar') ? 'POD' : 'BED'
-                            });
-                        }
-                    }
-                }
-                
-                if (endTime && (runStops.length === 0 || !runStops[runStops.length - 1].departureTime.startsWith(endTime.substring(0, 2)))) {
-                    // Check if this run might end at depot
-                    if (runStops.length > 0) {
-                        const lastStop = runStops[runStops.length - 1];
-                        if (lastStop.location && (lastStop.location.includes('Poplar') || lastStop.location.includes('Beckton'))) {
-                            const depotLocation = lastStop.location.includes('Poplar') ? 'Poplar Depot' : 'Beckton Depot';
-                            runStops.push({
-                                location: depotLocation,
-                                platform: '',
-                                arrivalTime: endTime + ':00',
-                                departureTime: endTime + ':00',
-                                locationCode: lastStop.location.includes('Poplar') ? 'POD' : 'BED'
-                            });
-                        }
-                    }
-                }
+                const runStops = parsedCsvData[runNumber];
                 
                 content += `
                     <table class="timetable-table">
                         <thead>
                             <tr>
-                                <th>Station</th>
+                                <th>Location</th>
                                 <th>Platform</th>
-                                <th>Times</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
                             </tr>
                         </thead>
                         <tbody>`;
                 
+                // Add depot departure if run starts from depot
+                if (startTime && (runStops[0]?.locationCode === 'POD1' || runStops[0]?.locationCode === 'BED1')) {
+                    const depotName = runStops[0]?.locationCode === 'POD1' ? 'Poplar Depot' : 'Beckton Depot';
+                    content += `
+                        <tr class="depot-stop">
+                            <td class="station-name">${depotName}</td>
+                            <td class="platform-info">—</td>
+                            <td class="time-info">—</td>
+                            <td class="time-info">${startTime}:00</td>
+                        </tr>`;
+                }
+                
                 runStops.forEach((stop, index) => {
-                    const arrTime = stop.arrivalTime.substring(0, 5);
-                    const depTime = stop.departureTime.substring(0, 5);
-                    const timeDisplay = arrTime === depTime ? arrTime : `${arrTime} - ${depTime}`;
+                    const arrTime = stop.arrivalTime.substring(0, 8); // HH:MM:SS
+                    const depTime = stop.departureTime.substring(0, 8); // HH:MM:SS
+                    const arrTimeDisplay = arrTime;
+                    const depTimeDisplay = depTime;
                     
                     content += `
                         <tr>
-                            <td class="station-cell">${stop.location}</td>
-                            <td class="platform-cell">${stop.platform || '-'}</td>
-                            <td class="time-cell">${timeDisplay}</td>
+                            <td class="station-name">${stop.location}</td>
+                            <td class="platform-info">${stop.platform ? 'Plat. ' + stop.platform : '—'}</td>
+                            <td class="time-info">${arrTimeDisplay}</td>
+                            <td class="time-info">${depTimeDisplay}</td>
                         </tr>`;
                 });
+                
+                // Add depot arrival if run ends at depot
+                if (endTime && runStops[runStops.length - 1] && 
+                    (runStops[runStops.length - 1].locationCode === 'POD1' || 
+                     runStops[runStops.length - 1].locationCode === 'BED1')) {
+                    const depotName = runStops[runStops.length - 1].locationCode === 'POD1' ? 'Poplar Depot' : 'Beckton Depot';
+                    content += `
+                        <tr class="depot-stop">
+                            <td class="station-name">${depotName}</td>
+                            <td class="platform-info">—</td>
+                            <td class="time-info">${endTime}:00</td>
+                            <td class="time-info">—</td>
+                        </tr>`;
+                }
                 
                 content += `
                         </tbody>
                     </table>`;
-                    
-                content += `
-                    <div style="margin-top: 16px; font-size: 12px; color: #888; text-align: center;">
-                        Duty times: ${startTime} - ${endTime}
-                    </div>`;
             } else {
-                // This shouldn't happen since we check hasRunTimetable before making headers clickable
+                // No timetable data available
                 content += `
-                    <div style="padding: 20px; text-align: center; color: #888;">
+                    <div style="padding: 40px 20px; text-align: center; color: #888;">
+                        <div style="font-size: 48px; margin-bottom: 12px;">🚇</div>
                         <div>Timetable data not available for this run</div>
                         <div style="font-size: 12px; margin-top: 8px;">
-                            Duty times: ${startTime} - ${endTime}
+                            This may be a depot movement or special working
                         </div>
                     </div>`;
             }
@@ -1669,18 +1700,19 @@
         // Close modal when clicking outside
         document.getElementById('dutyModal').addEventListener('click', (e) => {
             if (e.target.id === 'dutyModal') {
+                // Check if we're in timetable view and need to go back to duty view
+                const modalBody = document.getElementById('modalBody');
                 const closeBtn = document.getElementById('modalCloseBtn');
-                // Check if we're currently viewing timetable info (back arrow is showing)
-                if (closeBtn.innerHTML === '←') {
-                    // Close modal completely, don't go back to duty details
-                    closeDutyModal();
-                    closeBtn.innerHTML = '&times;';
-                    closeBtn.style.fontSize = '1.5rem';
-                    // Clear any history states
-                    history.go(-2); // Go back past both run-details and duty-details states
-                } else {
-                    // Normal close for duty details view
+                
+                // If modal body has no padding, we're in timetable view
+                if (modalBody.style.padding === '0px') {
+                    // Go back to duty view
+                    modalBody.style.padding = '1.5rem';
+                    closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12"/></svg>`;
                     history.back();
+                } else {
+                    // Close modal entirely
+                    closeDutyModal();
                 }
             }
         });
