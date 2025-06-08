@@ -1046,8 +1046,16 @@
                     dutyTimes = `<span>Book on: ${startTime}</span><span>Book off: ${endTime}</span>`;
                     
                     card.addEventListener('click', () => {
-                        // Set the current duty date for timetable lookup
-                        currentDutyDate = new Date(dutyInfo.date);
+                        // Set the current duty date for timetable lookup - use the duty's actual date!
+                        console.log('🎯 DEBUG: Duty card clicked, dutyInfo.date:', dutyInfo.date);
+                        
+                        // Parse the duty date properly (dutyInfo.date should be YYYY-MM-DD format)
+                        const dutyDateParts = dutyInfo.date.split('-');
+                        currentDutyDate = new Date(dutyDateParts[0], dutyDateParts[1] - 1, dutyDateParts[2]);
+                        
+                        console.log('🎯 DEBUG: Parsed currentDutyDate:', currentDutyDate);
+                        console.log('🎯 DEBUG: Day of week:', currentDutyDate.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Europe/London' }));
+                        
                         // Clear any cached timetable data when switching duties
                         currentTimetableData = null;
                         showDutyDetails(versions[0], dutyInfo.dutyNumber);
