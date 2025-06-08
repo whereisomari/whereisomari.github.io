@@ -1424,13 +1424,13 @@
 
                 // Create timetable HTML with proper table structure
                 let timetableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; min-width: 0;">
-                        <thead style="position: sticky; top: 65px; z-index: 15; background: #1a1a1a;">
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                                <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left; background: #1a1a1a;">Location</th>
-                                <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a;">Plat.</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a;">Arrival</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a;">Departure</th>
+                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
+                        <thead style="position: sticky; top: 65px; z-index: 15;">
+                            <tr style="background: #1a1a1a; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left; background: #1a1a1a; border: none;">Location</th>
+                                <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a; border: none;">Plat.</th>
+                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a; border: none;">Arrival</th>
+                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a; border: none;">Departure</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1443,10 +1443,10 @@
                     
                     timetableHTML += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 12px; font-weight: 500; font-size: 14px; ${nameColor} word-wrap: break-word; white-space: normal; line-height: 1.3; height: 48px; vertical-align: middle;">${stop.location}</td>
-                            <td style="padding: 12px; color: #888; font-size: 14px; text-align: center; height: 48px; vertical-align: middle;">${stop.platform}</td>
-                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; height: 48px; vertical-align: middle;">${stop.arrivalTime}</td>
-                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; height: 48px; vertical-align: middle;">${stop.departureTime}</td>
+                            <td style="padding: 12px; font-weight: 500; font-size: 14px; ${nameColor}">${stop.location}</td>
+                            <td style="padding: 12px; color: #888; font-size: 14px; text-align: center;">${stop.platform}</td>
+                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center;">${stop.arrivalTime}</td>
+                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center;">${stop.departureTime}</td>
                         </tr>
                     `;
                 });
