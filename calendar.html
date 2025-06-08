@@ -467,6 +467,16 @@
             font-size: 1.1rem;
             margin-top: 2rem;
         }
+        
+        .timetable-sticky-header {
+            position: sticky;
+            top: 65px;
+            z-index: 15;
+        }
+        .timetable-sticky-header th {
+             background: #1a1a1a;
+             border: none;
+        }
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -522,9 +532,8 @@
                 padding: 4px 8px;
             }
             
-            .duty-modal-content .timetable-header {
-                top: 50px !important;
-                padding: 6px 0 !important;
+            .timetable-sticky-header {
+                top: 50px;
             }
             
             .duty-modal-content table {
@@ -534,15 +543,7 @@
             .duty-modal-content td {
                 padding: 8px 6px !important;
                 height: 48px !important;
-                vertical-align: top !important;
-            }
-            
-            .duty-modal-content .timetable-header {
-                padding: 6px 0 !important;
-            }
-            
-            .duty-modal-content .timetable-header > div {
-                padding: 0 6px !important;
+                vertical-align: middle !important; /* FIX: Changed to middle */
             }
         }
     </style>
@@ -1107,7 +1108,7 @@
                     
                     card.addEventListener('click', () => {
                         // Set the current duty date for timetable lookup - use the duty's actual date!
-                        // Parse the duty date properly (dutyInfo.date should be YYYY-MM-DD format)
+                        // Parse the duty date properly (dutyInfo.date should becameraContinuous-MM-DD format)
                         const dutyDateParts = dutyInfo.date.split('-');
                         currentDutyDate = new Date(dutyDateParts[0], dutyDateParts[1] - 1, dutyDateParts[2]);
                         
@@ -1425,12 +1426,12 @@
                 // Create timetable HTML with proper table structure
                 let timetableHTML = `
                     <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
-                        <thead style="position: sticky; top: 64px; z-index: 15;">
+                        <thead class="timetable-sticky-header">
                             <tr style="background: #1a1a1a; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                                <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left; background: #1a1a1a; border: none;">Location</th>
-                                <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a; border: none;">Plat.</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a; border: none;">Arrival</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center; background: #1a1a1a; border: none;">Departure</th>
+                                <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
+                                <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
+                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
+                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Departure</th>
                             </tr>
                         </thead>
                         <tbody>
