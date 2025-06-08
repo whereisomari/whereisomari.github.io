@@ -436,6 +436,26 @@
 
         .duty-modal-body {
             padding: 1.5rem;
+            transition: opacity 0.25s ease-in-out;
+        }
+
+        .timetable-loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            gap: 1rem;
+            color: #888;
+        }
+
+        .timetable-loader {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
         }
 
         .section {
@@ -472,7 +492,7 @@
             position: sticky;
             top: 65px;
             z-index: 15;
-            background: #1a1a1a; /* FIX: Moved background here */
+            background: #1a1a1a;
         }
         .timetable-sticky-header th {
              border: none;
@@ -1390,22 +1410,34 @@
             const modalBody = document.getElementById('modalBody');
             const closeBtn = document.querySelector('.close-modal');
 
-            // Change close button to back arrow
-            closeBtn.innerHTML = '←';
-            closeBtn.style.fontSize = '1.5rem';
-            closeBtn.style.fontWeight = 'normal';
-            currentModalView = 'timetable';
+            // --- Start Fade Out and Show Loader ---
+            modalBody.style.opacity = '0';
+            
+            setTimeout(() => {
+                // Change close button to back arrow
+                closeBtn.innerHTML = '←';
+                closeBtn.style.fontSize = '1.5rem';
+                closeBtn.style.fontWeight = 'normal';
+                currentModalView = 'timetable';
 
-            modalTitle.textContent = `${halfName}: Run ${runNumber}`;
-            modalBody.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem;">Loading timetable data...</div>';
-            modalBody.style.padding = '0';
+                modalTitle.textContent = `${halfName}: Run ${runNumber}`;
+                modalBody.innerHTML = `
+                    <div class="timetable-loader-container">
+                        <div class="timetable-loader"></div>
+                        <div>Loading Calling Points...</div>
+                    </div>`;
+                modalBody.style.padding = '0'; // Adjust padding for loader
+                
+                // --- Fade In Loader ---
+                modalBody.style.opacity = '1';
+            }, 250); // This timeout matches the CSS transition duration
+
 
             try {
                 // Get applicable timetable for the duty date
                 const applicableTimetable = getApplicableTimetable(dutyDate);
                 if (!applicableTimetable) {
-                    modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">No applicable timetable found for this date</div>';
-                    return;
+                    throw new Error('No applicable timetable found for this date');
                 }
 
                 // Fetch timetable data if not already cached
@@ -1414,8 +1446,7 @@
                 }
 
                 if (!currentTimetableData || !currentTimetableData[runNumber]) {
-                    modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">Run not found in timetable</div>';
-                    return;
+                    throw new Error('Run not found in timetable');
                 }
 
                 // Get and filter run data
@@ -1456,12 +1487,29 @@
                         </tbody>
                     </table>
                 `;
-
-                modalBody.innerHTML = timetableHTML;
                 
+                // --- Fade out loader and fade in table ---
+                setTimeout(() => {
+                    modalBody.style.opacity = '0';
+                    setTimeout(() => {
+                        modalBody.innerHTML = timetableHTML;
+                        modalBody.style.opacity = '1';
+                    }, 250);
+                }, 500); // Add a minimum display time for the loader
+                
+
             } catch (error) {
                 console.error('Error loading timetable:', error);
-                modalBody.innerHTML = '<div style="text-align: center; color: #e53935; padding: 2rem;">Error loading timetable data</div>';
+                const errorMessageHTML = `<div class="timetable-loader-container" style="color: #e53935;">${error.message}</div>`;
+                
+                // Fade out loader and fade in error
+                setTimeout(() => {
+                    modalBody.style.opacity = '0';
+                    setTimeout(() => {
+                        modalBody.innerHTML = errorMessageHTML;
+                        modalBody.style.opacity = '1';
+                    }, 250);
+                }, 500);
             }
         }
 
