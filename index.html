@@ -1461,7 +1461,7 @@
         }
         
         // TIMEZONE SETTING - Change this to use different timezone
-        const SYSTEM_TIMEZONE = "Europe/London";
+        const SYSTEM_TIMEZONE = "Atlantic/Reykjavik";
         
         // Get current time in the set timezone
         function getCurrentTimeInTimezone(dateTime = null) {
@@ -1495,12 +1495,12 @@
             }
         }
         
-        // Get operating date (changes at 04:00, not midnight)
+        // Get operating date (changes at 03:00, not midnight)
         function getOperatingDate(dateTime = null) {
             const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
             
             // If before 03:00, use previous day as operating date
-            if (localDateTime.getHours() < 4) {
+            if (localDateTime.getHours() < 3) {
                 localDateTime.setDate(localDateTime.getDate() - 1);
             }
             
