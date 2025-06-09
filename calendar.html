@@ -278,10 +278,9 @@
 			border-color: #667eea;
 		}
 
-		/* Sign out link */
 		.sign-out-link {
 			position: fixed;
-			top: 20px;
+			top: 20px; /* Same as nav-link */
 			right: 20px;
 			background: none;
 			border: none;
@@ -289,7 +288,7 @@
 			font-size: 0.8rem;
 			cursor: pointer;
 			z-index: 100;
-			padding: 4px 8px;
+			padding: 8px 8px; /* Match nav-link padding height */
 			transition: color 0.3s ease;
 		}
 
@@ -608,6 +607,25 @@
         }
 
         /* Responsive design */
+		
+		@media (max-width: 768px) {
+			.nav-link {
+				position: fixed;
+				top: 15px;
+				left: 50%;
+				transform: translateX(-50%);
+				padding: 6px 12px;
+				font-size: 0.85rem;
+			}
+			
+			.sign-out-link {
+				position: fixed;
+				top: 15px;
+				right: 15px;
+				padding: 6px 8px;
+			}
+		}		
+		
         @media (max-width: 768px) {
 			body {
 				min-height: 100vh;
@@ -630,24 +648,6 @@
             .duty-modal {
                 padding: 1rem;
             }
-
-			.nav-link {
-				position: absolute;
-				top: 15px;
-				left: 50%;
-				transform: translateX(-50%);
-				padding: 6px 12px;
-				font-size: 0.85rem;
-			}
-
-			.sign-out-link {
-				position: absolute;
-				top: 15px;
-				right: 15px;
-				bottom: auto;
-				left: auto;
-				transform: none;
-			}
 
             .page-title {
                 font-size: clamp(2.5rem, 8vw, 4rem);
@@ -884,7 +884,12 @@
                 loginSplashScreen.style.display = 'none';
             }, 500);
 
-            mainContainer.style.display = 'flex';
+			// Show main container immediately
+			mainContainer.style.display = 'flex';
+
+			// Show nav buttons immediately
+			document.getElementById('calendarNavButton').style.display = 'block';
+			document.getElementById('signOutButton').style.display = 'block';			
             
             // Load duty tracker, duty lookup data, and timetable paths
             Promise.all([
@@ -896,6 +901,17 @@
                 console.log('All data loaded successfully');
                 populateCalendar();
                 
+				setTimeout(() => {
+					const textOverlay = document.getElementById('textOverlay');
+					if (textOverlay) {
+						textOverlay.style.opacity = '0';
+						setTimeout(() => {
+							textOverlay.style.display = 'none';
+						}, 800);
+					}
+				}, 4000);
+            })				
+				
                 // Fade out overlays
                 setTimeout(() => {
                     const loadingOverlay = document.getElementById('loadingOverlay');
@@ -907,19 +923,6 @@
                     }
                 }, 3200);
                 
-				setTimeout(() => {
-					const textOverlay = document.getElementById('textOverlay');
-					if (textOverlay) {
-						textOverlay.style.opacity = '0';
-						setTimeout(() => {
-							textOverlay.style.display = 'none';
-							// Show nav button and sign out after loading finishes
-							document.getElementById('realtimeNavButton').style.display = 'block';
-							document.getElementById('signOutButton').style.display = 'block';
-						}, 800);
-					}
-				}, 4000);
-            })
             .catch(error => {
                 console.error("Data loading failed:", error);
                 showError('Error loading duty data: ' + error.message);

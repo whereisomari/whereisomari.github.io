@@ -340,7 +340,7 @@
 		/* Sign out link */
 		.sign-out-link {
 			position: fixed;
-			top: 20px;
+			top: 20px; /* Same as nav-link */
 			right: 20px;
 			background: none;
 			border: none;
@@ -348,7 +348,7 @@
 			font-size: 0.8rem;
 			cursor: pointer;
 			z-index: 100;
-			padding: 4px 8px;
+			padding: 8px 8px; /* Match nav-link padding height */
 			transition: color 0.3s ease;
 		}
 
@@ -460,7 +460,7 @@
 			}
 
 			.nav-link {
-				position: absolute;
+				position: fixed; /* Keep fixed, not absolute */
 				top: 15px;
 				left: 50%;
 				transform: translateX(-50%);
@@ -469,14 +469,12 @@
 			}
 			
 			.sign-out-link {
-				position: absolute;
-				top: 15px;
+				position: fixed; /* Keep fixed, not absolute */
+				top: 15px; /* Same as nav-link */
 				right: 15px;
-				bottom: auto;
-				left: auto;
-				transform: none;
-			}		
-			
+				padding: 6px 8px; /* Match nav-link padding height */
+			}	
+
 			.status-prefix {
 				font-size: clamp(2.8rem, 12vw, 5.5rem);
 				line-height: 0.95;
@@ -729,7 +727,11 @@
 			}, 500);
 
 			// Show main container immediately
-			mainContainer.style.display = 'flex';		
+			mainContainer.style.display = 'flex';
+
+			// Show nav buttons immediately
+			document.getElementById('calendarNavButton').style.display = 'block';
+			document.getElementById('signOutButton').style.display = 'block';			
 			
 			// Load duty tracker and start updates
 			fetchDutyTracker()
@@ -745,7 +747,7 @@
 								loadingOverlay.style.display = 'none';
 							}, 800);
 						}
-					}, 3200);
+					}, 3200);				
 					
 					// Wait 4 seconds (circle finishes fading), then fade out text overlay
 					setTimeout(() => {
@@ -754,9 +756,6 @@
 							textOverlay.style.opacity = '0';
 							setTimeout(() => {
 								textOverlay.style.display = 'none';
-								// Show nav button and sign out after loading finishes
-								document.getElementById('calendarNavButton').style.display = 'block';
-								document.getElementById('signOutButton').style.display = 'block';
 							}, 800);
 						}
 					}, 4000);
