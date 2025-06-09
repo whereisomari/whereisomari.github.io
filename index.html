@@ -1375,7 +1375,7 @@
         let runTransitions = {};
         let updateInterval = null;
         let previousStatus = { main: null, details: null };
-        let currentTimetableName = 'N/A'; // <-- ADDED: To store the current timetable name
+        let currentTimetableName = 'N/A';
         
         // Global update buffer to prevent rapid-fire updates
         let updateBuffer = {
@@ -1396,7 +1396,7 @@
             const status = calculateCurrentStatus(operatingDate, timeStr, currentTimeInTimezone);
             
             // Display initial status immediately
-            displayStatus(status.main, status.details, false, true); // immediate = true
+            displayStatus(status.main, status.details, false); 
             previousStatus = { main: status.main, details: status.details };
             
             // Then update every second with normal behavior
@@ -1417,15 +1417,16 @@
             // Only log on minute changes to reduce noise
             const minute = currentTimeInTimezone.getMinutes();
             if (minute !== updateStatusRealTime.lastLoggedMinute) {
-                // This debug log is fine as it's not spammy
+                const operatingDateTimeForLog = getOperatingDateTime(currentTimeInTimezone);
                 console.log(`[DEBUG] updateStatusRealTime called at:`, {
                     utcTime: new Date().toISOString(),
                     timezoneTime: currentTimeInTimezone.toISOString(),
                     operatingDate: operatingDate,
+                    operatingDayOfWeek: operatingDateTimeForLog.toLocaleDateString('en-US', { weekday: 'long' }),
                     timeStr,
                     dayOfWeek: currentTimeInTimezone.toLocaleDateString('en-US', { weekday: 'long' }),
                     hour: currentTimeInTimezone.getHours(),
-                    timetable: currentTimetableName // <-- ADDED: Log the timetable name
+                    timetable: currentTimetableName
                 });
                 updateStatusRealTime.lastLoggedMinute = minute;
             }
@@ -1495,9 +1496,9 @@
                 return new Date(); // Fallback to system time
             }
         }
-        
-        // Get operating date (changes at 03:00, not midnight)
-        function getOperatingDate(dateTime = null) {
+
+        // *** NEW ***: Get operating Date object (for timetable selection)
+        function getOperatingDateTime(dateTime = null) {
             const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
             
             // If before 03:00, use previous day as operating date
@@ -1505,8 +1506,14 @@
                 localDateTime.setDate(localDateTime.getDate() - 1);
             }
             
-            // Return just the date part
-            return localDateTime.toISOString().split('T')[0];
+            return localDateTime;
+        }
+        
+        // Get operating date string (for duty lookup)
+        function getOperatingDate(dateTime = null) {
+            const operatingDateTime = getOperatingDateTime(dateTime);
+            // Return just the date part as a string
+            return operatingDateTime.toISOString().split('T')[0];
         }
         
         // Convert duty time to actual datetime in the set timezone (handles 25:55 = 01:55 next day)
@@ -1541,7 +1548,7 @@
             'WES': 'Westferry', 'WOA': 'Woolwich Arsenal'
         };
         
-        // --- NEW TIMETABLE FETCHING LOGIC ---
+        // --- TIMETABLE FETCHING LOGIC ---
 
         function parseDateRange(dateStr) {
 			dateStr = dateStr.replace(/['"]/g, '');
@@ -1568,8 +1575,9 @@
 			});
 		}
 		
+        // *** MODIFIED ***: Uses getOperatingDateTime to ensure correct day is used
 		function sortTimetablesByApplicability(entries) {
-			const operatingDateTime = getCurrentTimeInTimezone();
+			const operatingDateTime = getOperatingDateTime(); // <-- CORRECTED: Use operating day logic
 			const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 			
 			return entries.sort((a, b) => {
@@ -1627,7 +1635,7 @@
                 // 3. Determine the most applicable timetable
                 const sortedEntries = sortTimetablesByApplicability(timetableEntries);
                 const applicableTimetable = sortedEntries[0];
-                currentTimetableName = applicableTimetable.name; // <-- MODIFIED: Store the timetable name
+                currentTimetableName = applicableTimetable.name;
                 console.log(`[INFO] Using timetable: '${currentTimetableName}' from URL: ${applicableTimetable.url}`);
 
                 // 4. Fetch the applicable timetable CSV
@@ -1647,7 +1655,7 @@
             }
         }
         
-        // --- END OF NEW LOGIC ---
+        // --- END OF TIMETABLE LOGIC ---
 
         // Parse CSV data like the timetable explorer
         function parseCSVData(csvText) {
@@ -1818,7 +1826,7 @@
         }
         
         function formatDateForDuty(date) {
-            return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+            return date.toISOString().split('T')[0]; //-MM-DD format
         }
         
         function findNextDuty(currentOperatingDate, currentTime, currentDateTime) {
