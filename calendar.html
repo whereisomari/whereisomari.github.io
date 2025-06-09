@@ -725,24 +725,25 @@
         <div class="simple-loader"></div>
     </div>
 
-    <!-- Main content -->
-    <div class="container" id="mainContainer" style="display: none;">
-        <div class="header">
-            <a href="/" class="nav-link" id="realtimeNavButton" style="display: none;">View Realtime</a>
-			<!-- Sign out link -->
-			<button id="signOutButton" class="sign-out-link" onclick="signOut()" style="display: none;">Sign Out</button>			
-            <h1 class="page-title">
-                <span class="title-gradient">Omari's</span><br>
-                <span class="title-white">Duty Calendar</span>
-            </h1>
-        </div>
-        
-        <div class="calendar-grid" id="calendarGrid">
-            <!-- Calendar items will be populated here -->
-        </div>
-        
-        <div id="errorMessage" class="error-message" style="display: none;"></div>
-    </div>
+	<!-- Navigation buttons outside container -->
+	<a href="/" class="nav-link" id="realtimeNavButton" style="display: none;">View Realtime</a>
+	<button id="signOutButton" class="sign-out-link" onclick="signOut()" style="display: none;">Sign Out</button>
+
+	<!-- Main content -->
+	<div class="container" id="mainContainer" style="display: none;">
+		<div class="header">
+			<h1 class="page-title">
+				<span class="title-gradient">Omari's</span><br>
+				<span class="title-white">Duty Calendar</span>
+			</h1>
+		</div>
+		
+		<div class="calendar-grid" id="calendarGrid">
+			<!-- Calendar items will be populated here -->
+		</div>
+		
+		<div id="errorMessage" class="error-message" style="display: none;"></div>
+	</div>
 
     <!-- Duty Detail Modal -->
     <div class="duty-modal" id="dutyModal">
