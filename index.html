@@ -22,18 +22,18 @@
             overflow-x: hidden;
         }
         
-		        /* Enhanced particle system */
-		.particles {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			pointer-events: none;
-			z-index: 1;
-		}
+        /* Enhanced particle system */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
 
-        /* --- NEW: Login Screen Styles --- */
+        /* Login Screen Styles */
         .login-splash-screen {
             position: fixed;
             top: 0;
@@ -44,7 +44,7 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             z-index: 1000;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             transition: opacity 0.5s ease;
@@ -111,65 +111,65 @@
             color: #ff6b6b;
         }
 
-		.particle {
-			position: absolute;
-			border-radius: 50%;
-			pointer-events: none;
-		}
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
 
-		.particle-small {
-			width: 1px;
-			height: 1px;
-			background: rgba(255, 255, 255, 0.9);
-			box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
-			animation: floatUp 4s infinite linear;
-		}
+        .particle-small {
+            width: 1px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+            animation: floatUp 4s infinite linear;
+        }
 
-		.particle-medium {
-			width: 2px;
-			height: 2px;
-			background: rgba(100, 200, 255, 0.95);
-			box-shadow: 0 0 4px rgba(100, 200, 255, 0.7);
-			animation: floatUp 6s infinite linear;
-		}
+        .particle-medium {
+            width: 2px;
+            height: 2px;
+            background: rgba(100, 200, 255, 0.95);
+            box-shadow: 0 0 4px rgba(100, 200, 255, 0.7);
+            animation: floatUp 6s infinite linear;
+        }
 
-		.particle-large {
-			width: 3px;
-			height: 3px;
-			background: rgba(255, 100, 200, 0.9);
-			box-shadow: 0 0 6px rgba(255, 100, 200, 0.6);
-			animation: floatUp 8s infinite linear;
-		}
+        .particle-large {
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 100, 200, 0.9);
+            box-shadow: 0 0 6px rgba(255, 100, 200, 0.6);
+            animation: floatUp 8s infinite linear;
+        }
 
-		@keyframes floatUp {
-			0% {
-				transform: translateY(120vh) rotate(0deg);
-				opacity: 0;
-			}
-			3% {
-				opacity: 0;
-			}
-			8% {
-				opacity: 1;
-			}
-			92% {
-				opacity: 1;
-			}
-			97% {
-				opacity: 0;
-			}
-			100% {
-				transform: translateY(-20vh) rotate(360deg);
-				opacity: 0;
-			}
-		}
+        @keyframes floatUp {
+            0% {
+                transform: translateY(120vh) rotate(0deg);
+                opacity: 0;
+            }
+            3% {
+                opacity: 0;
+            }
+            8% {
+                opacity: 1;
+            }
+            92% {
+                opacity: 1;
+            }
+            97% {
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
         
         /* Main container */
         .container {
             position: relative;
             z-index: 10;
             min-height: 100vh;
-            display: none; /* Initially hidden until login */
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -178,30 +178,30 @@
         }
         
         /* Stylized "Omari is probably" */
-		.status-prefix {
-					font-size: clamp(2rem, 6vw, 4rem);
-					font-weight: 300;
-					margin-bottom: 2rem;
-					opacity: 0;
-					animation: fadeInUp 1s ease-out 0.3s forwards, gradientCycle 5s linear infinite;
-					background: linear-gradient(to right, 
-						hsl(300, 80%, 70%), 
-						hsl(270, 80%, 61%), 
-						hsl(235, 85%, 55%), 
-						hsl(300, 80%, 70%));
-					background-size: 300% 300%;
-					-webkit-background-clip: text;
-					background-clip: text;
-					-webkit-text-fill-color: transparent;
-					position: relative;
-				}
+        .status-prefix {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards, gradientCycle 5s linear infinite;
+            background: linear-gradient(to right, 
+                hsl(300, 80%, 70%), 
+                hsl(270, 80%, 61%), 
+                hsl(235, 85%, 55%), 
+                hsl(300, 80%, 70%));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
 
-				@keyframes gradientCycle {
-					0% { background-position: 150% 0%, 0% 50%; }
-					33% { background-position: 100% 100%, 50% 50%; }
-					66% { background-position: 50% 50%, 100% 0%; }
-					100% { background-position: 0% 0%, 150% 50%; }
-				}
+        @keyframes gradientCycle {
+            0% { background-position: 150% 0%, 0% 50%; }
+            33% { background-position: 100% 100%, 50% 50%; }
+            66% { background-position: 50% 50%, 100% 0%; }
+            100% { background-position: 0% 0%, 150% 50%; }
+        }
         
         .status-prefix::after {
             content: '';
@@ -278,175 +278,25 @@
             z-index: 2;
         }
 
-        /* Calendar button */
-        .calendar-button {
+        /* View Calendar nav button */
+        .nav-link {
             position: fixed;
             top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
+            right: 20px;
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
             transition: all 0.3s ease;
             z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
         }
 
-        .calendar-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-
-        /* Calendar overlay */
-        .calendar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 200;
-            display: none;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .calendar-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .calendar-title {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(to right, hsl(300, 80%, 70%), hsl(270, 80%, 61%), hsl(235, 85%, 55%));
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientCycle 5s linear infinite;
-        }
-
-        .calendar-close {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 30px;
-            cursor: pointer;
-            padding: 5px;
-            transition: color 0.3s;
-        }
-
-        .calendar-close:hover {
-            color: white;
-        }
-
-        .duty-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-        }
-
-        .duty-card {
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .duty-card:hover {
-            background: rgba(40, 40, 40, 0.8);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .duty-card.off-duty {
-            background: rgba(20, 40, 20, 0.6);
-            cursor: default;
-        }
-
-        .duty-card.off-duty:hover {
-            transform: none;
-            background: rgba(20, 40, 20, 0.6);
-        }
-
-        .duty-date {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 8px;
-        }
-
-        .duty-main {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .duty-detail {
-            font-size: 14px;
-            color: #ccc;
-        }
-
-        .duty-detail-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 300;
-            display: none;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .duty-detail-content {
-            max-width: 800px;
-            margin: 50px auto;
-            background: rgba(20, 20, 20, 0.9);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .calendar-content {
-                margin: 0;
-                border-radius: 0;
-                padding: 15px;
-            }
-            
-            .duty-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .calendar-button {
-                top: 15px;
-                left: 15px;
-                width: 45px;
-                height: 45px;
-                font-size: 18px;
-            }
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
         }
         
         .simple-loader {
@@ -549,6 +399,13 @@
             .login-content {
                 padding: 30px 20px;
             }
+
+            .nav-link {
+                top: 15px;
+                right: 15px;
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -567,10 +424,8 @@
         <div class="simple-loader"></div>
     </div>
 
-    <!-- Calendar button -->
-    <button id="calendarButton" class="calendar-button" onclick="openCalendar()" style="display: none;">
-        📅
-    </button>
+	<!-- View Calendar nav button -->
+	<a href="calendar.html" class="nav-link" id="calendarNavButton" style="display: none;">View Calendar</a>
     
     <!-- NEW: Login Screen -->
     <div class="login-splash-screen" id="loginSplashScreen" style="display: none;">
@@ -775,6 +630,9 @@
 			// Show main container immediately
 			mainContainer.style.display = 'flex';
 			
+			// Show calendar nav button
+			document.getElementById('calendarNavButton').style.display = 'block';			
+			
 			// Load duty tracker and start updates
 			fetchDutyTracker()
 				.then(() => {
@@ -892,443 +750,6 @@
 		}
 
         // --- END: Firebase Integration and Authentication ---
-
-        // Calendar functionality
-        let calendarDutyData = {
-            base: {},
-            singleTemp: {},
-            rangeTemp: []
-        };
-
-        // Day name lookups for calendar
-        const dayNames = {
-            "O": "Rest day",
-            "RD": "Rest day", 
-            "AL": "Annual leave",
-            "OAL": "Owed annual leave",
-            "MRD": "Rest day (manual)",
-            "LD": "Lieu day",
-            "BH": "Bank holiday",
-            "T": "Training day",
-            "SB": "Standby",
-            "IT": "Training",
-            "TR": "Training"
-        };
-
-        function openCalendar() {
-            document.getElementById('calendarOverlay').style.display = 'block';
-            loadCalendarDuties();
-        }
-
-        function closeCalendar() {
-            document.getElementById('calendarOverlay').style.display = 'none';
-        }
-
-        function closeDutyDetail() {
-            document.getElementById('dutyDetailModal').style.display = 'none';
-        }
-
-        function loadCalendarDuties() {
-            if (!dutyData) {
-                document.getElementById('dutyGrid').innerHTML = '<div style="color: #e53935;">No duty data available</div>';
-                return;
-            }
-
-            const duties = parseNext20Days();
-            displayDutyCards(duties);
-        }
-
-        function parseNext20Days() {
-            const lines = dutyData.split('\n');
-            const duties = [];
-            const currentDate = new Date(getCurrentTimeInTimezone());
-            
-            // Find current operating date
-            const operatingDate = getOperatingDate();
-            let startIndex = -1;
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line === operatingDate + ':') {
-                    startIndex = i;
-                    break;
-                }
-            }
-            
-            if (startIndex === -1) return duties;
-            
-            let dayCount = 0;
-            
-            for (let i = startIndex; i < lines.length && dayCount < 20; i++) {
-                const line = lines[i].trim();
-                if (line.endsWith(':')) {
-                    const date = line.slice(0, -1);
-                    const category = lines[i + 1]?.trim();
-                    const dutyNumber = lines[i + 2]?.trim();
-                    const firstHalf = lines[i + 3]?.trim() || '';
-                    const secondHalf = lines[i + 4]?.trim() || '';
-                    
-                    duties.push({
-                        date: date,
-                        category: category,
-                        dutyNumber: dutyNumber,
-                        firstHalf: firstHalf,
-                        secondHalf: secondHalf
-                    });
-                    dayCount++;
-                }
-            }
-            
-            return duties;
-        }
-
-        function displayDutyCards(duties) {
-            const grid = document.getElementById('dutyGrid');
-            grid.innerHTML = '';
-            
-            duties.forEach(duty => {
-                const card = createDutyCard(duty);
-                grid.appendChild(card);
-            });
-        }
-
-        function createDutyCard(duty) {
-            const card = document.createElement('div');
-            const date = new Date(duty.date);
-            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            
-            // Check if it's an off duty
-            const isOffDuty = ['O', 'AL', 'OAL', 'LD', 'BH'].includes(duty.category);
-            
-            card.className = `duty-card ${isOffDuty ? 'off-duty' : ''}`;
-            
-            if (isOffDuty) {
-                card.innerHTML = `
-                    <div class="duty-date">${dayName}, ${formattedDate}</div>
-                    <div class="duty-main">${dayNames[duty.category] || duty.category}</div>
-                    <div class="duty-detail">No duty scheduled</div>
-                `;
-            } else {
-                let dutyInfo = '';
-                if (duty.dutyNumber && duty.dutyNumber !== '???' && duty.dutyNumber !== 'SPARE') {
-                    dutyInfo = `Duty ${duty.dutyNumber}`;
-                    card.onclick = () => showDutyDetail(duty);
-                } else {
-                    dutyInfo = duty.category === 'SPARE' ? 'Spare Duty' : duty.category;
-                }
-                
-                // Get basic timing info from first/second half if available
-                let timeInfo = '';
-                if (duty.firstHalf && duty.firstHalf !== 'SPARE') {
-                    const runInfo = parseRunInfo(duty.firstHalf);
-                    if (runInfo) {
-                        timeInfo = `${runInfo.startTime} - ${runInfo.endTime}`;
-                    }
-                }
-                
-                card.innerHTML = `
-                    <div class="duty-date">${dayName}, ${formattedDate}</div>
-                    <div class="duty-main">${dutyInfo}</div>
-                    <div class="duty-detail">${timeInfo || 'Click for details'}</div>
-                `;
-            }
-            
-            return card;
-        }
-
-        async function showDutyDetail(duty) {
-            if (!duty.dutyNumber || duty.dutyNumber === '???' || duty.dutyNumber === 'SPARE') {
-                return;
-            }
-            
-            // Show loading in modal
-            const modal = document.getElementById('dutyDetailModal');
-            const content = document.getElementById('dutyDetailContent');
-            content.innerHTML = `
-                <div style="padding: 40px; text-align: center; color: #888;">
-                    <div style="font-size: 18px; margin-bottom: 10px;">Loading duty details...</div>
-                    <div class="simple-loader" style="margin: 20px auto;"></div>
-                </div>
-            `;
-            modal.style.display = 'block';
-            
-            try {
-                // Fetch duty data from Firebase (same as dlrduties.html)
-                await loadDutyDataForCalendar();
-                
-                // Get duty details
-                const versions = getDutyForDate(duty.dutyNumber, duty.date);
-                
-                if (versions.length > 0) {
-                    const dutyDetail = versions[0];
-                    content.innerHTML = formatDutyDetailsForCalendar(dutyDetail.duty, dutyDetail.dutyId, dutyDetail, duty.date);
-                } else {
-                    content.innerHTML = `
-                        <div style="padding: 40px; text-align: center;">
-                            <h3 style="color: #e53935; margin-bottom: 15px;">Duty Not Found</h3>
-                            <p style="color: #888; margin-bottom: 20px;">Could not find details for Duty ${duty.dutyNumber} on ${duty.date}</p>
-                            <button onclick="closeDutyDetail()" style="background: #1e88e5; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">Close</button>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error loading duty details:', error);
-                content.innerHTML = `
-                    <div style="padding: 40px; text-align: center;">
-                        <h3 style="color: #e53935; margin-bottom: 15px;">Error Loading Duty</h3>
-                        <p style="color: #888; margin-bottom: 20px;">Could not load duty details: ${error.message}</p>
-                        <button onclick="closeDutyDetail()" style="background: #1e88e5; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">Close</button>
-                    </div>
-                `;
-            }
-        }
-
-        async function loadDutyDataForCalendar() {
-            // Only load if we don't have duty data yet
-            if (Object.keys(calendarDutyData.base).length > 0) return;
-            
-            const storageRef = firebase.storage().ref('duty-files');
-            const result = await storageRef.listAll();
-            
-            for (const fileRef of result.items) {
-                const url = await fileRef.getDownloadURL();
-                const response = await fetch(url);
-                const content = await response.text();
-                
-                const jsonMatch = content.match(/var\s+ExtractedDuties\s*=\s*(\{.*\});/s);
-                if (jsonMatch) {
-                    const duties = JSON.parse(jsonMatch[1]);
-                    processDutyFileForCalendar(fileRef.name, duties);
-                }
-            }
-        }
-
-        function processDutyFileForCalendar(filename, duties) {
-            const parts = filename.split('.')[0].split('-');
-            
-            if (filename.includes('-to-')) {
-                // Range temp file
-                const [startYear, startMonth, startDay, , endYear, endMonth, endDay] = parts;
-                const startDate = new Date(startYear, startMonth - 1, startDay);
-                const endDate = new Date(endYear, endMonth - 1, endDay);
-                calendarDutyData.rangeTemp.push({
-                    startDate,
-                    endDate,
-                    duties,
-                    filename
-                });
-            } else if (filename.endsWith('-Base.json')) {
-                // Base file
-                const [year, month, day] = parts;
-                const baseDate = new Date(year, month - 1, day);
-                calendarDutyData.base[baseDate.getTime()] = {
-                    duties,
-                    filename
-                };
-            } else if (filename.endsWith('-Temp.json')) {
-                // Single day temp file
-                const [year, month, day] = parts;
-                const dateKey = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                calendarDutyData.singleTemp[dateKey] = {
-                    duties,
-                    filename
-                };
-            }
-        }
-
-        function getDutyForDate(dutyNumber, dateStr) {
-            const versions = [];
-            const [year, month, day] = dateStr.split('-');
-            const date = new Date(year, month - 1, day);
-
-            // Check single day temp
-            const dateKey = `${year}-${month}-${day}`;
-            if (calendarDutyData.singleTemp[dateKey]) {
-                const tempDuty = Object.entries(calendarDutyData.singleTemp[dateKey].duties)
-                    .find(([key]) => key.startsWith(dutyNumber + '-'));
-                if (tempDuty) {
-                    versions.push({
-                        type: 'temp',
-                        date: dateStr,
-                        duty: tempDuty[1],
-                        dutyId: tempDuty[0],
-                        filename: calendarDutyData.singleTemp[dateKey].filename
-                    });
-                }
-            }
-
-            // Check range temp
-            const rangeTempMatch = calendarDutyData.rangeTemp.find(range => 
-                date >= range.startDate && date <= range.endDate);
-            if (rangeTempMatch) {
-                const tempDuty = Object.entries(rangeTempMatch.duties)
-                    .find(([key]) => key.startsWith(dutyNumber + '-'));
-                if (tempDuty) {
-                    versions.push({
-                        type: 'temp',
-                        dateRange: {
-                            start: rangeTempMatch.startDate.toISOString().split('T')[0],
-                            end: rangeTempMatch.endDate.toISOString().split('T')[0]
-                        },
-                        duty: tempDuty[1],
-                        dutyId: tempDuty[0],
-                        filename: rangeTempMatch.filename
-                    });
-                }
-            }
-
-            // Check base duties
-            const baseDate = Object.keys(calendarDutyData.base)
-                .map(Number)
-                .filter(time => new Date(time) <= date)
-                .sort((a, b) => b - a)[0];
-
-            if (baseDate) {
-                const baseDutyId = Object.keys(calendarDutyData.base[baseDate].duties)
-                    .find(key => key.startsWith(dutyNumber + '-'));
-                if (baseDutyId) {
-                    versions.push({
-                        type: 'base',
-                        date: new Date(baseDate).toISOString().split('T')[0],
-                        duty: calendarDutyData.base[baseDate].duties[baseDutyId],
-                        dutyId: baseDutyId,
-                        filename: calendarDutyData.base[baseDate].filename
-                    });
-                }
-            }
-
-            return versions;
-        }
-
-        function formatDutyDetailsForCalendar(duty, dutyId, versionInfo, date) {
-            const [number, location, endLocation, startTime, endTime] = dutyId.split('-');
-            const dutyDate = new Date(date);
-            const formattedDate = dutyDate.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-
-            let content = `
-                <div style="background: rgba(30, 136, 229, 0.8); color: white; padding: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h2 style="margin: 0; font-size: 24px;">Duty ${number}</h2>
-                            <div style="font-size: 16px; opacity: 0.9; margin-top: 5px;">${formattedDate}</div>
-                            <div style="font-size: 14px; opacity: 0.8; margin-top: 5px;">
-                                ${location} ${startTime}-${endTime} | Type: ${duty.TypeOfDuty} | Spread: ${duty.Spreadtime} | Paid: ${duty.PaidTime}
-                            </div>
-                        </div>
-                        <button onclick="closeDutyDetail()" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer; padding: 5px;">×</button>
-                    </div>
-                </div>
-                <div style="padding: 20px;">
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                            <span style="color: #888; min-width: 80px;">Book on:</span>
-                            <span>${startTime}${location ? ` at ${location}` : ''}</span>
-                        </div>
-                    </div>
-            `;
-
-            if (duty.TypeOfDuty === "SPARE" || duty.TypeOfDuty === "TRAINING" || duty.TypeOfDuty === "PANEL") {
-                content += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="font-size: 16px; color: #1e88e5; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #424242;">
-                            Duty Details
-                        </div>
-                        <div style="margin-left: 16px; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>
-                    </div>`;
-            } else {
-                // First Half
-                content += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="font-size: 16px; color: #1e88e5; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #424242; display: flex; justify-content: space-between;">
-                            <span>First Half</span>
-                            <span style="color: #888; font-size: 14px;">${duty.FirstHalfLength}</span>
-                        </div>`;
-
-                if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
-                    content += `<div style="margin-left: 16px; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
-                } else {
-                    content += `
-                        <div style="margin-left: 16px;">
-                            <div style="margin-bottom: 4px; display: flex; gap: 8px;">
-                                <span style="color: #888; min-width: 80px;">Run:</span>
-                                <span>${duty.FirstHalfRunNumber}</span>
-                            </div>
-                            <div style="margin-bottom: 4px; display: flex; gap: 8px;">
-                                <span style="color: #888; min-width: 80px;">Pick up:</span>
-                                <span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span>
-                            </div>
-                            <div style="margin-bottom: 4px; display: flex; gap: 8px;">
-                                <span style="color: #888; min-width: 80px;">Relieved:</span>
-                                <span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span>
-                            </div>
-                        </div>`;
-                }
-                content += `</div>`;
-
-                // Break Details
-                if (duty.FirstHalfEndTime && duty.SecondHalfStartTime) {
-                    content += `
-                        <div style="margin-bottom: 20px;">
-                            <div style="font-size: 16px; color: #1e88e5; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #424242;">
-                                Break Details
-                            </div>
-                            <div style="margin-left: 16px;">
-                                <div style="display: flex; gap: 8px;">
-                                    <span style="color: #888; min-width: 80px;">Duration:</span>
-                                    <span>${calculateBreakDetails(duty)}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                }
-
-                // Second Half
-                content += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="font-size: 16px; color: #1e88e5; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #424242; display: flex; justify-content: space-between;">
-                            <span>Second Half</span>
-                            <span style="color: #888; font-size: 14px;">${duty.SecondHalfLength}</span>
-                        </div>`;
-
-                if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
-                    content += `<div style="margin-left: 16px; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
-                } else {
-                    content += `
-                        <div style="margin-left: 16px;">
-                            <div style="margin-bottom: 4px; display: flex; gap: 8px;">
-                                <span style="color: #888; min-width: 80px;">Run:</span>
-                                <span>${duty.SecondHalfRunNumber}</span>
-                            </div>
-                            <div style="margin-bottom: 4px; display: flex; gap: 8px;">
-                                <span style="color: #888; min-width: 80px;">Pick up:</span>
-                                <span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span>
-                            </div>
-                            <div style="margin-bottom: 4px; display: flex; gap: 8px;">
-                                <span style="color: #888; min-width: 80px;">Relieved:</span>
-                                <span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span>
-                            </div>
-                        </div>`;
-                }
-                content += `</div>`;
-            }
-
-            content += `
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; gap: 8px;">
-                        <span style="color: #888; min-width: 80px;">Book off:</span>
-                        <span>${endTime}${endLocation ? ` at ${endLocation}` : ''}</span>
-                    </div>
-                </div>
-            `;
-
-            content += `</div>`;
-            return content;
-        }
 
         function calculateBreakDetails(duty) {
             if (!duty.FirstHalfEndTime || !duty.SecondHalfStartTime) return "N/A";
@@ -2666,36 +2087,6 @@
         
         // Initialize particles and add event handlers
         createParticles();
-        
-        // Add event handlers for closing modals when clicking outside
-        document.addEventListener('click', function(event) {
-            const calendarOverlay = document.getElementById('calendarOverlay');
-            const dutyDetailModal = document.getElementById('dutyDetailModal');
-            
-            // Close calendar if clicking outside calendar content
-            if (calendarOverlay && event.target === calendarOverlay) {
-                closeCalendar();
-            }
-            
-            // Close duty detail if clicking outside duty detail content
-            if (dutyDetailModal && event.target === dutyDetailModal) {
-                closeDutyDetail();
-            }
-        });
-        
-        // Add ESC key handler for closing modals
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const calendarOverlay = document.getElementById('calendarOverlay');
-                const dutyDetailModal = document.getElementById('dutyDetailModal');
-                
-                if (dutyDetailModal && dutyDetailModal.style.display === 'block') {
-                    closeDutyDetail();
-                } else if (calendarOverlay && calendarOverlay.style.display === 'block') {
-                    closeCalendar();
-                }
-            }
-        });
         
         // Load timetable on page load (public file)
         fetchAndProcessTimetable()
