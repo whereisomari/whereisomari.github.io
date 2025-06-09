@@ -1375,6 +1375,7 @@
         let runTransitions = {};
         let updateInterval = null;
         let previousStatus = { main: null, details: null };
+        let currentTimetableName = 'N/A'; // <-- ADDED: To store the current timetable name
         
         // Global update buffer to prevent rapid-fire updates
         let updateBuffer = {
@@ -1423,7 +1424,8 @@
                     operatingDate: operatingDate,
                     timeStr,
                     dayOfWeek: currentTimeInTimezone.toLocaleDateString('en-US', { weekday: 'long' }),
-                    hour: currentTimeInTimezone.getHours()
+                    hour: currentTimeInTimezone.getHours(),
+                    timetable: currentTimetableName // <-- ADDED: Log the timetable name
                 });
                 updateStatusRealTime.lastLoggedMinute = minute;
             }
@@ -1625,7 +1627,8 @@
                 // 3. Determine the most applicable timetable
                 const sortedEntries = sortTimetablesByApplicability(timetableEntries);
                 const applicableTimetable = sortedEntries[0];
-                console.log(`[INFO] Using timetable: '${applicableTimetable.name}' from URL: ${applicableTimetable.url}`);
+                currentTimetableName = applicableTimetable.name; // <-- MODIFIED: Store the timetable name
+                console.log(`[INFO] Using timetable: '${currentTimetableName}' from URL: ${applicableTimetable.url}`);
 
                 // 4. Fetch the applicable timetable CSV
                 const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
