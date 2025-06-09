@@ -1637,10 +1637,10 @@
         function getLocationName(locationCode) {
             // Handle depot codes first
             if (locationCode === 'POD') {
-                return 'Poplar depot';
+                return 'Poplar Depot';
             }
             if (locationCode === 'BED') {
-                return 'Beckton depot';
+                return 'Beckton Depot';
             }
             
             const stationCode = locationCode.substring(0, 3);
@@ -1649,8 +1649,8 @@
         }
         
         function getDepotName(locationCode) {
-            if (locationCode === 'POD') return 'Poplar depot';
-            if (locationCode === 'BED') return 'Beckton depot';
+            if (locationCode === 'POD') return 'Poplar Depot';
+            if (locationCode === 'BED') return 'Beckton Depot';
             return locationCode;
         }
         
@@ -1798,97 +1798,142 @@
             return null;
         }
         
-        function getRunStatus(runInfo, currentTimeSeconds, timeStr) {
-            // SIMPLE RULE: Don't start position updates until 1 minute after pickup time
-            const dutyStartTimeSeconds = parseTime(runInfo.startTime);
-            const oneMinuteAfterStart = dutyStartTimeSeconds + 60;
-            
-            if (currentTimeSeconds < oneMinuteAfterStart) {
-                // We're still in the "pickup period" - show simple departing status
-                const startLocationName = getLocationName(runInfo.startLocation);
-                
-                // Handle run transitions to get the right run number
-                let actualRunNumber = runInfo.firstRun;
-                let displayRunNumber = runInfo.runNumber;
-                
-                if (runInfo.secondRun && runInfo.transitionTime && currentTimeSeconds > runInfo.transitionTime) {
-                    actualRunNumber = runInfo.secondRun;
-                    displayRunNumber = actualRunNumber;
-                }
-                
-                // Get simple destination
-                let destination;
-                if (parsedCsvData[actualRunNumber]) {
-                    const lastStop = parsedCsvData[actualRunNumber][parsedCsvData[actualRunNumber].length - 1];
-                    destination = lastStop.location;
-                } else {
-                    destination = getLocationName(runInfo.endLocation);
-                }
-                
-                return {
-                    main: `departing ${startLocationName}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            }
-            
-            // Handle run transitions
-            let actualRunNumber = runInfo.firstRun;
-            let displayRunNumber = runInfo.runNumber;
-            
-            if (runInfo.secondRun && runInfo.transitionTime) {
-                // Check if we're in the transition gap
-                if (currentTimeSeconds > runInfo.transitionTime) {
-                    // We're after the first run ended, check if second run has started
-                    const secondRunStops = parsedCsvData[runInfo.secondRun];
-                    if (secondRunStops && secondRunStops.length > 0) {
-                        const secondRunStartTime = parseTime(secondRunStops[0].arrivalTime);
-                        
-                        if (currentTimeSeconds < secondRunStartTime) {
-                            // We're in the transition gap - between runs
-                            const firstRunStops = parsedCsvData[runInfo.firstRun];
-                            if (firstRunStops && firstRunStops.length > 0) {
-                                const lastStopFirstRun = firstRunStops[firstRunStops.length - 1];
-                                const firstStopSecondRun = secondRunStops[0];
-                                
-                                return {
-                                    main: `between ${lastStopFirstRun.location} and ${firstStopSecondRun.location}`,
-                                    details: `Transitioning from Run ${runInfo.firstRun} to Run ${runInfo.secondRun}`
-                                };
-                            }
-                        } else {
-                            // Second run has started, use second run
-                            actualRunNumber = runInfo.secondRun;
-                        }
-                    }
-                }
-                // If we're still before transition time, continue using first run
-                displayRunNumber = actualRunNumber; // Show the actual run number being used
-            }
-            
-            // Check for depot movements FIRST before checking CSV data
-            const startLocation = runInfo.startLocation;
-            const endLocation = runInfo.endLocation;
-            
-			if (['POD', 'BED'].includes(startLocation) || ['POD', 'BED'].includes(endLocation)) {
-				if (['POD', 'BED'].includes(startLocation)) {
-					// Empty stock leaving depot
-					const depot = getDepotName(startLocation);
-					let dutyStartTime = runInfo.startTime.substring(0, 5);
-					
-					// Convert 25:55 format to 01:55 for display  
-					if (dutyStartTime.startsWith('2') && parseInt(dutyStartTime.split(':')[0]) >= 24) {
-						const [hours, minutes] = dutyStartTime.split(':');
-						const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-						dutyStartTime = `${adjustedHours}:${minutes}`;
-					}
-					
-					const firstStation = getRunFirstStation(actualRunNumber);
-					
-					if (firstStation) {
-						const firstStationTimeSeconds = parseTime(firstStation.time);
+		function getRunStatus(runInfo, currentTimeSeconds, timeStr) {
+			// SIMPLE RULE: Don't start position updates until 1 minute after pickup time
+			const dutyStartTimeSeconds = parseTime(runInfo.startTime);
+			const oneMinuteAfterStart = dutyStartTimeSeconds + 60;
+			
+			if (currentTimeSeconds < oneMinuteAfterStart) {
+				// We're still in the "pickup period" - show simple departing status
+				const startLocationName = getLocationName(runInfo.startLocation);
+				
+				// Handle run transitions to get the right run number
+				let actualRunNumber = runInfo.firstRun;
+				let displayRunNumber = runInfo.runNumber;
+				
+				if (runInfo.secondRun && runInfo.transitionTime && currentTimeSeconds > runInfo.transitionTime) {
+					actualRunNumber = runInfo.secondRun;
+					displayRunNumber = actualRunNumber;
+				}
+				
+				// Get simple destination
+				let destination;
+				if (parsedCsvData[actualRunNumber]) {
+					const lastStop = parsedCsvData[actualRunNumber][parsedCsvData[actualRunNumber].length - 1];
+					destination = lastStop.location;
+				} else {
+					destination = getLocationName(runInfo.endLocation);
+				}
+				
+				return {
+					main: `departing ${startLocationName}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			}
+			
+			// Handle run transitions
+			let actualRunNumber = runInfo.firstRun;
+			let displayRunNumber = runInfo.runNumber;
+			
+			if (runInfo.secondRun && runInfo.transitionTime) {
+				// Check if we're in the transition gap
+				if (currentTimeSeconds > runInfo.transitionTime) {
+					// We're after the first run ended, check if second run has started
+					const secondRunStops = parsedCsvData[runInfo.secondRun];
+					if (secondRunStops && secondRunStops.length > 0) {
+						const secondRunStartTime = parseTime(secondRunStops[0].arrivalTime);
 						
-						if (currentTimeSeconds < firstStationTimeSeconds) {
-							// Still traveling to first station
+						if (currentTimeSeconds < secondRunStartTime) {
+							// We're in the transition gap - between runs
+							const firstRunStops = parsedCsvData[runInfo.firstRun];
+							if (firstRunStops && firstRunStops.length > 0) {
+								const lastStopFirstRun = firstRunStops[firstRunStops.length - 1];
+								const firstStopSecondRun = secondRunStops[0];
+								
+								return {
+									main: `between ${lastStopFirstRun.location} and ${firstStopSecondRun.location}`,
+									details: `Transitioning from Run ${runInfo.firstRun} to Run ${runInfo.secondRun}`
+								};
+							}
+						} else {
+							// Second run has started, use second run
+							actualRunNumber = runInfo.secondRun;
+						}
+					}
+				}
+				// If we're still before transition time, continue using first run
+				displayRunNumber = actualRunNumber; // Show the actual run number being used
+			}
+			
+			// Check if we have this run in our CSV data
+			if (!parsedCsvData[actualRunNumber]) {
+				// Regular operating service without timetable
+				const startStation = getLocationName(runInfo.startLocation);
+				const endStation = getLocationName(runInfo.endLocation);
+				
+				return {
+					main: `operating between ${startStation} and ${endStation}`,
+					details: `onboard Run ${displayRunNumber} - timetable not available`
+				};
+			}
+			
+			// Get the destination for this trip (not the entire run)
+			const destination = getCurrentTripDestination(actualRunNumber, currentTimeSeconds);
+			
+			// Find current position in the timetable
+			const currentPosition = findCurrentPosition(parsedCsvData[actualRunNumber], timeStr, currentTimeSeconds);
+			
+			if (currentPosition.type === 'at_station') {
+				let details = '';
+				if (currentPosition.details === 'departing soon') {
+					details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
+				} else if (currentPosition.details.includes('minute')) {
+					details = `onboard Run ${displayRunNumber} to ${destination} - ${currentPosition.details}`;
+				} else {
+					// This covers "departing now" which we're removing - treat as departing soon
+					details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
+				}
+				
+				return {
+					main: `at ${currentPosition.location}`,
+					details: details
+				};
+			} else if (currentPosition.type === 'departing_station') {
+				return {
+					main: `departing ${currentPosition.location}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			} else if (currentPosition.type === 'approaching_station') {
+				return {
+					main: `approaching ${currentPosition.to}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			} else if (currentPosition.type === 'between_stations') {
+				return {
+					main: `between ${currentPosition.from} and ${currentPosition.to}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			} else {
+				// Check for depot movements as fallback
+				const startLocation = runInfo.startLocation;
+				const endLocation = runInfo.endLocation;
+				
+				if (['POD', 'BED'].includes(startLocation) || ['POD', 'BED'].includes(endLocation)) {
+					if (['POD', 'BED'].includes(startLocation)) {
+						// Empty stock leaving depot
+						const depot = getDepotName(startLocation);
+						let dutyStartTime = runInfo.startTime.substring(0, 5);
+						
+						// Convert 25:55 format to 01:55 for display  
+						if (dutyStartTime.startsWith('2') && parseInt(dutyStartTime.split(':')[0]) >= 24) {
+							const [hours, minutes] = dutyStartTime.split(':');
+							const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+							dutyStartTime = `${adjustedHours}:${minutes}`;
+						}
+						
+						const firstStation = getRunFirstStation(actualRunNumber);
+						
+						if (firstStation) {
 							let firstStationTime = firstStation.time.substring(0, 5);
 							if (firstStationTime.startsWith('2') && parseInt(firstStationTime.split(':')[0]) >= 24) {
 								const [hours, minutes] = firstStationTime.split(':');
@@ -1900,126 +1945,75 @@
 								main: 'somewhere on the DLR',
 								details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber} when it reaches ${firstStation.location} at ${firstStationTime}`
 							};
+						} else {
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber}`
+							};
 						}
-						// If we're past the first station time, fall through to normal run tracking
 					} else {
-						return {
-							main: 'somewhere on the DLR',
-							details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber}`
-						};
-					}
-				} else {
-					// Empty stock returning to depot
-					const depot = getDepotName(endLocation);
-					let dutyEndTime = runInfo.endTime.substring(0, 5);
-					
-					// Convert 25:55 format to 01:55 for display
-					if (dutyEndTime.startsWith('2') && parseInt(dutyEndTime.split(':')[0]) >= 24) {
-						const [hours, minutes] = dutyEndTime.split(':');
-						const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-						dutyEndTime = `${adjustedHours}:${minutes}`;
-					}
-					
-					const lastStation = getRunLastStation(actualRunNumber);
-					
-					if (lastStation) {
-						let lastStationTime = lastStation.time.substring(0, 5);
-						// Convert last station time too if needed
-						if (lastStationTime.startsWith('2') && parseInt(lastStationTime.split(':')[0]) >= 24) {
-							const [hours, minutes] = lastStationTime.split(':');
+						// Empty stock returning to depot
+						const depot = getDepotName(endLocation);
+						let dutyEndTime = runInfo.endTime.substring(0, 5);
+						
+						// Convert 25:55 format to 01:55 for display
+						if (dutyEndTime.startsWith('2') && parseInt(dutyEndTime.split(':')[0]) >= 24) {
+							const [hours, minutes] = dutyEndTime.split(':');
 							const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-							lastStationTime = `${adjustedHours}:${minutes}`;
+							dutyEndTime = `${adjustedHours}:${minutes}`;
 						}
 						
-						return {
-							main: 'somewhere on the DLR',
-							details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber} which the timetable for ended when it reached ${lastStation.location} at ${lastStationTime}`
-						};
-					} else {
-						return {
-							main: 'somewhere on the DLR',
-							details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber}`
-						};
+						const lastStation = getRunLastStation(actualRunNumber);
+						
+						if (lastStation) {
+							let lastStationTime = lastStation.time.substring(0, 5);
+							// Convert last station time too if needed
+							if (lastStationTime.startsWith('2') && parseInt(lastStationTime.split(':')[0]) >= 24) {
+								const [hours, minutes] = lastStationTime.split(':');
+								const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+								lastStationTime = `${adjustedHours}:${minutes}`;
+							}
+							
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber} which the timetable for ended when it reached ${lastStation.location} at ${lastStationTime}`
+							};
+						} else {
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber}`
+							};
+						}
 					}
 				}
+				
+				// Fallback to simple calculation
+				const startStation = getLocationName(runInfo.startLocation);
+				const endStation = getLocationName(runInfo.endLocation);
+				const runStartTimeSeconds = parseTime(runInfo.startTime);
+				const runEndTimeSeconds = parseTime(runInfo.endTime);
+				const elapsed = currentTimeSeconds - runStartTimeSeconds;
+				const duration = runEndTimeSeconds - runStartTimeSeconds;
+				const progress = elapsed / duration;
+				
+				if (progress < 0.3) {
+					return {
+						main: `departing ${startStation}`,
+						details: `onboard Run ${displayRunNumber} to ${destination}`
+					};
+				} else if (progress > 0.8) {
+					return {
+						main: `approaching ${endStation}`,
+						details: `onboard Run ${displayRunNumber} to ${destination}`
+					};
+				} else {
+					return {
+						main: `between ${startStation} and ${endStation}`,
+						details: `onboard Run ${displayRunNumber} to ${destination}`
+					};
+				}
 			}
-            
-            // Check if we have this run in our CSV data
-            if (!parsedCsvData[actualRunNumber]) {
-                // Regular operating service without timetable
-                const startStation = getLocationName(runInfo.startLocation);
-                const endStation = getLocationName(runInfo.endLocation);
-                
-                return {
-                    main: `operating between ${startStation} and ${endStation}`,
-                    details: `onboard Run ${displayRunNumber} - timetable not available`
-                };
-            }
-            
-            // Get the destination for this trip (not the entire run)
-            const destination = getCurrentTripDestination(actualRunNumber, currentTimeSeconds);
-            
-            // Find current position in the timetable
-            const currentPosition = findCurrentPosition(parsedCsvData[actualRunNumber], timeStr, currentTimeSeconds);
-            
-            if (currentPosition.type === 'at_station') {
-                let details = '';
-                if (currentPosition.details === 'departing soon') {
-                    details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
-                } else if (currentPosition.details.includes('minute')) {
-                    details = `onboard Run ${displayRunNumber} to ${destination} - ${currentPosition.details}`;
-                } else {
-                    // This covers "departing now" which we're removing - treat as departing soon
-                    details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
-                }
-                
-                return {
-                    main: `at ${currentPosition.location}`,
-                    details: details
-                };
-            } else if (currentPosition.type === 'departing_station') {
-                return {
-                    main: `departing ${currentPosition.location}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            } else if (currentPosition.type === 'approaching_station') {
-                return {
-                    main: `approaching ${currentPosition.to}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            } else if (currentPosition.type === 'between_stations') {
-                return {
-                    main: `between ${currentPosition.from} and ${currentPosition.to}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            } else {
-                // Fallback to simple calculation
-                const startStation = getLocationName(runInfo.startLocation);
-                const endStation = getLocationName(runInfo.endLocation);
-                const runStartTimeSeconds = parseTime(runInfo.startTime);
-                const runEndTimeSeconds = parseTime(runInfo.endTime);
-                const elapsed = currentTimeSeconds - runStartTimeSeconds;
-                const duration = runEndTimeSeconds - runStartTimeSeconds;
-                const progress = elapsed / duration;
-                
-                if (progress < 0.3) {
-                    return {
-                        main: `departing ${startStation}`,
-                        details: `onboard Run ${displayRunNumber} to ${destination}`
-                    };
-                } else if (progress > 0.8) {
-                    return {
-                        main: `approaching ${endStation}`,
-                        details: `onboard Run ${displayRunNumber} to ${destination}`
-                    };
-                } else {
-                    return {
-                        main: `between ${startStation} and ${endStation}`,
-                        details: `onboard Run ${displayRunNumber} to ${destination}`
-                    };
-                }
-            }
-        }
+		}
         
         // Logs the raw CSV line for debugging
         function findCurrentPosition(runStops, currentTime, currentTimeSeconds) {
