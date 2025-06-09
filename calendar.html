@@ -644,7 +644,7 @@
     <div class="particle-mask"></div>
     
     <!-- Login Screen -->
-    <div class="login-splash-screen" id="loginSplashScreen">
+    <div class="login-splash-screen" id="loginSplashScreen" style="display: none;">
         <div class="login-content">
             <div id="loginForm">
                 <input type="password" id="passwordInput" class="login-input" placeholder="Password">
@@ -663,7 +663,7 @@
     </div>
 
     <!-- Main content -->
-    <div class="container" id="mainContainer">
+    <div class="container" id="mainContainer" style="display: none;">
         <div class="header">
             <a href="/" class="nav-link">View Realtime</a>
             <h1 class="page-title">
@@ -1827,29 +1827,18 @@
                                 console.error("Persistence error:", error);
                             });
                         
-                        firebase.auth().onAuthStateChanged((user) => {
-                            if (user) {
-                                console.log('User is signed in:', user.email);
-                                initializeApp();
-                            } else {
-                                console.log('User is signed out.');
-                                loginSplashScreen.style.display = 'flex';
-                                loginSplashScreen.style.opacity = '1';
-                                mainContainer.style.display = 'none';
-                                loginButton.disabled = false;
-                                
-                                const loadingOverlay = document.getElementById('loadingOverlay');
-                                const textOverlay = document.getElementById('textOverlay');
-                                if (loadingOverlay) {
-                                    loadingOverlay.style.display = 'flex';
-                                    loadingOverlay.style.opacity = '1';
-                                }
-                                if (textOverlay) {
-                                    textOverlay.style.display = 'block';
-                                    textOverlay.style.opacity = '1';
-                                }
-                            }
-                        });
+						firebase.auth().onAuthStateChanged((user) => {
+							if (user) {
+								console.log('User is signed in:', user.email);
+								initializeApp();
+							} else {
+								console.log('User is signed out.');
+								loginSplashScreen.style.display = 'flex';
+								loginSplashScreen.style.opacity = '1';
+								mainContainer.style.display = 'none';
+								loginButton.disabled = false;
+							}
+						});
                         
                     });
                 });
