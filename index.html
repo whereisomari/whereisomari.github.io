@@ -1657,7 +1657,7 @@
         
         // --- END OF TIMETABLE LOGIC ---
 
-        // *** MODIFIED ***: Now stores the raw CSV line for debugging
+        // Stores the raw CSV line for debugging
         function parseCSVData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const runData = {};
@@ -1967,6 +1967,7 @@
 			}
 		}
         
+        // *** MODIFIED ***: Correctly adjusts current time for comparison with timetable
         function calculateCurrentStatus(operatingDate, time, currentDateTime) {
             // Parse duty data for the given operating date
             const lines = dutyData.split('\n');
@@ -1979,7 +1980,6 @@
                     foundDate = true;
                     const category = lines[i + 1]?.trim();
                     
-                    // For off-duty categories, there are no subsequent duty lines
                     if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
                         currentDateData = {
                             category: category,
@@ -1987,8 +1987,6 @@
                             secondHalf: ''
                         };
                     } else {
-                        // BUG FIX: Corrected indices to account for duty number line
-                        // For working days, read the duty details
                         currentDateData = {
                             category: category,
                             firstHalf: lines[i + 3]?.trim() || '',
@@ -2006,7 +2004,6 @@
                 };
             }
             
-            // Handle different duty categories - use "not on the DLR right now" for all off-duty states
             if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(currentDateData.category)) {
                 const nextDuty = findNextDuty(operatingDate, time, currentDateTime);
                 if (nextDuty) {
@@ -2023,17 +2020,29 @@
                 }
             }
             
-            // Handle SPARE duties
             if (currentDateData.firstHalf === 'SPARE' && currentDateData.secondHalf === 'SPARE') {
                 return {
                     main: 'somewhere on the DLR',
                     details: 'On a Spare duty'
                 };
             }
-            
-            // Parse run information and get current status
-            const currentTimeSeconds = parseTime(time);
-            
+
+            // --- TIME ADJUSTMENT LOGIC ---
+            // If the current calendar day is after the operating day (e.g., 2 AM Monday for Sunday's duty),
+            // add 24 hours to the time so it can be correctly compared with timetable times like "26:30:00".
+            let adjustedTime = time;
+            const operatingDateStr = operatingDate; // e.g., "2025-06-08"
+            const currentDateStr = currentDateTime.toISOString().split('T')[0]; // e.g., "2025-06-09"
+
+            if (currentDateStr > operatingDateStr) {
+                 const [hours, minutes, seconds] = time.split(':').map(Number);
+                 const adjustedHours = hours + 24;
+                 adjustedTime = `${adjustedHours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            const currentTimeSeconds = parseTime(adjustedTime);
+            // --- END TIME ADJUSTMENT ---
+
             // Check first half
             if (currentDateData.firstHalf && currentDateData.firstHalf !== 'SPARE') {
                 const firstHalf = parseRunInfo(currentDateData.firstHalf);
@@ -2491,7 +2500,7 @@
             }
         }
         
-        // *** MODIFIED ***: Now logs the raw CSV line for debugging
+        // Logs the raw CSV line for debugging
         function findCurrentPosition(runStops, currentTime, currentTimeSeconds) {
             
             // Find the current position in the timetable
