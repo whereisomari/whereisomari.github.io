@@ -1975,11 +1975,12 @@
                             secondHalf: ''
                         };
                     } else {
+                        // BUG FIX: Corrected indices to account for duty number line
                         // For working days, read the duty details
                         currentDateData = {
                             category: category,
-                            firstHalf: lines[i + 2]?.trim() || '',
-                            secondHalf: lines[i + 3]?.trim() || ''
+                            firstHalf: lines[i + 3]?.trim() || '',
+                            secondHalf: lines[i + 4]?.trim() || ''
                         };
                     }
                     break;
