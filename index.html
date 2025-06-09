@@ -429,211 +429,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Modal styles from calendar.html */
-        .duty-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.5s ease, visibility 0s linear 0.5s;
-        }
-
-        .duty-modal.is-visible {
-            visibility: visible;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-
-        .duty-modal-content {
-            background: #1a1a1a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 80vh;
-            overflow: hidden;
-            position: relative;
-            min-width: 0;
-        }
-
-        .modal-opening .duty-modal-content {
-            animation: zoomIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-        }
-
-        .modal-closing .duty-modal-content {
-            animation: zoomOut 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
-        }
-
-        @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes zoomOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-        }
-
-        .duty-modal-body {
-            height: calc(80vh - 65px);
-            overflow: hidden;
-        }
-
-        .slide-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .slide-pane {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .slide-pane.timetable {
-            padding: 0;
-        }
-
-        .slide-pane.is-center {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .slide-pane.is-left {
-            transform: translateX(-100%);
-            opacity: 0;
-        }
-
-        .slide-pane.is-right {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-
-        .duty-modal-header {
-            background: linear-gradient(90deg, #8A2BE2, #4B0082);
-            color: white;
-            padding: 0.8rem 1.2rem;
-            font-size: 1.2rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 20;
-            border-radius: 15px 15px 0 0;
-            min-height: 65px;
-            box-sizing: border-box;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            min-height: 40px;
-        }
-
-        .close-modal svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .section {
-            margin-bottom: 1.5rem;
-        }
-
-        .section-header {
-            font-size: 1rem;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .section-item {
-            margin-bottom: 0.5rem;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .section-label {
-            color: #888;
-            min-width: 80px;
-        }
-
-        .timetable-sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 15;
-            background: #1a1a1a;
-        }
-
-        .timetable-sticky-header th {
-            border: none;
-        }
-
-        /* Clickable run number styling */
-        .clickable-run {
-            color: #667eea;
-            cursor: pointer;
-            text-decoration: underline;
-            text-decoration-color: rgba(102, 126, 234, 0.5);
-            transition: all 0.2s ease;
-        }
-
-        .clickable-run:hover {
-            color: #8a9ff7;
-            text-decoration-color: #8a9ff7;
-        }
-
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .login-content {
-                padding: 30px 20px;
-            }
-
             .calendar-content {
                 margin: 0;
                 border-radius: 0;
@@ -650,48 +446,6 @@
                 width: 45px;
                 height: 45px;
                 font-size: 18px;
-            }
-
-            .duty-modal {
-                padding: 1rem;
-            }
-            
-            .duty-modal-content {
-                margin: 0 auto;
-                max-width: calc(100vw - 2rem);
-            }
-            
-            .duty-modal-header {
-                padding: 0.5rem 1rem;
-                font-size: 1.1rem;
-                min-height: 50px;
-            }
-            
-            .duty-modal-body {
-                height: calc(80vh - 50px);
-            }
-            
-            .close-modal {
-                min-height: 40px;
-                padding: 4px 8px;
-            }
-            
-            .slide-pane {
-                padding: 1rem;
-            }
-            
-            .slide-pane.timetable {
-                padding: 0;
-            }
-            
-            .duty-modal-content table {
-                font-size: 12px;
-            }
-            
-            .duty-modal-content td {
-                padding: 8px 6px !important;
-                height: 48px !important;
-                vertical-align: middle !important;
             }
         }
         
@@ -785,6 +539,17 @@
                 opacity: 1;
             }
         }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .login-content {
+                padding: 30px 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -826,19 +591,6 @@
         
         <div class="status-details" id="statusDetails"></div>
         
-    </div>
-
-    <!-- Duty Detail Modal -->
-    <div class="duty-modal" id="dutyModal">
-        <div class="duty-modal-content">
-            <div class="duty-modal-header">
-                <span id="modalTitle">Duty Details</span>
-                <button class="close-modal" onclick="closeDutyModal()"></button>
-            </div>
-            <div class="duty-modal-body" id="modalBody">
-                <!-- Slide panes will be populated here -->
-            </div>
-        </div>
     </div>
 
     <script>
@@ -1012,80 +764,83 @@
         
         // Main function to initialize app after login
         function initializeApp() {
-            console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
-            
-            loginSplashScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginSplashScreen.style.display = 'none';
-            }, 500);
+			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
+			
+			// Hide login screen immediately
+			loginSplashScreen.style.opacity = '0';
+			setTimeout(() => {
+				loginSplashScreen.style.display = 'none';
+			}, 500);
 
-            mainContainer.style.display = 'flex';
-            
-            // Load all required data
-            Promise.all([
-                fetchDutyTracker(),
-                fetchDutyLookupData(),
-                initializeTimetablePaths()
-            ])
-            .then(() => {
-                console.log('All data loaded successfully');
-                
-                setTimeout(() => {
-                    const loadingOverlay = document.getElementById('loadingOverlay');
-                    if (loadingOverlay) {
-                        loadingOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                }, 3200);
-                
-                setTimeout(() => {
-                    const textOverlay = document.getElementById('textOverlay');
-                    if (textOverlay) {
-                        textOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            textOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                }, 4000);
-                
-                startRealTimeUpdates();
-            })
-            .catch(error => {
-                console.error("Data loading failed:", error);
-                
-                setTimeout(() => {
-                    const loadingOverlay = document.getElementById('loadingOverlay');
-                    if (loadingOverlay) {
-                        loadingOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                }, 3200);
-                
-                setTimeout(() => {
-                    const textOverlay = document.getElementById('textOverlay');
-                    if (textOverlay) {
-                        textOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            textOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                    
-                    const statusMain = document.getElementById('statusMain');
-                    const statusDetails = document.getElementById('statusDetails');
-                    
-                    if (statusMain) {
-                        statusMain.textContent = 'Error loading duty data';
-                    }
-                    if (statusDetails) {
-                        statusDetails.textContent = error.message;
-                    }
-                }, 4000);
-            });
-        }
+			// Show main container immediately
+			mainContainer.style.display = 'flex';
+			
+			// Load duty tracker and start updates
+			fetchDutyTracker()
+				.then(() => {
+					console.log('Duty tracker loaded successfully');
+					
+					// Wait 3.2 seconds, then start fading circle so it finishes right before text overlay starts
+					setTimeout(() => {
+						const loadingOverlay = document.getElementById('loadingOverlay');
+						if (loadingOverlay) {
+							loadingOverlay.style.opacity = '0';
+							setTimeout(() => {
+								loadingOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 3200);
+					
+					// Wait 4 seconds (circle finishes fading), then fade out text overlay
+					setTimeout(() => {
+						const textOverlay = document.getElementById('textOverlay');
+						if (textOverlay) {
+							textOverlay.style.opacity = '0';
+							setTimeout(() => {
+								textOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 4000);
+					
+					// Start the real-time updates
+					startRealTimeUpdates();
+				})
+				.catch(error => {
+					console.error("Duty tracker loading failed:", error);
+					
+					// Hide overlays even on error with same timing
+					setTimeout(() => {
+						const loadingOverlay = document.getElementById('loadingOverlay');
+						if (loadingOverlay) {
+							loadingOverlay.style.opacity = '0';
+							setTimeout(() => {
+								loadingOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 3200);
+					
+					setTimeout(() => {
+						const textOverlay = document.getElementById('textOverlay');
+						if (textOverlay) {
+							textOverlay.style.opacity = '0';
+							setTimeout(() => {
+								textOverlay.style.display = 'none';
+							}, 800);
+						}
+						
+						// Show error content
+						const statusMain = document.getElementById('statusMain');
+						const statusDetails = document.getElementById('statusDetails');
+						
+						if (statusMain) {
+							statusMain.textContent = 'Error loading duty data';
+						}
+						if (statusDetails) {
+							statusDetails.textContent = error.message;
+						}
+					}, 4000);
+				});
+		}
         
         // Function to fetch duty tracker from Firebase
 		function fetchDutyTracker() {
@@ -1382,6 +1137,70 @@
             }
         }
 
+        function getDutyForDate(dutyNumber, dateStr) {
+            const versions = [];
+            const [year, month, day] = dateStr.split('-');
+            const date = new Date(year, month - 1, day);
+
+            // Check single day temp
+            const dateKey = `${year}-${month}-${day}`;
+            if (calendarDutyData.singleTemp[dateKey]) {
+                const tempDuty = Object.entries(calendarDutyData.singleTemp[dateKey].duties)
+                    .find(([key]) => key.startsWith(dutyNumber + '-'));
+                if (tempDuty) {
+                    versions.push({
+                        type: 'temp',
+                        date: dateStr,
+                        duty: tempDuty[1],
+                        dutyId: tempDuty[0],
+                        filename: calendarDutyData.singleTemp[dateKey].filename
+                    });
+                }
+            }
+
+            // Check range temp
+            const rangeTempMatch = calendarDutyData.rangeTemp.find(range => 
+                date >= range.startDate && date <= range.endDate);
+            if (rangeTempMatch) {
+                const tempDuty = Object.entries(rangeTempMatch.duties)
+                    .find(([key]) => key.startsWith(dutyNumber + '-'));
+                if (tempDuty) {
+                    versions.push({
+                        type: 'temp',
+                        dateRange: {
+                            start: rangeTempMatch.startDate.toISOString().split('T')[0],
+                            end: rangeTempMatch.endDate.toISOString().split('T')[0]
+                        },
+                        duty: tempDuty[1],
+                        dutyId: tempDuty[0],
+                        filename: rangeTempMatch.filename
+                    });
+                }
+            }
+
+            // Check base duties
+            const baseDate = Object.keys(calendarDutyData.base)
+                .map(Number)
+                .filter(time => new Date(time) <= date)
+                .sort((a, b) => b - a)[0];
+
+            if (baseDate) {
+                const baseDutyId = Object.keys(calendarDutyData.base[baseDate].duties)
+                    .find(key => key.startsWith(dutyNumber + '-'));
+                if (baseDutyId) {
+                    versions.push({
+                        type: 'base',
+                        date: new Date(baseDate).toISOString().split('T')[0],
+                        duty: calendarDutyData.base[baseDate].duties[baseDutyId],
+                        dutyId: baseDutyId,
+                        filename: calendarDutyData.base[baseDate].filename
+                    });
+                }
+            }
+
+            return versions;
+        }
+
         function formatDutyDetailsForCalendar(duty, dutyId, versionInfo, date) {
             const [number, location, endLocation, startTime, endTime] = dutyId.split('-');
             const dutyDate = new Date(date);
@@ -1558,22 +1377,6 @@
         let previousStatus = { main: null, details: null };
         let currentTimetableName = 'N/A';
         
-        // Modal and duty lookup data
-        let dutyLookupData = {
-            base: {},
-            singleTemp: {},
-            rangeTemp: []
-        };
-        let timetablePaths = {};
-        let currentModalView = 'duty';
-        let currentDutyData = null;
-        let currentDutyDate = null;
-        let currentTimetableData = null;
-
-        // SVG Icons
-        const closeIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-        const backIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`;
-        
         // Global update buffer to prevent rapid-fire updates
         let updateBuffer = {
             timer: null,
@@ -1742,8 +1545,7 @@
             'ROV': 'Royal Victoria', 'SHA': 'Shadwell', 'SOQ': 'South Quay', 'STL': 'Star Lane',
             'SHS': 'Stratford High Street', 'STI': 'Stratford International', 'STR': 'Stratford',
             'TOG': 'Tower Gateway', 'WEH': 'West Ham', 'WIQ': 'West India Quay', 'WST': 'West Silvertown',
-            'WES': 'Westferry', 'WOA': 'Woolwich Arsenal',
-            'POD': 'Poplar Depot', 'BED': 'Beckton Depot'
+            'WES': 'Westferry', 'WOA': 'Woolwich Arsenal'
         };
         
         // --- TIMETABLE FETCHING LOGIC ---
@@ -2476,20 +2278,15 @@
         }
         
         function getRunStatus(runInfo, currentTimeSeconds, timeStr) {
-            // Get operating date for duty lookup
-            const operatingDate = getOperatingDate();
-            
-            // Try to get duty information for base/temp duty detection
-            const versions = getDutyForDate(runInfo.runNumber.replace('>', ''), operatingDate);
-            const isBaseDuty = versions.length > 0 && isDutyBaseType(versions[0]);
-            
             // SIMPLE RULE: Don't start position updates until 1 minute after pickup time
             const dutyStartTimeSeconds = parseTime(runInfo.startTime);
             const oneMinuteAfterStart = dutyStartTimeSeconds + 60;
             
             if (currentTimeSeconds < oneMinuteAfterStart) {
+                // We're still in the "pickup period" - show simple departing status
                 const startLocationName = getLocationName(runInfo.startLocation);
                 
+                // Handle run transitions to get the right run number
                 let actualRunNumber = runInfo.firstRun;
                 let displayRunNumber = runInfo.runNumber;
                 
@@ -2498,8 +2295,9 @@
                     displayRunNumber = actualRunNumber;
                 }
                 
+                // Get simple destination
                 let destination;
-                if (isBaseDuty && parsedCsvData[actualRunNumber]) {
+                if (parsedCsvData[actualRunNumber]) {
                     const lastStop = parsedCsvData[actualRunNumber][parsedCsvData[actualRunNumber].length - 1];
                     destination = lastStop.location;
                 } else {
@@ -2517,12 +2315,15 @@
             let displayRunNumber = runInfo.runNumber;
             
             if (runInfo.secondRun && runInfo.transitionTime) {
+                // Check if we're in the transition gap
                 if (currentTimeSeconds > runInfo.transitionTime) {
+                    // We're after the first run ended, check if second run has started
                     const secondRunStops = parsedCsvData[runInfo.secondRun];
                     if (secondRunStops && secondRunStops.length > 0) {
                         const secondRunStartTime = parseTime(secondRunStops[0].arrivalTime);
                         
                         if (currentTimeSeconds < secondRunStartTime) {
+                            // We're in the transition gap - between runs
                             const firstRunStops = parsedCsvData[runInfo.firstRun];
                             if (firstRunStops && firstRunStops.length > 0) {
                                 const lastStopFirstRun = firstRunStops[firstRunStops.length - 1];
@@ -2534,112 +2335,110 @@
                                 };
                             }
                         } else {
+                            // Second run has started, use second run
                             actualRunNumber = runInfo.secondRun;
                         }
                     }
                 }
-                displayRunNumber = actualRunNumber;
+                // If we're still before transition time, continue using first run
+                displayRunNumber = actualRunNumber; // Show the actual run number being used
             }
             
-            // Check for depot movements FIRST
+            // Check for depot movements FIRST before checking CSV data
             const startLocation = runInfo.startLocation;
             const endLocation = runInfo.endLocation;
             
-            if (['POD', 'BED'].includes(startLocation) || ['POD', 'BED'].includes(endLocation)) {
-                if (['POD', 'BED'].includes(startLocation)) {
-                    const depot = getDepotName(startLocation);
-                    let dutyStartTime = runInfo.startTime.substring(0, 5);
-                    
-                    if (dutyStartTime.startsWith('2') && parseInt(dutyStartTime.split(':')[0]) >= 24) {
-                        const [hours, minutes] = dutyStartTime.split(':');
-                        const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                        dutyStartTime = `${adjustedHours}:${minutes}`;
-                    }
-                    
-                    if (isBaseDuty) {
-                        const firstStation = getRunFirstStation(actualRunNumber);
-                        
-                        if (firstStation) {
-                            const firstStationTimeSeconds = parseTime(firstStation.time);
-                            
-                            if (currentTimeSeconds < firstStationTimeSeconds) {
-                                let firstStationTime = firstStation.time.substring(0, 5);
-                                if (firstStationTime.startsWith('2') && parseInt(firstStationTime.split(':')[0]) >= 24) {
-                                    const [hours, minutes] = firstStationTime.split(':');
-                                    const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                                    firstStationTime = `${adjustedHours}:${minutes}`;
-                                }
-                                
-                                return {
-                                    main: 'somewhere on the DLR',
-                                    details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber} when it reaches ${firstStation.location} at ${firstStationTime}`
-                                };
-                            }
-                        } else {
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber}`
-                            };
-                        }
-                    } else {
-                        // Non-base duty fallback
-                        return {
-                            main: 'somewhere on the DLR',
-                            details: `onboard Run ${displayRunNumber} which picked up from ${getLocationName(runInfo.startLocation)} at ${runInfo.startTime.substring(0, 5)} and is relieved at ${getLocationName(runInfo.endLocation)} at ${runInfo.endTime.substring(0, 5)}`
-                        };
-                    }
-                } else {
-                    const depot = getDepotName(endLocation);
-                    let dutyEndTime = runInfo.endTime.substring(0, 5);
-                    
-                    if (dutyEndTime.startsWith('2') && parseInt(dutyEndTime.split(':')[0]) >= 24) {
-                        const [hours, minutes] = dutyEndTime.split(':');
-                        const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                        dutyEndTime = `${adjustedHours}:${minutes}`;
-                    }
-                    
-                    if (isBaseDuty) {
-                        const lastStation = getRunLastStation(actualRunNumber);
-                        
-                        if (lastStation) {
-                            let lastStationTime = lastStation.time.substring(0, 5);
-                            if (lastStationTime.startsWith('2') && parseInt(lastStationTime.split(':')[0]) >= 24) {
-                                const [hours, minutes] = lastStationTime.split(':');
-                                const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                                lastStationTime = `${adjustedHours}:${minutes}`;
-                            }
-                            
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber} which the timetable for ended when it reached ${lastStation.location} at ${lastStationTime}`
-                            };
-                        } else {
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber}`
-                            };
-                        }
-                    } else {
-                        // Non-base duty fallback
-                        return {
-                            main: 'somewhere on the DLR',
-                            details: `onboard Run ${displayRunNumber} which picked up from ${getLocationName(runInfo.startLocation)} at ${runInfo.startTime.substring(0, 5)} and is relieved at ${getLocationName(runInfo.endLocation)} at ${runInfo.endTime.substring(0, 5)}`
-                        };
-                    }
-                }
-            }
+			if (['POD', 'BED'].includes(startLocation) || ['POD', 'BED'].includes(endLocation)) {
+				if (['POD', 'BED'].includes(startLocation)) {
+					// Empty stock leaving depot
+					const depot = getDepotName(startLocation);
+					let dutyStartTime = runInfo.startTime.substring(0, 5);
+					
+					// Convert 25:55 format to 01:55 for display  
+					if (dutyStartTime.startsWith('2') && parseInt(dutyStartTime.split(':')[0]) >= 24) {
+						const [hours, minutes] = dutyStartTime.split(':');
+						const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+						dutyStartTime = `${adjustedHours}:${minutes}`;
+					}
+					
+					const firstStation = getRunFirstStation(actualRunNumber);
+					
+					if (firstStation) {
+						const firstStationTimeSeconds = parseTime(firstStation.time);
+						
+						if (currentTimeSeconds < firstStationTimeSeconds) {
+							// Still traveling to first station
+							let firstStationTime = firstStation.time.substring(0, 5);
+							if (firstStationTime.startsWith('2') && parseInt(firstStationTime.split(':')[0]) >= 24) {
+								const [hours, minutes] = firstStationTime.split(':');
+								const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+								firstStationTime = `${adjustedHours}:${minutes}`;
+							}
+							
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber} when it reaches ${firstStation.location} at ${firstStationTime}`
+							};
+						}
+						// If we're past the first station time, fall through to normal run tracking
+					} else {
+						return {
+							main: 'somewhere on the DLR',
+							details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber}`
+						};
+					}
+				} else {
+					// Empty stock returning to depot
+					const depot = getDepotName(endLocation);
+					let dutyEndTime = runInfo.endTime.substring(0, 5);
+					
+					// Convert 25:55 format to 01:55 for display
+					if (dutyEndTime.startsWith('2') && parseInt(dutyEndTime.split(':')[0]) >= 24) {
+						const [hours, minutes] = dutyEndTime.split(':');
+						const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+						dutyEndTime = `${adjustedHours}:${minutes}`;
+					}
+					
+					const lastStation = getRunLastStation(actualRunNumber);
+					
+					if (lastStation) {
+						let lastStationTime = lastStation.time.substring(0, 5);
+						// Convert last station time too if needed
+						if (lastStationTime.startsWith('2') && parseInt(lastStationTime.split(':')[0]) >= 24) {
+							const [hours, minutes] = lastStationTime.split(':');
+							const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+							lastStationTime = `${adjustedHours}:${minutes}`;
+						}
+						
+						return {
+							main: 'somewhere on the DLR',
+							details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber} which the timetable for ended when it reached ${lastStation.location} at ${lastStationTime}`
+						};
+					} else {
+						return {
+							main: 'somewhere on the DLR',
+							details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber}`
+						};
+					}
+				}
+			}
             
-            // Check if we have this run in our CSV data AND it's a base duty
-            if (!isBaseDuty || !parsedCsvData[actualRunNumber]) {
-                // Non-base duty or no timetable fallback
+            // Check if we have this run in our CSV data
+            if (!parsedCsvData[actualRunNumber]) {
+                // Regular operating service without timetable
+                const startStation = getLocationName(runInfo.startLocation);
+                const endStation = getLocationName(runInfo.endLocation);
+                
                 return {
-                    main: 'somewhere on the DLR',
-                    details: `onboard Run ${displayRunNumber} which picked up from ${getLocationName(runInfo.startLocation)} at ${runInfo.startTime.substring(0, 5)} and is relieved at ${getLocationName(runInfo.endLocation)} at ${runInfo.endTime.substring(0, 5)}`
+                    main: `operating between ${startStation} and ${endStation}`,
+                    details: `onboard Run ${displayRunNumber} - timetable not available`
                 };
             }
             
-            // Original timetable-based logic for base duties
+            // Get the destination for this trip (not the entire run)
             const destination = getCurrentTripDestination(actualRunNumber, currentTimeSeconds);
+            
+            // Find current position in the timetable
             const currentPosition = findCurrentPosition(parsedCsvData[actualRunNumber], timeStr, currentTimeSeconds);
             
             if (currentPosition.type === 'at_station') {
@@ -2649,6 +2448,7 @@
                 } else if (currentPosition.details.includes('minute')) {
                     details = `onboard Run ${displayRunNumber} to ${destination} - ${currentPosition.details}`;
                 } else {
+                    // This covers "departing now" which we're removing - treat as departing soon
                     details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
                 }
                 
@@ -2804,10 +2604,7 @@
 				// If not animating, just update text directly
 				if (!update.animate) {
 					statusMain.textContent = update.main;
-					// Make Run numbers clickable
-					const operatingDate = getOperatingDate();
-					const detailsWithClickableRuns = makeRunNumberClickable(update.details, operatingDate);
-					statusDetails.innerHTML = detailsWithClickableRuns;
+					statusDetails.textContent = update.details;
 					return;
 				}
 				
@@ -2845,10 +2642,7 @@
 					
 					// Change text and fade in after fade out completes
 					setTimeout(() => {
-						// Make Run numbers clickable
-						const operatingDate = getOperatingDate();
-						const detailsWithClickableRuns = makeRunNumberClickable(update.details, operatingDate);
-						statusDetails.innerHTML = detailsWithClickableRuns;
+						statusDetails.textContent = update.details;
 						statusDetails.classList.remove('details-fade-out');
 						
 						// Force reflow before applying fade in
@@ -2869,591 +2663,6 @@
 				updateBuffer.timer = null;
 			}, 3000);
 		}
-
-        // Fetch duty lookup data
-        function fetchDutyLookupData() {
-            return new Promise((resolve, reject) => {
-                const storageRef = firebase.storage().ref('duty-files');
-                
-                storageRef.listAll()
-                    .then((result) => {
-                        const promises = result.items.map(fileRef => {
-                            return fileRef.getDownloadURL()
-                                .then(url => fetch(url))
-                                .then(response => response.text())
-                                .then(content => {
-                                    const jsonMatch = content.match(/var\s+ExtractedDuties\s*=\s*(\{.*\});/s);
-                                    if (jsonMatch) {
-                                        const duties = JSON.parse(jsonMatch[1]);
-                                        processDutyFile(fileRef.name, duties);
-                                    }
-                                });
-                        });
-                        
-                        return Promise.all(promises);
-                    })
-                    .then(() => {
-                        console.log('Duty lookup data loaded');
-                        resolve();
-                    })
-                    .catch(error => {
-                        console.error('Error fetching duty lookup data:', error);
-                        reject(error);
-                    });
-            });
-        }
-
-        // Process duty file
-        function processDutyFile(filename, duties) {
-            const parts = filename.split('.')[0].split('-');
-            
-            if (filename.includes('-to-')) {
-                const [startYear, startMonth, startDay, , endYear, endMonth, endDay] = parts;
-                const startDate = new Date(startYear, startMonth - 1, startDay);
-                const endDate = new Date(endYear, endMonth - 1, endDay);
-                dutyLookupData.rangeTemp.push({
-                    startDate,
-                    endDate,
-                    duties,
-                    filename
-                });
-            } else if (filename.endsWith('-Base.json')) {
-                const [year, month, day] = parts;
-                const baseDate = new Date(year, month - 1, day);
-                dutyLookupData.base[baseDate.getTime()] = {
-                    duties,
-                    filename
-                };
-            } else if (filename.endsWith('-Temp.json')) {
-                const [year, month, day] = parts;
-                const dateKey = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                dutyLookupData.singleTemp[dateKey] = {
-                    duties,
-                    filename
-                };
-            }
-        }
-
-        // Get duty for date
-        function getDutyForDate(dutyNumber, dateStr) {
-            const versions = [];
-            const [year, month, day] = dateStr.split('-');
-            const date = new Date(year, month - 1, day);
-
-            // Check single day temp
-            const dateKey = `${year}-${month}-${day}`;
-            if (dutyLookupData.singleTemp[dateKey]) {
-                const tempDuty = Object.entries(dutyLookupData.singleTemp[dateKey].duties)
-                    .find(([key]) => key.startsWith(dutyNumber + '-'));
-                if (tempDuty) {
-                    versions.push({
-                        type: 'temp',
-                        date: dateStr,
-                        duty: tempDuty[1],
-                        dutyId: tempDuty[0],
-                        filename: dutyLookupData.singleTemp[dateKey].filename
-                    });
-                }
-            }
-
-            // Check range temp
-            const rangeTempMatch = dutyLookupData.rangeTemp.find(range => 
-                date >= range.startDate && date <= range.endDate);
-            if (rangeTempMatch) {
-                const tempDuty = Object.entries(rangeTempMatch.duties)
-                    .find(([key]) => key.startsWith(dutyNumber + '-'));
-                if (tempDuty) {
-                    versions.push({
-                        type: 'temp',
-                        dateRange: {
-                            start: rangeTempMatch.startDate.toISOString().split('T')[0],
-                            end: rangeTempMatch.endDate.toISOString().split('T')[0]
-                        },
-                        duty: tempDuty[1],
-                        dutyId: tempDuty[0],
-                        filename: rangeTempMatch.filename
-                    });
-                }
-            }
-
-            // Check base duties
-            const baseDate = Object.keys(dutyLookupData.base)
-                .map(Number)
-                .filter(time => new Date(time) <= date)
-                .sort((a, b) => b - a)[0];
-
-            if (baseDate) {
-                const baseDutyId = Object.keys(dutyLookupData.base[baseDate].duties)
-                    .find(key => key.startsWith(dutyNumber + '-'));
-                if (baseDutyId) {
-                    versions.push({
-                        type: 'base',
-                        date: new Date(baseDate).toISOString().split('T')[0],
-                        duty: dutyLookupData.base[baseDate].duties[baseDutyId],
-                        dutyId: baseDutyId,
-                        filename: dutyLookupData.base[baseDate].filename
-                    });
-                }
-            }
-
-            return versions;
-        }
-
-        // Initialize timetable paths
-        async function initializeTimetablePaths() {
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt', { cache: 'no-store' });
-                const text = await response.text();
-                
-                const lines = text.split('\n').filter(line => line.trim() !== '');
-                
-                let currentEntry = {};
-                const timetableEntries = [];
-                
-                for (const line of lines) {
-                    const trimmedLine = line.trim();
-                    if (trimmedLine.startsWith('Name:')) {
-                        if (Object.keys(currentEntry).length > 0) {
-                            timetableEntries.push({...currentEntry});
-                        }
-                        currentEntry = {
-                            name: trimmedLine.substring(5).trim()
-                        };
-                    } else if (trimmedLine.startsWith('Applies:')) {
-                        currentEntry.applies = trimmedLine.substring(8).trim();
-                    } else if (trimmedLine.startsWith('URL:')) {
-                        currentEntry.url = trimmedLine.substring(4).trim();
-                        const fileName = currentEntry.url.substring(currentEntry.url.lastIndexOf('/') + 1, currentEntry.url.lastIndexOf('.'));
-                        currentEntry.fileName = fileName.toLowerCase();
-                    }
-                }
-                
-                if (Object.keys(currentEntry).length > 0) {
-                    timetableEntries.push(currentEntry);
-                }
-
-                timetableEntries.forEach(entry => {
-                    timetablePaths[entry.fileName] = entry;
-                });
-                
-            } catch (error) {
-                console.error('Error fetching timetable paths:', error);
-            }
-        }
-
-        // Check if duty is base type
-        function isDutyBaseType(versionInfo) {
-            return versionInfo.type === 'base';
-        }
-
-        // Get applicable timetable for a date
-        function getApplicableTimetable(date) {
-            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            const dayName = date.toLocaleDateString('en-US', { 
-                weekday: 'long',
-                timeZone: 'Europe/London'
-            });
-            
-            for (const [fileName, timetableInfo] of Object.entries(timetablePaths)) {
-                const applies = timetableInfo.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
-                
-                for (const range of applies) {
-                    if (dayNames.includes(range) && range === dayName) {
-                        return timetableInfo;
-                    }
-                    
-                    if (range.includes('/')) {
-                        const [start, end] = range.split('/').map(d => {
-                            const newDate = new Date(d.trim());
-                            newDate.setHours(0, 0, 0, 0);
-                            return newDate;
-                        });
-                        const compareDate = new Date(date);
-                        compareDate.setHours(0, 0, 0, 0);
-                        if (compareDate >= start && compareDate <= end) {
-                            return timetableInfo;
-                        }
-                    } else if (!dayNames.includes(range)) {
-                        const rangeDate = new Date(range);
-                        rangeDate.setHours(0, 0, 0, 0);
-                        const compareDate = new Date(date);
-                        compareDate.setHours(0, 0, 0, 0);
-                        if (+compareDate === +rangeDate) {
-                            return timetableInfo;
-                        }
-                    }
-                }
-            }
-            
-            return null;
-        }
-
-        // Fetch and parse timetable data
-        async function fetchTimetableData(timetableInfo) {
-            try {
-                const response = await fetch(timetableInfo.url);
-                const csvText = await response.text();
-                
-                const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                const runData = {};
-
-                const junctions = [
-                    'JRMS', 'JRMX', 'JCAW', 'JWEM', 'JCRO', 'JC2M', 'JC3M',
-                    'JC4M', 'JROM', 'JWEX', 'JCTM', 'JCTX', 'JWIQ', 'JNQX',
-                    'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
-                ];
-
-                lines.forEach((line, index) => {
-                    const parts = line.split(',');
-                    if (parts.length >= 7) {
-                        const runNumber = parts[1].trim();
-                        const locationCode = parts[4].trim();
-                        const arrivalTime = parts[5].trim();
-                        const departureTime = parts[6].trim();
-
-                        if (!junctions.includes(locationCode)) {
-                            if (!runData[runNumber]) {
-                                runData[runNumber] = [];
-                            }
-
-                            let location = '';
-                            let platform = '';
-
-                            if (locationCode === 'BANH') {
-                                location = 'Bank Headshunt';
-                            } else {
-                                const codePrefix = locationCode.slice(0, 3);
-                                platform = locationCode.slice(3);
-
-                                if (locationMapping[codePrefix]) {
-                                    location = locationMapping[codePrefix];
-                                    if (['LEW', 'BEC', 'STI', 'WOA'].includes(codePrefix) || locationCode === 'STR4B') {
-                                        platform = '';
-                                    }
-                                } else {
-                                    location = locationCode;
-                                    platform = '';
-                                }
-                            }
-
-                            runData[runNumber].push({
-                                location,
-                                platform,
-                                arrivalTime,
-                                departureTime,
-                                locationCode
-                            });
-                        }
-                    }
-                });
-
-                return runData;
-            } catch (error) {
-                console.error('Error fetching timetable data:', error);
-                return null;
-            }
-        }
-
-        // Filter run data by time constraints
-        function filterRunByTime(runData, startTime, endTime) {
-            if (!runData || !startTime || !endTime) return runData;
-            
-            const parseTime = (timeStr) => {
-                const [hours, minutes, seconds] = timeStr.split(':').map(Number);
-                return hours * 3600 + minutes * 60 + (seconds || 0);
-            };
-            
-            const startSeconds = parseTime(startTime + ':00');
-            const endSeconds = parseTime(endTime + ':00');
-            
-            let lastIncludedIndex = -1;
-            for (let i = 0; i < runData.length; i++) {
-                const arrivalSeconds = parseTime(runData[i].arrivalTime);
-                if (arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds) {
-                    lastIncludedIndex = i;
-                }
-            }
-            
-            if (lastIncludedIndex >= 0) {
-                const endIndex = Math.min(lastIncludedIndex + 2, runData.length);
-                return runData.filter((stop, index) => {
-                    const arrivalSeconds = parseTime(stop.arrivalTime);
-                    return (arrivalSeconds >= startSeconds && index < endIndex);
-                });
-            }
-            
-            return runData.filter(stop => {
-                const arrivalSeconds = parseTime(stop.arrivalTime);
-                return arrivalSeconds >= startSeconds && arrivalSeconds <= endSeconds;
-            });
-        }
-
-        // Add depot stops to run data
-        function addDepotStops(runData, startLocation, endLocation, startTime, endTime) {
-            if (!runData) return [];
-            
-            const result = [...runData];
-            
-            if ((startLocation === 'POD' || startLocation === 'BED') && 
-                !result.some(stop => stop.locationCode && stop.locationCode.startsWith(startLocation))) {
-                result.unshift({
-                    location: locationMapping[startLocation],
-                    platform: '—',
-                    arrivalTime: '—',
-                    departureTime: startTime + ':00',
-                    locationCode: startLocation,
-                    isDepot: true
-                });
-            }
-            
-            if ((endLocation === 'POD' || endLocation === 'BED') && 
-                !result.some(stop => stop.locationCode && stop.locationCode.startsWith(endLocation))) {
-                result.push({
-                    location: locationMapping[endLocation],
-                    platform: '—',
-                    arrivalTime: endTime + ':00',
-                    departureTime: '—',
-                    locationCode: endLocation,
-                    isDepot: true
-                });
-            }
-            
-            return result;
-        }
-
-        // Show timetable view
-        async function showTimetableView(halfName, runNumber, startTime, endTime, startLocation, endLocation, dutyDate = currentDutyDate) {
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const closeBtn = document.querySelector('.close-modal');
-            const dutyPane = document.getElementById('duty-pane');
-            let timetablePane = document.getElementById('timetable-pane');
-
-            dutyPane.classList.remove('is-center');
-            dutyPane.classList.add('is-right');
-
-            modalTitle.textContent = `${halfName}: Run ${runNumber}`;
-            closeBtn.innerHTML = backIconSVG;
-            currentModalView = 'timetable';
-
-            if (!timetablePane) {
-                timetablePane = document.createElement('div');
-                timetablePane.id = 'timetable-pane';
-                timetablePane.className = 'slide-pane timetable is-left';
-                modalBody.querySelector('.slide-container').appendChild(timetablePane);
-            } else {
-                 timetablePane.className = 'slide-pane timetable is-left';
-            }
-            
-            timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #888;">Loading timetable...</div>`;
-            
-            try {
-                const applicableTimetable = getApplicableTimetable(dutyDate);
-                if (!applicableTimetable) throw new Error('No applicable timetable found for this date');
-
-                if (!currentTimetableData) currentTimetableData = await fetchTimetableData(applicableTimetable);
-
-                if (!currentTimetableData || !currentTimetableData[runNumber]) throw new Error('Run not found in timetable');
-
-                let runData = currentTimetableData[runNumber];
-                runData = filterRunByTime(runData, startTime, endTime);
-                runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
-
-                let timetableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
-                        <thead class="timetable-sticky-header">
-                            <tr>
-                                <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
-                                <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Departure</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                runData.forEach(stop => {
-                    const isDepot = stop.isDepot || stop.locationCode === 'POD' || stop.locationCode === 'BED';
-                    const rowStyle = isDepot ? 'background: rgba(30, 136, 229, 0.1);' : '';
-                    const nameColor = isDepot ? 'color: #1e88e5;' : 'color: #ffffff;';
-                    
-                    timetableHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 12px; font-weight: 500; font-size: 14px; ${nameColor} vertical-align: middle;">${stop.location}</td>
-                            <td style="padding: 12px; color: #888; font-size: 14px; text-align: center; vertical-align: middle;">${stop.platform}</td>
-                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.arrivalTime}</td>
-                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.departureTime}</td>
-                        </tr>
-                    `;
-                });
-
-                timetableHTML += `</tbody></table>`;
-                timetablePane.innerHTML = timetableHTML;
-                
-            } catch (error) {
-                console.error('Error loading timetable:', error);
-                timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #e53935;">${error.message}</div>`;
-            }
-
-            requestAnimationFrame(() => {
-                 timetablePane.classList.remove('is-left');
-                 timetablePane.classList.add('is-center');
-            });
-        }
-
-        // Show duty details modal
-        function showDutyDetails(versionInfo, dutyNumber) {
-            const modal = document.getElementById('dutyModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const closeBtn = document.querySelector('.close-modal');
-            
-            currentDutyData = versionInfo;
-            currentTimetableData = null; 
-            
-            const duty = versionInfo.duty;
-            const dutyId = versionInfo.dutyId;
-            const [number, location, endLocation, startTime, endTime] = dutyId.split('-');
-            
-            modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
-            closeBtn.innerHTML = closeIconSVG;
-            
-            const isBaseDuty = isDutyBaseType(versionInfo);
-            
-            let dutyContentHTML = `
-                <div class="section">
-                    <div class="section-item">
-                        <span class="section-label">Type:</span>
-                        <span>${duty.TypeOfDuty}</span>
-                    </div>
-                    <div class="section-item">
-                        <span class="section-label">Spread:</span>
-                        <span>${duty.Spreadtime}</span>
-                    </div>
-                    <div class="section-item">
-                        <span class="section-label">Paid:</span>
-                        <span>${duty.PaidTime}</span>
-                    </div>
-                    <div class="section-item">
-                        <span class="section-label">Book on:</span>
-                        <span>${startTime}${location ? ` at ${location}` : ''}</span>
-                    </div>
-                </div>
-            `;
-
-            if (duty.TypeOfDuty === "SPARE" || duty.TypeOfDuty === "TRAINING" || duty.TypeOfDuty === "PANEL") {
-                dutyContentHTML += `<div class="section"><div class="section-header">Duty Details</div><div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div></div>`;
-            } else {
-                const canShowFirstHalf = isBaseDuty && duty.FirstHalfRunNumber && duty.FirstHalfRunNumber !== "" && duty.FirstHalfRunNumber !== "TR";
-                const dutyDateString = currentDutyDate.getFullYear() + ',' + (currentDutyDate.getMonth()) + ',' + currentDutyDate.getDate();
-                
-                dutyContentHTML += `
-                    <div class="section">
-                        <div class="section-header">
-                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowFirstHalf ? 'cursor: pointer;' : ''}" ${canShowFirstHalf ? `onclick="showTimetableView('First Half', '${duty.FirstHalfRunNumber}', '${duty.FirstHalfStartTime}', '${duty.FirstHalfEndTime}', '${duty.FirstHalfStartLocation}', '${duty.FirstHalfEndLocation}', new Date(${dutyDateString}))"` : ''}>
-                                <span>First Half (${duty.FirstHalfLength})</span>
-                                ${canShowFirstHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888;">View Calling Points →</div>' : ''}
-                            </div>
-                        </div>`;
-
-                if (duty.FirstHalfRunNumber === "" || duty.FirstHalfRunNumber === "TR") {
-                    dutyContentHTML += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
-                } else {
-                    dutyContentHTML += `<div style="margin-left: 1rem;"><div class="section-item"><span class="section-label">Run:</span><span>${duty.FirstHalfRunNumber}</span></div><div class="section-item"><span class="section-label">Pick up:</span><span>${duty.FirstHalfStartLocation} at ${duty.FirstHalfStartTime}</span></div><div class="section-item"><span class="section-label">Relieved:</span><span>${duty.FirstHalfEndLocation} at ${duty.FirstHalfEndTime}</span></div></div>`;
-                }
-                dutyContentHTML += `</div>`;
-
-                if (duty.FirstHalfEndTime && duty.SecondHalfStartTime) {
-                    dutyContentHTML += `<div class="section"><div class="section-header">Break Details</div><div class="section-item"><span class="section-label">Duration:</span><span>${calculateBreakDetails(duty)}</span></div></div>`;
-                }
-
-                const canShowSecondHalf = isBaseDuty && duty.SecondHalfRunNumber && duty.SecondHalfRunNumber !== "" && duty.SecondHalfRunNumber !== "TR";
-                dutyContentHTML += `
-                    <div class="section">
-                         <div class="section-header">
-                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; ${canShowSecondHalf ? 'cursor: pointer;' : ''}" ${canShowSecondHalf ? `onclick="showTimetableView('Second Half', '${duty.SecondHalfRunNumber}', '${duty.SecondHalfStartTime}', '${duty.SecondHalfEndTime}', '${duty.SecondHalfStartLocation}', '${duty.SecondHalfEndLocation}', new Date(${dutyDateString}))"` : ''}>
-                                <span>Second Half (${duty.SecondHalfLength})</span>
-                                ${canShowSecondHalf ? '<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888;">View Calling Points →</div>' : ''}
-                            </div>
-                        </div>`;
-
-                if (duty.SecondHalfRunNumber === "" || duty.SecondHalfRunNumber === "TR") {
-                    dutyContentHTML += `<div style="margin-left: 1rem; font-style: italic; color: #888;">${duty.TypeOfDuty}</div>`;
-                } else {
-                     dutyContentHTML += `<div style="margin-left: 1rem;"><div class="section-item"><span class="section-label">Run:</span><span>${duty.SecondHalfRunNumber}</span></div><div class="section-item"><span class="section-label">Pick up:</span><span>${duty.SecondHalfStartLocation} at ${duty.SecondHalfStartTime}</span></div><div class="section-item"><span class="section-label">Relieved:</span><span>${duty.SecondHalfEndLocation} at ${duty.SecondHalfEndTime}</span></div></div>`;
-                }
-                dutyContentHTML += `</div>`;
-            }
-
-            dutyContentHTML += `<div class="section"><div class="section-item"><span class="section-label">Book off:</span><span>${endTime}${endLocation ? ` at ${endLocation}` : ''}</span></div></div>`;
-
-            modalBody.innerHTML = `
-                <div class="slide-container">
-                    <div id="duty-pane" class="slide-pane is-center">${dutyContentHTML}</div>
-                </div>
-            `;
-            
-            modal.classList.add('is-visible');
-            modal.classList.add('modal-opening');
-            
-            history.pushState({ modal: 'duty' }, '', '');
-        }
-
-        // Close modal or navigate back
-        function closeDutyModal() {
-            const modal = document.getElementById('dutyModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const closeBtn = document.querySelector('.close-modal');
-
-            if (currentModalView === 'timetable') {
-                const dutyPane = document.getElementById('duty-pane');
-                const timetablePane = document.getElementById('timetable-pane');
-                
-                timetablePane.classList.remove('is-center');
-                timetablePane.classList.add('is-left');
-                
-                dutyPane.classList.remove('is-right');
-                dutyPane.classList.add('is-center');
-
-                const { dutyId } = currentDutyData;
-                const [number, location, , startTime, endTime] = dutyId.split('-');
-                modalTitle.textContent = `Duty ${number}: ${location} ${startTime}-${endTime}`;
-                closeBtn.innerHTML = closeIconSVG;
-                currentModalView = 'duty';
-            } else {
-                modal.classList.add('modal-closing');
-                modal.classList.remove('modal-opening');
-                modal.classList.remove('is-visible');
-                
-                setTimeout(() => {
-                    modal.classList.remove('modal-closing');
-                    currentModalView = 'duty';
-                    currentDutyData = null;
-                }, 500);
-            }
-        }
-
-        // Handle clickable run numbers
-        function makeRunNumberClickable(text, operatingDate) {
-            return text.replace(/Run (\d+)/g, (match, runNumber) => {
-                return `<span class="clickable-run" onclick="handleRunClick('${runNumber}', '${operatingDate}')">${match}</span>`;
-            });
-        }
-
-        // Handle run number click
-        function handleRunClick(runNumber, operatingDate) {
-            // Get the duty information for this run
-            const versions = getDutyForDate(runNumber, operatingDate);
-            if (versions.length > 0) {
-                const operatingDateParts = operatingDate.split('-');
-                currentDutyDate = new Date(operatingDateParts[0], operatingDateParts[1] - 1, operatingDateParts[2]);
-                
-                currentTimetableData = null;
-                showDutyDetails(versions[0], runNumber);
-            } else {
-                console.warn(`No duty data found for Run ${runNumber} on ${operatingDate}`);
-            }
-        }
         
         // Initialize particles and add event handlers
         createParticles();
@@ -3485,22 +2694,6 @@
                 } else if (calendarOverlay && calendarOverlay.style.display === 'block') {
                     closeCalendar();
                 }
-            }
-        });
-
-        // Handle browser back button for modal
-        window.addEventListener('popstate', (event) => {
-            const modal = document.getElementById('dutyModal');
-            if (modal && modal.classList.contains('is-visible')) {
-                closeDutyModal();
-            }
-        });
-
-        // Close modal when clicking outside
-        document.addEventListener('click', (event) => {
-            const modal = document.getElementById('dutyModal');
-            if (modal && event.target === modal) {
-                closeDutyModal();
             }
         });
         
