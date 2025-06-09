@@ -184,17 +184,22 @@
         }
         
         /* Main container */
-        .container {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
-        }
+		.container {
+			position: relative;
+			z-index: 10;
+			min-height: 100vh;
+			display: none;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			padding: 2rem;
+			text-align: center;
+		}
+
+		.status-main, .status-details {
+			text-align: center;
+			width: 100%;
+		}
         
         /* Stylized "Omari is probably" */
 		.status-prefix {
@@ -222,17 +227,21 @@
             100% { background-position: 0% 0%, 150% 50%; }
         }
         
-        .status-prefix::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
-            opacity: 0.6;
-        }
+		.status-prefix::after {
+			display: none;
+		}
+		
+		.probably {
+			font-style: italic;
+			text-decoration: underline;
+			text-decoration-color: transparent;
+			background: linear-gradient(to right, 
+				hsl(300, 80%, 70%), 
+				hsl(270, 80%, 61%), 
+				hsl(235, 85%, 55%)) no-repeat bottom;
+			background-size: 100% 2px;
+			padding-bottom: 2px;
+		}		
 		
 		.desktop-text {
 			display: inline;
@@ -441,8 +450,9 @@
         /* Responsive design */
 		@media (max-width: 768px) {
 			.container {
-				padding: 1rem;
-				min-height: 85vh;
+				min-height: 80vh;
+				justify-content: flex-start;
+				padding-top: 15vh;
 			}
 			
 			.login-content {
@@ -450,6 +460,7 @@
 			}
 
 			.nav-link {
+				position: absolute;
 				top: 15px;
 				left: 50%;
 				transform: translateX(-50%);
@@ -458,13 +469,13 @@
 			}
 			
 			.sign-out-link {
-				position: fixed;
-				bottom: 20px;
-				left: 50%;
-				transform: translateX(-50%);
-				top: auto;
-				right: auto;
-			}			
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				bottom: auto;
+				left: auto;
+				transform: none;
+			}		
 			
 			.status-prefix {
 				font-size: clamp(2.8rem, 12vw, 5.5rem);
@@ -517,10 +528,9 @@
     <!-- Main content (initially hidden) -->
     <div class="container" id="mainContainer" style="display: none;">
 		<div class="status-prefix">
-			<span class="desktop-text">Omari is probably</span>
-			<span class="mobile-text">Omari<br>is probably</span>
+			<span class="desktop-text">Omari is <em class="probably">probably</em></span>
+			<span class="mobile-text">Omari<br>is <em class="probably">probably</em></span>
 		</div>
-
         <div class="status-main" id="statusMain"></div>
         
         <div class="status-details" id="statusDetails"></div>
