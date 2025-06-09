@@ -610,6 +610,8 @@
         /* Responsive design */
 		@media (max-width: 768px) {
 			body {
+				position: relative;
+				height: auto;
 				min-height: 100vh;
 			}
 			
@@ -632,7 +634,7 @@
 			}
 
 			.nav-link {
-				position: fixed;
+				position: absolute;
 				top: 15px;
 				left: 50%;
 				transform: translateX(-50%);
@@ -642,13 +644,13 @@
 			}
 
 			.sign-out-link {
-				position: fixed;
+				position: absolute;
 				top: 15px;
 				right: 15px;
 				padding: 6px 8px;
 				z-index: 101;
 			}
-
+			
 			.page-title {
 				font-size: clamp(2.5rem, 8vw, 4rem);
 				margin-bottom: 0.5rem;
