@@ -418,6 +418,58 @@
     </div>
 
     <script>
+        // Define signIn function immediately to ensure it's available
+        function signIn() {
+            const email = 'standard@yourapp.local';
+            const password = document.getElementById('passwordInput').value;
+            const loginError = document.getElementById('loginError');
+            const loginButton = document.getElementById('loginButton');
+            
+            if (!password) {
+                loginError.textContent = "Please enter your password.";
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginError.textContent = '';
+
+            console.log('Attempting to sign in user:', email);
+
+            // Check if Firebase is loaded
+            if (typeof firebase === 'undefined') {
+                loginError.textContent = "Please wait for the page to fully load.";
+                loginButton.disabled = false;
+                return;
+            }
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    console.log('Sign in successful for:', userCredential.user.email);
+                    // Authentication successful - initializeApp will be called by onAuthStateChanged
+                })
+                .catch((error) => {
+                    console.error('Sign in error:', error);
+                    loginError.textContent = getUserFriendlyAuthError(error);
+                    loginButton.disabled = false;
+                });
+        }
+
+        function getUserFriendlyAuthError(error) {
+            switch (error.code) {
+                case 'auth/invalid-login-credentials':
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-email':
+                    return "Incorrect password. Please try again.";
+                case 'auth/too-many-requests':
+                    return "Access temporarily disabled. Please try again later.";
+                case 'auth/network-request-failed':
+                    return "Network error. Please check your connection.";
+                default:
+                    return "Login error: " + error.message;
+            }
+        }
+
         // Enhanced particle system
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
@@ -533,58 +585,19 @@
 
         const mainContainer = document.getElementById('mainContainer');
         const loginSplashScreen = document.getElementById('loginSplashScreen');
-        const loginError = document.getElementById('loginError');
-        const loginButton = document.getElementById('loginButton');
-        const passwordInput = document.getElementById('passwordInput');
 
-        function signIn() {
-            const email = 'standard@yourapp.local';
-            const password = passwordInput.value;
-            
-            if (!password) {
-                loginError.textContent = "Please enter your password.";
-                return;
-            }
-
-            loginButton.disabled = true;
-            loginError.textContent = '';
-
-            console.log('Attempting to sign in user:', email);
-
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    console.log('Sign in successful for:', userCredential.user.email);
-                    // Authentication successful - initializeApp will be called by onAuthStateChanged
-                })
-                .catch((error) => {
-                    console.error('Sign in error:', error);
-                    loginError.textContent = getUserFriendlyAuthError(error);
-                    loginButton.disabled = false;
+        // Add password input event listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        signIn();
+                    }
                 });
-        }
-        
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                signIn();
             }
         });
-
-        function getUserFriendlyAuthError(error) {
-            switch (error.code) {
-                case 'auth/invalid-login-credentials':
-                case 'auth/user-not-found':
-                case 'auth/wrong-password':
-                case 'auth/invalid-email':
-                    return "Incorrect password. Please try again.";
-                case 'auth/too-many-requests':
-                    return "Access temporarily disabled. Please try again later.";
-                case 'auth/network-request-failed':
-                    return "Network error. Please check your connection.";
-                default:
-                    return "Login error: " + error.message;
-            }
-        }
         
         // Main function to initialize app after login
         function initializeApp() {
