@@ -1497,7 +1497,7 @@
             }
         }
 
-        // *** NEW ***: Get operating Date object (for timetable selection)
+        // Get operating Date object (for timetable selection)
         function getOperatingDateTime(dateTime = null) {
             const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
             
@@ -1575,9 +1575,9 @@
 			});
 		}
 		
-        // *** MODIFIED ***: Uses getOperatingDateTime to ensure correct day is used
+        // Uses getOperatingDateTime to ensure correct day is used
 		function sortTimetablesByApplicability(entries) {
-			const operatingDateTime = getOperatingDateTime(); // <-- CORRECTED: Use operating day logic
+			const operatingDateTime = getOperatingDateTime(); // Use operating day logic
 			const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 			
 			return entries.sort((a, b) => {
@@ -1657,7 +1657,7 @@
         
         // --- END OF TIMETABLE LOGIC ---
 
-        // Parse CSV data like the timetable explorer
+        // *** MODIFIED ***: Now stores the raw CSV line for debugging
         function parseCSVData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const runData = {};
@@ -1706,7 +1706,8 @@
                             platform,
                             arrivalTime,
                             departureTime,
-                            locationCode
+                            locationCode,
+                            rawLine: line // Store original line
                         });
                     }
                 }
@@ -2490,6 +2491,7 @@
             }
         }
         
+        // *** MODIFIED ***: Now logs the raw CSV line for debugging
         function findCurrentPosition(runStops, currentTime, currentTimeSeconds) {
             
             // Find the current position in the timetable
@@ -2500,6 +2502,7 @@
                 
                 // Check if we're in the "departing" window (10 seconds before departure, lasting 20 seconds)
                 if (currentTimeSeconds >= (departureTime - 10) && currentTimeSeconds <= (departureTime + 10)) {
+                    console.log(`[DEBUG] Departing station. Timetable line:`, stop.rawLine);
                     return {
                         type: 'departing_station',
                         location: stop.location
@@ -2517,7 +2520,7 @@
                         // Anything 60 seconds or less becomes "departing soon"
                         details = 'departing soon';
                     }
-                    
+                    console.log(`[DEBUG] At station. Timetable line:`, stop.rawLine);
                     return {
                         type: 'at_station',
                         location: stop.location,
@@ -2532,6 +2535,7 @@
                     
                     // Check if we're in the "approaching" window (20 seconds before arrival, lasting 20 seconds)
                     if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
+                        console.log(`[DEBUG] Approaching station. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
                         return {
                             type: 'approaching_station',
                             from: stop.location,
@@ -2541,6 +2545,7 @@
                     
                     // Regular between stations (after departure + 10 seconds, before approaching window)
                     if (currentTimeSeconds > (departureTime + 10) && currentTimeSeconds < (nextArrivalTime - 20)) {
+                        console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
                         return {
                             type: 'between_stations',
                             from: stop.location,
