@@ -465,7 +465,7 @@
     <div class="text-overlay" id="textOverlay"></div>
     
     <!-- Loading overlay -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loading-overlay" id="loadingOverlay">
         <div class="simple-loader"></div>
     </div>
 
@@ -666,11 +666,7 @@
         }
         
         // Main function to initialize app after login
-        function initializeApp() {
-			// Show loading overlays
-			document.getElementById('loadingOverlay').style.display = 'flex';
-			document.getElementById('loadingOverlay').style.opacity = '1';
-			
+        function initializeApp() {			
 			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
 			
 			// Hide login screen immediately
@@ -2190,13 +2186,14 @@
 								initializeApp();
 							} else {
 								console.log('User is signed out.');
+								// Hide loading overlay and show login
+								document.getElementById('loadingOverlay').style.display = 'none';
 								loginSplashScreen.style.display = 'flex';
 								loginSplashScreen.style.opacity = '1';
 								mainContainer.style.display = 'none';
 								loginButton.disabled = false;
 							}
-						});
-						
+						});	
 					});
 				});
 			});
