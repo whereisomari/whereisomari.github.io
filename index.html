@@ -325,7 +325,7 @@
 			border: 1px solid rgba(102, 126, 234, 0.3);
 			border-radius: 8px;
 			transition: all 0.3s ease;
-			z-index: 100;
+			z-index: 30;
 			background: rgba(10, 10, 10, 0.8);
 			backdrop-filter: blur(10px);
 			font-size: 0.9rem;
@@ -340,15 +340,15 @@
 		/* Sign out link */
 		.sign-out-link {
 			position: fixed;
-			top: 20px; /* Same as nav-link */
+			top: 20px;
 			right: 20px;
 			background: none;
 			border: none;
 			color: rgba(255, 255, 255, 0.4);
 			font-size: 0.8rem;
 			cursor: pointer;
-			z-index: 100;
-			padding: 8px 8px; /* Match nav-link padding height */
+			z-index: 30;
+			padding: 8px 8px;
 			transition: color 0.3s ease;
 		}
 
@@ -727,11 +727,7 @@
 			}, 500);
 
 			// Show main container immediately
-			mainContainer.style.display = 'flex';
-
-			// Show nav buttons immediately
-			document.getElementById('calendarNavButton').style.display = 'block';
-			document.getElementById('signOutButton').style.display = 'block';			
+			mainContainer.style.display = 'flex';			
 			
 			// Load duty tracker and start updates
 			fetchDutyTracker()
@@ -756,6 +752,9 @@
 							textOverlay.style.opacity = '0';
 							setTimeout(() => {
 								textOverlay.style.display = 'none';
+								// Show nav buttons when content is fully visible
+								document.getElementById('calendarNavButton').style.display = 'block';
+								document.getElementById('signOutButton').style.display = 'block';
 							}, 800);
 						}
 					}, 4000);
