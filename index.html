@@ -1396,7 +1396,7 @@
             const status = calculateCurrentStatus(operatingDate, timeStr, currentTimeInTimezone);
             
             // Display initial status immediately
-            displayStatus(status.main, status.details, false); 
+            displayStatus(status.main, status.details, false, true); // immediate = true
             previousStatus = { main: status.main, details: status.details };
             
             // Then update every second with normal behavior
@@ -1417,12 +1417,10 @@
             // Only log on minute changes to reduce noise
             const minute = currentTimeInTimezone.getMinutes();
             if (minute !== updateStatusRealTime.lastLoggedMinute) {
-                const operatingDateTimeForLog = getOperatingDateTime(currentTimeInTimezone);
                 console.log(`[DEBUG] updateStatusRealTime called at:`, {
                     utcTime: new Date().toISOString(),
                     timezoneTime: currentTimeInTimezone.toISOString(),
                     operatingDate: operatingDate,
-                    operatingDayOfWeek: operatingDateTimeForLog.toLocaleDateString('en-US', { weekday: 'long' }),
                     timeStr,
                     dayOfWeek: currentTimeInTimezone.toLocaleDateString('en-US', { weekday: 'long' }),
                     hour: currentTimeInTimezone.getHours(),
@@ -1496,24 +1494,18 @@
                 return new Date(); // Fallback to system time
             }
         }
-
-        // Get operating Date object (for timetable selection)
-        function getOperatingDateTime(dateTime = null) {
+        
+        // Get operating date (changes at 04:00, not midnight)
+        function getOperatingDate(dateTime = null) {
             const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
             
             // If before 03:00, use previous day as operating date
-            if (localDateTime.getHours() < 3) {
+            if (localDateTime.getHours() < 4) {
                 localDateTime.setDate(localDateTime.getDate() - 1);
             }
             
-            return localDateTime;
-        }
-        
-        // Get operating date string (for duty lookup)
-        function getOperatingDate(dateTime = null) {
-            const operatingDateTime = getOperatingDateTime(dateTime);
-            // Return just the date part as a string
-            return operatingDateTime.toISOString().split('T')[0];
+            // Return just the date part
+            return localDateTime.toISOString().split('T')[0];
         }
         
         // Convert duty time to actual datetime in the set timezone (handles 25:55 = 01:55 next day)
@@ -1548,7 +1540,7 @@
             'WES': 'Westferry', 'WOA': 'Woolwich Arsenal'
         };
         
-        // --- TIMETABLE FETCHING LOGIC ---
+        // --- NEW TIMETABLE FETCHING LOGIC ---
 
         function parseDateRange(dateStr) {
 			dateStr = dateStr.replace(/['"]/g, '');
@@ -1575,9 +1567,8 @@
 			});
 		}
 		
-        // Uses getOperatingDateTime to ensure correct day is used
 		function sortTimetablesByApplicability(entries) {
-			const operatingDateTime = getOperatingDateTime(); // Use operating day logic
+			const operatingDateTime = getCurrentTimeInTimezone();
 			const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 			
 			return entries.sort((a, b) => {
@@ -1635,8 +1626,8 @@
                 // 3. Determine the most applicable timetable
                 const sortedEntries = sortTimetablesByApplicability(timetableEntries);
                 const applicableTimetable = sortedEntries[0];
-                currentTimetableName = applicableTimetable.name;
-                console.log(`[INFO] Using timetable: '${currentTimetableName}' from URL: ${applicableTimetable.url}`);
+                currentTimetableName = applicableTimetable.name; 
+                console.log(`[INFO] Using timetable: '${applicableTimetable.name}' from URL: ${applicableTimetable.url}`);
 
                 // 4. Fetch the applicable timetable CSV
                 const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
@@ -1655,9 +1646,9 @@
             }
         }
         
-        // --- END OF TIMETABLE LOGIC ---
+        // --- END OF NEW LOGIC ---
 
-        // Stores the raw CSV line for debugging
+        // Parse CSV data like the timetable explorer
         function parseCSVData(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const runData = {};
@@ -1706,8 +1697,7 @@
                             platform,
                             arrivalTime,
                             departureTime,
-                            locationCode,
-                            rawLine: line // Store original line
+                            locationCode
                         });
                     }
                 }
@@ -1827,7 +1817,7 @@
         }
         
         function formatDateForDuty(date) {
-            return date.toISOString().split('T')[0]; //-MM-DD format
+            return date.toISOString().split('T')[0]; // yyyy-MM-dd format
         }
         
         function findNextDuty(currentOperatingDate, currentTime, currentDateTime) {
@@ -1967,7 +1957,6 @@
 			}
 		}
         
-        // *** MODIFIED ***: Correctly adjusts current time for comparison with timetable
         function calculateCurrentStatus(operatingDate, time, currentDateTime) {
             // Parse duty data for the given operating date
             const lines = dutyData.split('\n');
@@ -1980,6 +1969,7 @@
                     foundDate = true;
                     const category = lines[i + 1]?.trim();
                     
+                    // For off-duty categories, there are no subsequent duty lines
                     if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(category)) {
                         currentDateData = {
                             category: category,
@@ -1987,6 +1977,7 @@
                             secondHalf: ''
                         };
                     } else {
+                        // For working days, read the duty details
                         currentDateData = {
                             category: category,
                             firstHalf: lines[i + 3]?.trim() || '',
@@ -2004,6 +1995,7 @@
                 };
             }
             
+            // Handle different duty categories - use "not on the DLR right now" for all off-duty states
             if (['O', 'AL', 'OAL', 'LD', 'BH'].includes(currentDateData.category)) {
                 const nextDuty = findNextDuty(operatingDate, time, currentDateTime);
                 if (nextDuty) {
@@ -2020,29 +2012,17 @@
                 }
             }
             
+            // Handle SPARE duties
             if (currentDateData.firstHalf === 'SPARE' && currentDateData.secondHalf === 'SPARE') {
                 return {
                     main: 'somewhere on the DLR',
                     details: 'On a Spare duty'
                 };
             }
-
-            // --- TIME ADJUSTMENT LOGIC ---
-            // If the current calendar day is after the operating day (e.g., 2 AM Monday for Sunday's duty),
-            // add 24 hours to the time so it can be correctly compared with timetable times like "26:30:00".
-            let adjustedTime = time;
-            const operatingDateStr = operatingDate; // e.g., "2025-06-08"
-            const currentDateStr = currentDateTime.toISOString().split('T')[0]; // e.g., "2025-06-09"
-
-            if (currentDateStr > operatingDateStr) {
-                 const [hours, minutes, seconds] = time.split(':').map(Number);
-                 const adjustedHours = hours + 24;
-                 adjustedTime = `${adjustedHours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-
-            const currentTimeSeconds = parseTime(adjustedTime);
-            // --- END TIME ADJUSTMENT ---
-
+            
+            // Parse run information and get current status
+            const currentTimeSeconds = parseTime(time);
+            
             // Check first half
             if (currentDateData.firstHalf && currentDateData.firstHalf !== 'SPARE') {
                 const firstHalf = parseRunInfo(currentDateData.firstHalf);
@@ -2234,7 +2214,7 @@
             const lastStop = parsedCsvData[runNumber][parsedCsvData[runNumber].length - 1];
             return {
                 location: lastStop.location,
-                time: lastStop.departureTime
+                time: lastStop.arrivalTime // <-- BUG FIX: Changed from departureTime
             };
         }
         
@@ -2500,7 +2480,6 @@
             }
         }
         
-        // Logs the raw CSV line for debugging
         function findCurrentPosition(runStops, currentTime, currentTimeSeconds) {
             
             // Find the current position in the timetable
@@ -2511,7 +2490,6 @@
                 
                 // Check if we're in the "departing" window (10 seconds before departure, lasting 20 seconds)
                 if (currentTimeSeconds >= (departureTime - 10) && currentTimeSeconds <= (departureTime + 10)) {
-                    console.log(`[DEBUG] Departing station. Timetable line:`, stop.rawLine);
                     return {
                         type: 'departing_station',
                         location: stop.location
@@ -2529,7 +2507,7 @@
                         // Anything 60 seconds or less becomes "departing soon"
                         details = 'departing soon';
                     }
-                    console.log(`[DEBUG] At station. Timetable line:`, stop.rawLine);
+                    
                     return {
                         type: 'at_station',
                         location: stop.location,
@@ -2544,7 +2522,6 @@
                     
                     // Check if we're in the "approaching" window (20 seconds before arrival, lasting 20 seconds)
                     if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
-                        console.log(`[DEBUG] Approaching station. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
                         return {
                             type: 'approaching_station',
                             from: stop.location,
@@ -2554,7 +2531,6 @@
                     
                     // Regular between stations (after departure + 10 seconds, before approaching window)
                     if (currentTimeSeconds > (departureTime + 10) && currentTimeSeconds < (nextArrivalTime - 20)) {
-                        console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
                         return {
                             type: 'between_stations',
                             from: stop.location,
