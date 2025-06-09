@@ -278,6 +278,25 @@
 			border-color: #667eea;
 		}
 
+		/* Sign out link */
+		.sign-out-link {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			background: none;
+			border: none;
+			color: rgba(255, 255, 255, 0.4);
+			font-size: 0.8rem;
+			cursor: pointer;
+			z-index: 100;
+			padding: 4px 8px;
+			transition: color 0.3s ease;
+		}
+
+		.sign-out-link:hover {
+			color: rgba(255, 255, 255, 0.7);
+		}
+		
         .page-title {
             font-size: clamp(2rem, 6vw, 3.5rem);
             font-weight: 300;
@@ -596,7 +615,11 @@
 			
 			.container {
 				min-height: 85vh;
-				padding: 1rem 1rem 2rem 1rem;
+				padding: 80px 1rem 2rem 1rem; /* Changed top padding from 1rem to 80px */
+			}
+			
+			.header {
+				margin-bottom: 2rem;
 			}
             
             .calendar-grid {
@@ -608,16 +631,23 @@
                 padding: 1rem;
             }
 
-            .header {
-                margin-bottom: 2rem;
-            }
-
 			.nav-link {
 				top: 15px;
 				left: 50%;
 				transform: translateX(-50%);
-				padding: 6px 12px;
+				padding: 8px 16px;
 				font-size: 0.85rem;
+				position: fixed;
+				z-index: 101;
+			}
+
+			.sign-out-link {
+				position: fixed;
+				bottom: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				top: auto;
+				right: auto;
 			}
 
             .page-title {
@@ -698,6 +728,8 @@
     <div class="container" id="mainContainer" style="display: none;">
         <div class="header">
             <a href="/" class="nav-link" id="realtimeNavButton" style="display: none;">View Realtime</a>
+			<!-- Sign out link -->
+			<button id="signOutButton" class="sign-out-link" onclick="signOut()" style="display: none;">Sign Out</button>			
             <h1 class="page-title">
                 <span class="title-gradient">Omari's</span><br>
                 <span class="title-white">Duty Calendar</span>
@@ -832,10 +864,21 @@
             }
         }
 
+		function signOut() {
+			firebase.auth().signOut().then(() => {
+				console.log('User signed out');
+			}).catch((error) => {
+				console.error('Sign out error:', error);
+			});
+		}
+
         // Initialize app after login
 		function initializeApp() {
-			// Show loading overlays
-            console.log('Initializing calendar app');
+			// Show loading overlay
+			document.getElementById('loadingOverlay').style.display = 'flex';
+			document.getElementById('loadingOverlay').style.opacity = '1';
+			
+			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);
             
             loginSplashScreen.style.opacity = '0';
             setTimeout(() => {
@@ -871,8 +914,9 @@
 						textOverlay.style.opacity = '0';
 						setTimeout(() => {
 							textOverlay.style.display = 'none';
-							// Show nav button after loading finishes
+							// Show nav button and sign out after loading finishes
 							document.getElementById('realtimeNavButton').style.display = 'block';
+							document.getElementById('signOutButton').style.display = 'block';
 						}, 800);
 					}
 				}, 4000);
