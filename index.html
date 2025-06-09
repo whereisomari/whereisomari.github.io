@@ -1325,71 +1325,7 @@
                 };
             }
         }
-
-        function getDutyForDate(dutyNumber, dateStr) {
-            const versions = [];
-            const [year, month, day] = dateStr.split('-');
-            const date = new Date(year, month - 1, day);
-
-            // Check single day temp
-            const dateKey = `${year}-${month}-${day}`;
-            if (calendarDutyData.singleTemp[dateKey]) {
-                const tempDuty = Object.entries(calendarDutyData.singleTemp[dateKey].duties)
-                    .find(([key]) => key.startsWith(dutyNumber + '-'));
-                if (tempDuty) {
-                    versions.push({
-                        type: 'temp',
-                        date: dateStr,
-                        duty: tempDuty[1],
-                        dutyId: tempDuty[0],
-                        filename: calendarDutyData.singleTemp[dateKey].filename
-                    });
-                }
-            }
-
-            // Check range temp
-            const rangeTempMatch = calendarDutyData.rangeTemp.find(range => 
-                date >= range.startDate && date <= range.endDate);
-            if (rangeTempMatch) {
-                const tempDuty = Object.entries(rangeTempMatch.duties)
-                    .find(([key]) => key.startsWith(dutyNumber + '-'));
-                if (tempDuty) {
-                    versions.push({
-                        type: 'temp',
-                        dateRange: {
-                            start: rangeTempMatch.startDate.toISOString().split('T')[0],
-                            end: rangeTempMatch.endDate.toISOString().split('T')[0]
-                        },
-                        duty: tempDuty[1],
-                        dutyId: tempDuty[0],
-                        filename: rangeTempMatch.filename
-                    });
-                }
-            }
-
-            // Check base duties
-            const baseDate = Object.keys(calendarDutyData.base)
-                .map(Number)
-                .filter(time => new Date(time) <= date)
-                .sort((a, b) => b - a)[0];
-
-            if (baseDate) {
-                const baseDutyId = Object.keys(calendarDutyData.base[baseDate].duties)
-                    .find(key => key.startsWith(dutyNumber + '-'));
-                if (baseDutyId) {
-                    versions.push({
-                        type: 'base',
-                        date: new Date(baseDate).toISOString().split('T')[0],
-                        duty: calendarDutyData.base[baseDate].duties[baseDutyId],
-                        dutyId: baseDutyId,
-                        filename: calendarDutyData.base[baseDate].filename
-                    });
-                }
-            }
-
-            return versions;
-        }
-
+        
         function formatDutyDetailsForCalendar(duty, dutyId, versionInfo, date) {
             const [number, location, endLocation, startTime, endTime] = dutyId.split('-');
             const dutyDate = new Date(date);
@@ -1519,44 +1455,6 @@
             return content;
         }
 
-        function calculateBreakDetails(duty) {
-            if (!duty.FirstHalfEndTime || !duty.SecondHalfStartTime) return "N/A";
-
-            const [breakHours, breakMins] = calculateTimeDifference(
-                duty.FirstHalfEndTime,
-                duty.SecondHalfStartTime
-            ).split(':').map(Number);
-
-            const [mealHours, mealMins] = duty.MealBreakDuration.split(':').map(Number);
-            
-            const totalBreakMins = (breakHours * 60 + breakMins);
-            const mealBreakMins = (mealHours * 60 + mealMins);
-            const paidBreakMins = totalBreakMins - mealBreakMins;
-            
-            const paidHours = Math.floor(paidBreakMins / 60);
-            const paidMins = paidBreakMins % 60;
-            const paidBreak = `${paidHours.toString().padStart(2, '0')}:${paidMins.toString().padStart(2, '0')}`;
-
-            return `${formatTime(breakHours, breakMins)} (${duty.MealBreakDuration} unpaid + ${paidBreak} paid)`;
-        }
-
-        function calculateTimeDifference(time1, time2) {
-            const [h1, m1] = time1.split(':').map(Number);
-            const [h2, m2] = time2.split(':').map(Number);
-            
-            let diffMinutes = (h2 * 60 + m2) - (h1 * 60 + m1);
-            if (diffMinutes < 0) diffMinutes += 24 * 60;
-            
-            const hours = Math.floor(diffMinutes / 60);
-            const minutes = diffMinutes % 60;
-            return formatTime(hours, minutes);
-        }
-
-        function formatTime(hours, minutes) {
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-        }
-
-        
         // Data storage
         let csvData = null;
         let dutyData = null;
@@ -1648,7 +1546,6 @@
                 };
             }
         }
-
 
         // Get duty info for lookup (from calendar.html)
         function getDutyForDate(dutyNumber, dateStr) {
@@ -1902,7 +1799,6 @@
             });
         }
 
-
         // Close modal or navigate back
         function closeDutyModal() {
             const modal = document.getElementById('dutyModal');
@@ -1936,27 +1832,22 @@
             }
         }
 
-        // Calculate break details
-        function calculateBreakDetails(duty) {
-            if (!duty.FirstHalfEndTime || !duty.SecondHalfStartTime) return "N/A";
-
-            const [breakHours, breakMins] = calculateTimeDifference(
-                duty.FirstHalfEndTime,
-                duty.SecondHalfStartTime
-            ).split(':').map(Number);
-
-            const [mealHours, mealMins] = duty.MealBreakDuration.split(':').map(Number);
+        function calculateTimeDifference(time1, time2) {
+            const [h1, m1] = time1.split(':').map(Number);
+            const [h2, m2] = time2.split(':').map(Number);
             
-            const totalBreakMins = (breakHours * 60 + breakMins);
-            const mealBreakMins = (mealHours * 60 + mealMins);
-            const paidBreakMins = totalBreakMins - mealBreakMins;
+            let diffMinutes = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (diffMinutes < 0) diffMinutes += 24 * 60;
             
-            const paidHours = Math.floor(paidBreakMins / 60);
-            const paidMins = paidBreakMins % 60;
-            const paidBreak = `${String(paidHours).padStart(2, '0')}:${String(paidMins).padStart(2, '0')}`;
-
-            return `${formatTime(breakHours, breakMins)} (${duty.MealBreakDuration} unpaid + ${paidBreak} paid)`;
+            const hours = Math.floor(diffMinutes / 60);
+            const minutes = diffMinutes % 60;
+            return formatTime(hours, minutes);
         }
+
+        function formatTime(hours, minutes) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+        
         // --- END: Added from Calendar.html ---
 
         // Global update buffer to prevent rapid-fire updates
@@ -1978,14 +1869,14 @@
             const status = calculateCurrentStatus(operatingDate, timeStr, currentTimeInTimezone);
             
             // Display initial status immediately
-            displayStatus(status.main, status.details, false, status.dutyVersion); 
+            displayStatus(status.main, status.details, false, status.dutyVersion, status.runNumber); 
             previousStatus = { main: status.main, details: status.details };
             
             // Then update every second with normal behavior
             updateInterval = setInterval(updateStatusRealTime, 1000);
         }
         
-        // REPLACED FUNCTION
+        // --- REPLACED/FIXED FUNCTION ---
         // Real-time status update
         function updateStatusRealTime() {
             if (!parsedCsvData || !dutyData) {
@@ -2002,13 +1893,13 @@
                 updateStatusRealTime.lastLoggedMinute = minute;
             }
             
-            // Get the full status object, including the duty version
+            // Get the full status object, including the duty version and run number
             const status = calculateCurrentStatus(operatingDate, timeStr, currentTimeInTimezone);
             
             // Check if status has actually changed
             if (status.main !== previousStatus.main || status.details !== previousStatus.details) {
-                // Pass the dutyVersion to displayStatus
-                displayStatus(status.main, status.details, true, status.dutyVersion);
+                // Pass the dutyVersion and runNumber to displayStatus
+                displayStatus(status.main, status.details, true, status.dutyVersion, status.runNumber);
                 previousStatus = { main: status.main, details: status.details };
             }
         }
@@ -2538,7 +2429,7 @@
 			}
 		}
         
-		// REPLACED FUNCTION
+		// --- REPLACED/FIXED FUNCTION ---
         // Calculate the current status
         function calculateCurrentStatus(operatingDate, time, currentDateTime) {
             const lines = dutyData.split('\n');
@@ -2567,7 +2458,8 @@
                 return {
                     main: 'not on the DLR right now',
                     details: 'No duty information found for this date',
-                    dutyVersion: null // NEW
+                    dutyVersion: null,
+                    runNumber: null
                 };
             }
 
@@ -2580,14 +2472,15 @@
                 const details = nextDuty 
                     ? `He'll be back at ${nextDuty.location} ${formatNextDutyDate(nextDuty, currentDateTime)}`
                     : 'No upcoming duties found';
-                return { main: 'not on the DLR right now', details, dutyVersion: primaryDutyVersion };
+                return { main: 'not on the DLR right now', details, dutyVersion: primaryDutyVersion, runNumber: null };
             }
             
             if (dutyInfo.firstHalf === 'SPARE' && dutyInfo.secondHalf === 'SPARE') {
                 return {
                     main: 'somewhere on the DLR',
                     details: 'On a Spare duty',
-                    dutyVersion: primaryDutyVersion
+                    dutyVersion: primaryDutyVersion,
+                    runNumber: null
                 };
             }
 
@@ -2630,7 +2523,8 @@
                         return {
                             main: 'on break',
                             details: `Next service: Run ${secondHalf.runNumber} at ${secondHalf.startTime} at ${getLocationName(secondHalf.startLocation)}`,
-                            dutyVersion: primaryDutyVersion
+                            dutyVersion: primaryDutyVersion,
+                            runNumber: secondHalf.runNumber
                         };
                     }
                 }
@@ -2640,7 +2534,7 @@
             const details = nextDuty
                 ? `He'll be back at ${nextDuty.location} ${formatNextDutyDate(nextDuty, currentDateTime)}`
                 : 'No upcoming duties found';
-            return { main: 'not on the DLR right now', details, dutyVersion: primaryDutyVersion };
+            return { main: 'not on the DLR right now', details, dutyVersion: primaryDutyVersion, runNumber: null };
         }
         
         function parseTime(timeStr) {
@@ -2816,17 +2710,19 @@
             return null;
         }
         
-        // REPLACED FUNCTION
+        // --- REPLACED/FIXED FUNCTION ---
         // Get status for a specific run
         function getRunStatus(runInfo, currentTimeSeconds, timeStr, dutyVersion) {
             const isBase = isDutyBaseType(dutyVersion);
+            const runNumberForDisplay = runInfo.runNumber;
 
             // If duty is NOT a base duty, show fallback message and exit
             if (!isBase) {
                 return {
                     main: 'somewhere on the DLR',
                     details: `onboard Run ${runInfo.runNumber} which picked up from ${getLocationName(runInfo.startLocation)} at ${runInfo.startTime} and is relieved at ${getLocationName(runInfo.endLocation)} at ${runInfo.endTime}`,
-                    dutyVersion: dutyVersion
+                    dutyVersion: dutyVersion,
+                    runNumber: runNumberForDisplay
                 };
             }
             
@@ -2847,7 +2743,8 @@
                 return {
                     main: `departing ${startLocationName}`,
                     details: `onboard Run ${runInfo.runNumber} to ${destination}`,
-                    dutyVersion: dutyVersion
+                    dutyVersion: dutyVersion,
+                    runNumber: runNumberForDisplay
                 };
             }
             
@@ -2860,7 +2757,8 @@
                 return {
                     main: `operating between ${getLocationName(runInfo.startLocation)} and ${getLocationName(runInfo.endLocation)}`,
                     details: `onboard Run ${runInfo.runNumber} - timetable not available`,
-                    dutyVersion: dutyVersion
+                    dutyVersion: dutyVersion,
+                    runNumber: runNumberForDisplay
                 };
             }
             
@@ -2881,7 +2779,7 @@
                 main = `between ${currentPosition.from} and ${currentPosition.to}`;
             }
 
-            return { main, details, dutyVersion: dutyVersion };
+            return { main, details, dutyVersion: dutyVersion, runNumber: runNumberForDisplay };
         }
         
         // Logs the raw CSV line for debugging
@@ -2951,14 +2849,14 @@
             return { type: 'unknown' };
         }
         
-        // REPLACED FUNCTION
+        // --- REPLACED/FIXED FUNCTION ---
         // Display status with a 3-second buffer and make run number clickable
-        function displayStatus(main, details, animate = false, dutyVersion = null) {
+        function displayStatus(main, details, animate = false, dutyVersion = null, runNumber = null) {
             if (updateBuffer.timer) {
                 clearTimeout(updateBuffer.timer);
             }
             
-            updateBuffer.pendingUpdate = { main, details, animate, dutyVersion };
+            updateBuffer.pendingUpdate = { main, details, animate, dutyVersion, runNumber };
             
             updateBuffer.timer = setTimeout(() => {
                 const update = updateBuffer.pendingUpdate;
@@ -3000,18 +2898,19 @@
                 }
 
                 // --- NEW LOGIC: Make Run number clickable ---
-                if (update.dutyVersion && update.dutyVersion.dutyId) {
-                    const dutyNumber = update.dutyVersion.dutyId.split('-')[0];
-                    const operatingDate = getOperatingDate(); // Get current operating date
+                if (update.dutyVersion && update.dutyVersion.dutyId && update.runNumber) {
+                    const dutyNumberForPopup = update.dutyVersion.dutyId.split('-')[0];
+                    const operatingDate = getOperatingDate();
                     
-                    // Regex to find "Run [number]"
-                    const runRegex = new RegExp(`(Run\\s+${dutyNumber}[\\d\\->]*)`, 'g');
+                    // Escape special characters (like '>') for the regex
+                    const escapedRunNumber = update.runNumber.replace('>', '\\>');
+                    const runRegex = new RegExp(`(Run\\s+${escapedRunNumber})`, 'g');
                     
                     // Use setTimeout to ensure the DOM has updated
                     setTimeout(() => {
                         statusDetails.innerHTML = statusDetails.innerHTML.replace(runRegex, (match) => {
-                            // Pass the base duty number and operating date to the click handler
-                            return `<span class="clickable-run" onclick="openDutyModalForRun('${dutyNumber}', '${operatingDate}')">${match}</span>`;
+                            // The popup is for the DUTY, not the run, so use dutyNumberForPopup
+                            return `<span class="clickable-run" onclick="openDutyModalForRun('${dutyNumberForPopup}', '${operatingDate}')">${match}</span>`;
                         });
                     }, 800); // Delay slightly to ensure fade-in is complete
                 }
