@@ -213,8 +213,7 @@
     <script>
         // Data storage
         let dutyData = null; // Changed from dutyTrackerData to dutyData
-        let currentTimetableData = null;
-        let currentDutyDate = null; // Missing global variable declaration
+        // currentTimetableData and currentDutyDate are declared in shared-modal.js
 
         // Initialize app after login
         function initializeApp() {
@@ -432,7 +431,6 @@
                         const dutyDateParts = dutyInfo.date.split('-');
                         currentDutyDate = new Date(dutyDateParts[0], dutyDateParts[1] - 1, dutyDateParts[2]);
                         
-                        currentTimetableData = null;
                         showDutyDetails(versions[0], dutyInfo.dutyNumber, currentDutyDate);
                     });
                 } else {
