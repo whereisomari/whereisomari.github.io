@@ -7,7 +7,7 @@ function getOperatingDate() {
     try {
         // Use Intl.DateTimeFormat to reliably get date/time parts for the London timezone.
         const options = {
-            timeZone: 'Europe/London',
+            timeZone: 'America/New_York',
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',

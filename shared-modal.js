@@ -317,7 +317,7 @@ function getApplicableTimetable(date) {
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const dayName = date.toLocaleDateString('en-US', { 
         weekday: 'long',
-        timeZone: 'Europe/London'
+        timeZone: 'America/New_York'
     });
     
     for (const [fileName, timetableInfo] of Object.entries(timetablePaths)) {
