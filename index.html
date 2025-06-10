@@ -1879,6 +1879,20 @@
 			
 			// Find current position in the timetable
 			const currentPosition = findCurrentPosition(parsedCsvData[actualRunNumber], timeStr, currentTimeSeconds);
+
+			// DEBUGGING: Log when destination might be wrong
+			if (destination === 'Poplar' || destination.includes('Poplar')) {
+				console.log(`[DEBUG POPLAR] Time: ${timeStr}, Run: ${actualRunNumber}, Destination: "${destination}"`);
+				console.log(`[DEBUG POPLAR] Position type: ${currentPosition.type}`);
+				if (currentPosition.from) console.log(`[DEBUG POPLAR] From: ${currentPosition.from}, To: ${currentPosition.to}`);
+			}
+
+			// DEBUGGING: Log when we get "between X and X"
+			if (currentPosition.type === 'between_stations' && currentPosition.from === currentPosition.to) {
+				console.log(`[DEBUG SAME STATION] Between "${currentPosition.from}" and "${currentPosition.to}"`);
+				console.log(`[DEBUG SAME STATION] Time: ${timeStr}, Destination: "${destination}"`);
+				console.log(`[DEBUG SAME STATION] This should not happen!`);
+			}
 			
 			if (currentPosition.type === 'at_station') {
 				let details = '';
@@ -2082,19 +2096,27 @@
 						};
 					}
                     
-                    // Regular between stations (after departure + 20 seconds, before approaching window)
-                    if (currentTimeSeconds > (departureTime + 20) && currentTimeSeconds < (nextArrivalTime - 20)) {
+					// Regular between stations (after departure + 20 seconds, before approaching window)
+					if (currentTimeSeconds > (departureTime + 20) && currentTimeSeconds < (nextArrivalTime - 20)) {
 						const currentPosition = `between-${stop.location}-${nextStop.location}`;
 						if (lastPositionForLogging !== currentPosition) {
 							console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
 							lastPositionForLogging = currentPosition;
 						}
-                        return {
-                            type: 'between_stations',
-                            from: stop.location,
-                            to: nextStop.location
-                        };
-                    }
+						
+						// DEBUGGING: Extra check for same station bug
+						if (stop.location === nextStop.location) {
+							console.log(`[ERROR] About to return between same stations: "${stop.location}" and "${nextStop.location}"`);
+							console.log(`[ERROR] Stop line:`, stop.rawLine);
+							console.log(`[ERROR] Next stop line:`, nextStop.rawLine);
+						}
+						
+						return {
+							type: 'between_stations',
+							from: stop.location,
+							to: nextStop.location
+						};
+					}
                 }
             }
             
