@@ -465,6 +465,7 @@
 				left: 15px;
 				padding: 6px 12px;
 				font-size: 0.85rem;
+				z-index: 101;
 			}
 
 			.sign-out-link {
@@ -728,75 +729,74 @@
 			// Show main container immediately
 			mainContainer.style.display = 'flex';			
 			
-			// Load duty tracker, duty lookup data, and initialize modal functionality
-			Promise.all([
-				fetchDutyTracker(),
-				fetchDutyLookupData(),  // NEW: Load duty lookup data
-				initializeModalFunctionality()  // NEW: Initialize modal functionality
-			])
-			.then(() => {
-				console.log('All data loaded successfully');
-				
-				// Same timing for overlays...
-				setTimeout(() => {
-					const loadingOverlay = document.getElementById('loadingOverlay');
-					if (loadingOverlay) {
-						loadingOverlay.style.opacity = '0';
-						setTimeout(() => {
-							loadingOverlay.style.display = 'none';
-						}, 800);
-					}
-				}, 3200);				
-				
-				setTimeout(() => {
-					const textOverlay = document.getElementById('textOverlay');
-					if (textOverlay) {
-						textOverlay.style.opacity = '0';
-						setTimeout(() => {
-							textOverlay.style.display = 'none';
-							document.getElementById('calendarNavButton').style.display = 'block';
-							document.getElementById('signOutButton').style.display = 'block';
-						}, 800);
-					}
-				}, 4000);
-				
-				// Start the real-time updates
-				startRealTimeUpdates();
-			})
-			.catch(error => {
-				console.error("Data loading failed:", error);
-				
-				// Handle error with same timing...
-				setTimeout(() => {
-					const loadingOverlay = document.getElementById('loadingOverlay');
-					if (loadingOverlay) {
-						loadingOverlay.style.opacity = '0';
-						setTimeout(() => {
-							loadingOverlay.style.display = 'none';
-						}, 800);
-					}
-				}, 3200);
-				
-				setTimeout(() => {
-					const textOverlay = document.getElementById('textOverlay');
-					if (textOverlay) {
-						textOverlay.style.opacity = '0';
-						setTimeout(() => {
-							textOverlay.style.display = 'none';
-						}, 800);
-					}
+			// Load duty tracker and start updates
+			fetchDutyTracker()
+				.then(() => {
+					console.log('Duty tracker loaded successfully');
 					
-					const statusMain = document.getElementById('statusMain');
-					const statusDetails = document.getElementById('statusDetails');
+					// Wait 3.2 seconds, then start fading circle so it finishes right before text overlay starts
+					setTimeout(() => {
+						const loadingOverlay = document.getElementById('loadingOverlay');
+						if (loadingOverlay) {
+							loadingOverlay.style.opacity = '0';
+							setTimeout(() => {
+								loadingOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 3200);				
 					
-					if (statusMain) {
-						statusMain.textContent = 'Error loading duty data';
-					}
-					if (statusDetails) {
-						statusDetails.textContent = error.message;
-					}
-				}, 4000);
-			});
+					// Wait 4 seconds (circle finishes fading), then fade out text overlay
+					setTimeout(() => {
+						const textOverlay = document.getElementById('textOverlay');
+						if (textOverlay) {
+							textOverlay.style.opacity = '0';
+							setTimeout(() => {
+								textOverlay.style.display = 'none';
+								// Show nav buttons when content is fully visible
+								document.getElementById('calendarNavButton').style.display = 'block';
+								document.getElementById('signOutButton').style.display = 'block';
+							}, 800);
+						}
+					}, 4000);
+					
+					// Start the real-time updates
+					startRealTimeUpdates();
+				})
+				.catch(error => {
+					console.error("Duty tracker loading failed:", error);
+					
+					// Hide overlays even on error with same timing
+					setTimeout(() => {
+						const loadingOverlay = document.getElementById('loadingOverlay');
+						if (loadingOverlay) {
+							loadingOverlay.style.opacity = '0';
+							setTimeout(() => {
+								loadingOverlay.style.display = 'none';
+							}, 800);
+						}
+					}, 3200);
+					
+					setTimeout(() => {
+						const textOverlay = document.getElementById('textOverlay');
+						if (textOverlay) {
+							textOverlay.style.opacity = '0';
+							setTimeout(() => {
+								textOverlay.style.display = 'none';
+							}, 800);
+						}
+						
+						// Show error content
+						const statusMain = document.getElementById('statusMain');
+						const statusDetails = document.getElementById('statusDetails');
+						
+						if (statusMain) {
+							statusMain.textContent = 'Error loading duty data';
+						}
+						if (statusDetails) {
+							statusDetails.textContent = error.message;
+						}
+					}, 4000);
+				});
 		}
         
         // Function to fetch duty tracker from Firebase
@@ -1796,11 +1796,6 @@
         }
         
 		function getRunStatus(runInfo, currentTimeSeconds, timeStr) {
-			// Get duty versions to check if it's a base duty
-			const operatingDate = getOperatingDate();
-			const dutyVersions = getDutyForDate(runInfo.firstRun, operatingDate);
-			const isBaseDuty = dutyVersions.length > 0 && isDutyBaseType(dutyVersions[0]);
-			
 			// SIMPLE RULE: Don't start position updates until 1 minute after pickup time
 			const dutyStartTimeSeconds = parseTime(runInfo.startTime);
 			const oneMinuteAfterStart = dutyStartTimeSeconds + 60;
@@ -1820,7 +1815,7 @@
 				
 				// Get simple destination
 				let destination;
-				if (isBaseDuty && parsedCsvData[actualRunNumber]) {
+				if (parsedCsvData[actualRunNumber]) {
 					const lastStop = parsedCsvData[actualRunNumber][parsedCsvData[actualRunNumber].length - 1];
 					destination = lastStop.location;
 				} else {
@@ -1833,19 +1828,6 @@
 				};
 			}
 			
-			// If it's not a base duty, use fallback logic
-			if (!isBaseDuty) {
-				const startLocationName = getLocationName(runInfo.startLocation);
-				const endLocationName = getLocationName(runInfo.endLocation);
-				const displayRunNumber = runInfo.runNumber;
-				
-				return {
-					main: 'somewhere on the DLR',
-					details: `onboard Run ${displayRunNumber} which picked up from ${startLocationName} at ${runInfo.startTime.substring(0, 5)} and is relieved at ${endLocationName} at ${runInfo.endTime.substring(0, 5)}`
-				};
-			}
-			
-			// Continue with existing base duty logic...
 			// Handle run transitions
 			let actualRunNumber = runInfo.firstRun;
 			let displayRunNumber = runInfo.runNumber;
@@ -2135,7 +2117,7 @@
 				const update = updateBuffer.pendingUpdate;
 				if (!update) return;
 				
-				// Update particle speed based on status
+				// ADD THIS LINE - Update particle speed based on status
 				updateParticleSpeed({ main: update.main, details: update.details });
 				
 				const statusMain = document.getElementById('statusMain');
@@ -2153,14 +2135,11 @@
 					loadingState.style.display = 'none';
 				}
 				
+				
 				// If not animating, just update text directly
 				if (!update.animate) {
 					statusMain.textContent = update.main;
 					statusDetails.textContent = update.details;
-					
-					// NEW: Make run numbers clickable after setting text
-					const operatingDate = getOperatingDate();
-					makeRunNumbersClickable(statusDetails, operatingDate);
 					return;
 				}
 				
@@ -2210,10 +2189,6 @@
 						setTimeout(() => {
 							statusDetails.classList.remove('details-fade-in');
 							statusDetails.style.animation = ''; // Reset to CSS default
-							
-							// NEW: Make run numbers clickable after animation completes
-							const operatingDate = getOperatingDate();
-							makeRunNumbersClickable(statusDetails, operatingDate);
 						}, 400);
 					}, 300);
 				}, 700);
@@ -2292,9 +2267,5 @@
 		}
 		loadFirebase();
     </script>
-
-    <!-- Shared JavaScript Files -->
-    <script src="shared-duty-logic.js"></script>
-    <script src="shared-modal.js"></script>
 </body>
 </html>
