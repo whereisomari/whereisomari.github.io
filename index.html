@@ -4,68 +4,252 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Where is Omari?</title>
-    <link rel="stylesheet" href="shared-styles.css">
     <style>
-        /* Index-specific styles */
-        .container {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
+        html {
+            height: 100%;
+            overflow-x: hidden;
         }
 
-        .status-main, .status-details {
-            text-align: center;
-            width: 100%;
+		body {
+			font-family: 'Inter', sans-serif;
+			background: #0a0a0a;
+			color: #ffffff;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			overflow-x: hidden;
+			overflow-y: auto;
+			margin: 0;
+			padding: 0;
+		}
+
+        @media (max-width: 768px) {
+            body {
+                position: relative;
+                height: auto;
+                min-height: 100vh;
+            }
         }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Enhanced particle system */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Login Screen Styles */
+        .login-splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .login-content {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px 15px;
+            background: linear-gradient(90deg, #8A2BE2, #4B0082);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .login-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .login-error {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+            color: #ff6b6b;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .particle-small {
+            width: 1px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+            animation: floatUp 4s infinite linear;
+        }
+
+        .particle-medium {
+            width: 2px;
+            height: 2px;
+            background: rgba(100, 200, 255, 0.95);
+            box-shadow: 0 0 4px rgba(100, 200, 255, 0.7);
+            animation: floatUp 6s infinite linear;
+        }
+
+        .particle-large {
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 100, 200, 0.9);
+            box-shadow: 0 0 6px rgba(255, 100, 200, 0.6);
+            animation: floatUp 8s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(120vh) rotate(0deg);
+                opacity: 0;
+            }
+            3% {
+                opacity: 0;
+            }
+            8% {
+                opacity: 1;
+            }
+            92% {
+                opacity: 1;
+            }
+            97% {
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Main container */
+		.container {
+			position: relative;
+			z-index: 10;
+			min-height: 100vh;
+			display: none;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			padding: 2rem;
+			text-align: center;
+		}
+
+		.status-main, .status-details {
+			text-align: center;
+			width: 100%;
+		}
         
         /* Stylized "Omari is probably" */
-        .status-prefix {
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: 300;
-            margin-bottom: 2rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 0.3s forwards, gradientCycle 5s linear infinite;
-            background: linear-gradient(to right, 
-                hsl(300, 80%, 70%), 
-                hsl(270, 80%, 61%), 
-                hsl(235, 85%, 55%), 
-                hsl(300, 80%, 70%));
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
-        
-        .status-prefix::after {
-            display: none;
-        }
-        
-        .probably {
-            font-style: italic;
-            text-decoration: underline;
-            text-decoration-color: transparent;
-            background: linear-gradient(to right, 
-                hsl(300, 80%, 70%), 
-                hsl(270, 80%, 61%), 
-                hsl(235, 85%, 55%)) no-repeat bottom;
-            background-size: 100% 2px;
-            padding-bottom: 2px;
-        }		
-        
-        .desktop-text {
-            display: inline;
-        }
+		.status-prefix {
+			font-size: clamp(2rem, 6vw, 4rem);
+			font-weight: 300;
+			margin-bottom: 2rem;
+			opacity: 0;
+			animation: fadeInUp 1s ease-out 0.3s forwards, gradientCycle 5s linear infinite;
+			background: linear-gradient(to right, 
+				hsl(300, 80%, 70%), 
+				hsl(270, 80%, 61%), 
+				hsl(235, 85%, 55%), 
+				hsl(300, 80%, 70%));
+			background-size: 300% 300%;
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+			position: relative;
+		}
 
-        .mobile-text {
-            display: none;
-        }		
+        @keyframes gradientCycle {
+            0% { background-position: 150% 0%, 0% 50%; }
+            33% { background-position: 100% 100%, 50% 50%; }
+            66% { background-position: 50% 50%, 100% 0%; }
+            100% { background-position: 0% 0%, 150% 50%; }
+        }
+        
+		.status-prefix::after {
+			display: none;
+		}
+		
+		.probably {
+			font-style: italic;
+			text-decoration: underline;
+			text-decoration-color: transparent;
+			background: linear-gradient(to right, 
+				hsl(300, 80%, 70%), 
+				hsl(270, 80%, 61%), 
+				hsl(235, 85%, 55%)) no-repeat bottom;
+			background-size: 100% 2px;
+			padding-bottom: 2px;
+		}		
+		
+		.desktop-text {
+			display: inline;
+		}
+
+		.mobile-text {
+			display: none;
+		}		
         
         /* Main status display */
         .status-main {
@@ -94,6 +278,97 @@
             gap: 0.5rem;
             font-size: 1.2rem;
             color: #666;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .text-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 40;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .particle-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #0a0a0a;
+            z-index: 2;
+        }
+
+		/* View Calendar/Realtime nav button */
+		.nav-link {
+			position: fixed;
+			top: 20px;
+			left: 20px;
+			color: #667eea;
+			text-decoration: none;
+			padding: 8px 16px;
+			border: 1px solid rgba(102, 126, 234, 0.3);
+			border-radius: 8px;
+			transition: all 0.3s ease;
+			z-index: 30;
+			background: rgba(10, 10, 10, 0.8);
+			backdrop-filter: blur(10px);
+			font-size: 0.9rem;
+			font-weight: 500;
+		}
+
+		.nav-link:hover {
+			background: rgba(102, 126, 234, 0.1);
+			border-color: #667eea;
+		}
+		
+		/* Sign out link */
+		.sign-out-link {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			background: none;
+			border: none;
+			color: rgba(255, 255, 255, 0.4);
+			font-size: 0.8rem;
+			cursor: pointer;
+			z-index: 30;
+			padding: 8px 8px;
+			transition: color 0.3s ease;
+		}
+
+		.sign-out-link:hover {
+			color: rgba(255, 255, 255, 0.7);
+		}		
+        
+        .simple-loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid;
+            border-top-color: hsl(300, 80%, 70%);
+            animation: spin 1.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .loading-dot {
@@ -129,28 +404,90 @@
             to { opacity: 1; }
         }
         
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .container {
-                min-height: 80vh;
-                justify-content: flex-start;
-                padding-top: 15vh;
+        /* Status change animation */
+        .status-change {
+            animation: statusChange 0.6s ease-out;
+        }
+        
+        @keyframes statusChange {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
             }
-
-            .status-prefix {
-                font-size: clamp(2.8rem, 12vw, 5.5rem);
-                line-height: 0.95;
-                margin-bottom: 1.5rem;
-            }
-            
-            .desktop-text {
-                display: none;
-            }
-            
-            .mobile-text {
-                display: inline;
+            100% {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
+        
+        /* Details fade animations */
+        .details-fade-out {
+            animation: detailsFadeOut 0.3s ease-out forwards;
+        }
+        
+        .details-fade-in {
+            animation: detailsFadeIn 0.4s ease-out forwards;
+        }
+        
+        @keyframes detailsFadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        @keyframes detailsFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive design */
+		@media (max-width: 768px) {
+			.container {
+				min-height: 80vh;
+				justify-content: flex-start;
+				padding-top: 15vh;
+			}
+			
+			.login-content {
+				padding: 30px 20px;
+			}
+
+			.nav-link {
+				position: absolute;
+				top: 15px;
+				left: 15px;
+				padding: 6px 12px;
+				font-size: 0.85rem;
+			}
+
+			.sign-out-link {
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				padding: 6px 8px;
+			}	
+
+			.status-prefix {
+				font-size: clamp(2.8rem, 12vw, 5.5rem);
+				line-height: 0.95;
+				margin-bottom: 1.5rem;
+			}
+			
+			.desktop-text {
+				display: none;
+			}
+			
+			.mobile-text {
+				display: inline;
+			}
+		}
     </style>
 </head>
 <body>
@@ -168,13 +505,13 @@
         <div class="simple-loader"></div>
     </div>
 
-    <!-- View Calendar nav button -->
-    <a href="calendar.html" class="nav-link" id="calendarNavButton" style="display: none;">View Calendar</a>
+	<!-- View Calendar nav button -->
+	<a href="calendar.html" class="nav-link" id="calendarNavButton" style="display: none;">View Calendar</a>
     
-    <!-- Sign out link -->
-    <button id="signOutButton" class="sign-out-link" onclick="signOut()" style="display: none;">Sign Out</button>	
-    
-    <!-- Login Screen -->
+	<!-- Sign out link -->
+	<button id="signOutButton" class="sign-out-link" onclick="signOut()" style="display: none;">Sign Out</button>	
+	
+    <!-- NEW: Login Screen -->
     <div class="login-splash-screen" id="loginSplashScreen" style="display: none;">
         <div class="login-content">
             <div id="loginForm">
@@ -187,24 +524,370 @@
 
     <!-- Main content (initially hidden) -->
     <div class="container" id="mainContainer" style="display: none;">
-        <div class="status-prefix">
-            <span class="desktop-text">Omari is <em class="probably">probably</em></span>
-            <span class="mobile-text">Omari<br>is <em class="probably">probably</em></span>
-        </div>
+		<div class="status-prefix">
+			<span class="desktop-text">Omari is <em class="probably">probably</em></span>
+			<span class="mobile-text">Omari<br>is <em class="probably">probably</em></span>
+		</div>
         <div class="status-main" id="statusMain"></div>
         
         <div class="status-details" id="statusDetails"></div>
         
     </div>
 
-    <!-- Include shared JavaScript files -->
-    <script src="shared-utils.js"></script>
-    <script src="shared-particles.js"></script>
-    <script src="shared-auth.js"></script>
-    <script src="shared-duty-logic.js"></script>
-    <script src="shared-modal.js"></script>
-
     <script>
+        // Enhanced particle system
+		function createParticles() {
+			const particlesContainer = document.getElementById('particles');
+			const particleCount = 300;
+			
+			for (let i = 0; i < particleCount; i++) {
+				const particle = document.createElement('div');
+				
+				// Random particle type
+				const types = ['particle-small', 'particle-medium', 'particle-large'];
+				const typeWeights = [0.6, 0.3, 0.1]; // More small particles
+				
+				let randomType = 'particle-small';
+				const rand = Math.random();
+				if (rand > typeWeights[0] + typeWeights[1]) {
+					randomType = 'particle-large';
+				} else if (rand > typeWeights[0]) {
+					randomType = 'particle-medium';
+				}
+				
+				particle.className = `particle ${randomType}`;
+				particle.style.left = Math.random() * 100 + '%';
+				
+				// Fix particles appearing at top - start them below viewport
+				const initialDelay = Math.random() * 20 + 's'; // Spread out over 20 seconds
+				particle.style.animationDelay = initialDelay;
+				
+				// Store the base duration for each particle type
+				const baseDuration = Math.random() * 4 + 4; // 4-8 seconds
+				particle.style.animationDuration = baseDuration + 's';
+				particle.dataset.baseDuration = baseDuration; // Store original duration
+				
+				particlesContainer.appendChild(particle);
+				
+				// Set initial very slow speed for loading state
+				setTimeout(() => {
+					const animations = particle.getAnimations();
+					if (animations.length > 0) {
+						animations[0].playbackRate = 0.05; // Very slow initially
+						particle.dataset.currentRate = 0.05;
+					}
+				}, 100);
+			}
+		}
+		
+		// Control particle speed based on train status
+		function updateParticleSpeed(status) {
+			const particles = document.querySelectorAll('.particle');
+			
+			// Define speed multipliers based on status
+			let targetSpeedMultiplier = 1;
+			
+			if (status.main.includes('at ')) {
+				targetSpeedMultiplier = 0.1; // Much slower when at station
+			} else if (status.main.includes('approaching ')) {
+				targetSpeedMultiplier = 0.5; // Medium speed when approaching
+			} else if (status.main.includes('departing ')) {
+				targetSpeedMultiplier = 1; // Normal speed when departing
+			} else if (status.main.includes('between ')) {
+				targetSpeedMultiplier = 3; // Even faster when traveling between stations
+			} else if (status.main.includes('on break') || status.main.includes('not on the DLR')) {
+				targetSpeedMultiplier = 0.05; // Very slow when not working
+			}
+			
+			particles.forEach(particle => {
+				// Get all animations on this particle
+				const animations = particle.getAnimations();
+				
+				if (animations.length > 0) {
+					const animation = animations[0]; // Get the floatUp animation
+					
+					// Get current playback rate or default to 1
+					const currentRate = particle.dataset.currentRate ? parseFloat(particle.dataset.currentRate) : 1;
+					
+					// Store transition data
+					particle.dataset.targetRate = targetSpeedMultiplier;
+					particle.dataset.startRate = currentRate;
+					particle.dataset.transitionStart = Date.now();
+					
+					// Clear any existing transition
+					if (particle.rateTransition) {
+						clearInterval(particle.rateTransition);
+					}
+					
+					// Smooth transition over 10 seconds
+					particle.rateTransition = setInterval(() => {
+						const elapsed = Date.now() - parseFloat(particle.dataset.transitionStart);
+						const duration = 10000; // 10 seconds
+						const progress = Math.min(elapsed / duration, 1);
+						
+						// Ease-out function
+						const easedProgress = 1 - Math.pow(1 - progress, 3);
+						
+						const startRate = parseFloat(particle.dataset.startRate);
+						const targetRate = parseFloat(particle.dataset.targetRate);
+						const currentRate = startRate + (targetRate - startRate) * easedProgress;
+						
+						// Update playback rate smoothly
+						animation.playbackRate = currentRate;
+						particle.dataset.currentRate = currentRate;
+						
+						// Clean up when done
+						if (progress >= 1) {
+							clearInterval(particle.rateTransition);
+							particle.rateTransition = null;
+						}
+					}, 50); // Update every 50ms for smooth transition
+				}
+			});
+		}
+        
+        // --- START: Firebase Integration and Authentication ---
+
+        const mainContainer = document.getElementById('mainContainer');
+        const loginSplashScreen = document.getElementById('loginSplashScreen');
+        const loginError = document.getElementById('loginError');
+        const loginButton = document.getElementById('loginButton');
+        const passwordInput = document.getElementById('passwordInput');
+
+		function signIn() {
+			const email = 'standard@yourapp.local';
+			const password = passwordInput.value;
+			
+			if (!password) {
+				loginError.textContent = "Please enter your password.";
+				return;
+			}
+
+			loginButton.disabled = true;
+			loginError.textContent = '';
+
+			console.log('Attempting to sign in user:', email);
+
+			firebase.auth().signInWithEmailAndPassword(email, password)
+				.then((userCredential) => {
+					console.log('Sign in successful for:', userCredential.user.email);
+					// Authentication successful - initializeApp will be called by onAuthStateChanged
+				})
+				.catch((error) => {
+					console.error('Sign in error:', error);
+					loginError.textContent = getUserFriendlyAuthError(error);
+					loginButton.disabled = false;
+				});
+		}
+        
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                signIn();
+            }
+        });
+
+        function getUserFriendlyAuthError(error) {
+            switch (error.code) {
+                case 'auth/invalid-login-credentials':
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-email':
+                    return "Incorrect password. Please try again.";
+                case 'auth/too-many-requests':
+                    return "Access temporarily disabled. Please try again later.";
+                case 'auth/network-request-failed':
+                    return "Network error. Please check your connection.";
+                default:
+                    return "Login error: " + error.message;
+            }
+        }
+		
+		function signOut() {
+			firebase.auth().signOut().then(() => {
+				console.log('User signed out');
+			}).catch((error) => {
+				console.error('Sign out error:', error);
+			});
+		}		
+        
+        // Main function to initialize app after login
+        function initializeApp() {			
+			// Show loading overlay
+			document.getElementById('loadingOverlay').style.display = 'flex';
+			document.getElementById('loadingOverlay').style.opacity = '1';
+			
+			console.log('initializeApp called for user:', firebase.auth().currentUser?.email);			
+			
+			// Hide login screen immediately
+			loginSplashScreen.style.opacity = '0';
+			setTimeout(() => {
+				loginSplashScreen.style.display = 'none';
+			}, 500);
+
+			// Show main container immediately
+			mainContainer.style.display = 'flex';			
+			
+			// Load duty tracker, duty lookup data, and initialize modal functionality
+			Promise.all([
+				fetchDutyTracker(),
+				fetchDutyLookupData(),  // NEW: Load duty lookup data
+				initializeModalFunctionality()  // NEW: Initialize modal functionality
+			])
+			.then(() => {
+				console.log('All data loaded successfully');
+				
+				// Same timing for overlays...
+				setTimeout(() => {
+					const loadingOverlay = document.getElementById('loadingOverlay');
+					if (loadingOverlay) {
+						loadingOverlay.style.opacity = '0';
+						setTimeout(() => {
+							loadingOverlay.style.display = 'none';
+						}, 800);
+					}
+				}, 3200);				
+				
+				setTimeout(() => {
+					const textOverlay = document.getElementById('textOverlay');
+					if (textOverlay) {
+						textOverlay.style.opacity = '0';
+						setTimeout(() => {
+							textOverlay.style.display = 'none';
+							document.getElementById('calendarNavButton').style.display = 'block';
+							document.getElementById('signOutButton').style.display = 'block';
+						}, 800);
+					}
+				}, 4000);
+				
+				// Start the real-time updates
+				startRealTimeUpdates();
+			})
+			.catch(error => {
+				console.error("Data loading failed:", error);
+				
+				// Handle error with same timing...
+				setTimeout(() => {
+					const loadingOverlay = document.getElementById('loadingOverlay');
+					if (loadingOverlay) {
+						loadingOverlay.style.opacity = '0';
+						setTimeout(() => {
+							loadingOverlay.style.display = 'none';
+						}, 800);
+					}
+				}, 3200);
+				
+				setTimeout(() => {
+					const textOverlay = document.getElementById('textOverlay');
+					if (textOverlay) {
+						textOverlay.style.opacity = '0';
+						setTimeout(() => {
+							textOverlay.style.display = 'none';
+						}, 800);
+					}
+					
+					const statusMain = document.getElementById('statusMain');
+					const statusDetails = document.getElementById('statusDetails');
+					
+					if (statusMain) {
+						statusMain.textContent = 'Error loading duty data';
+					}
+					if (statusDetails) {
+						statusDetails.textContent = error.message;
+					}
+				}, 4000);
+			});
+		}
+        
+        // Function to fetch duty tracker from Firebase
+		function fetchDutyTracker() {
+			return new Promise((resolve, reject) => {
+				// Reference to your storage bucket's tracker folder
+				const storageRef = firebase.storage().ref('tracker');
+				
+				// List all files in the tracker folder
+				storageRef.listAll()
+					.then((result) => {
+						console.log('Files found in tracker folder:', result.items.length);
+						
+						if (result.items.length === 0) {
+							throw new Error('No files found in tracker folder');
+						}
+						
+						// Find the duty-tracker.txt file
+						const trackerFile = result.items.find(item => item.name === 'duty-tracker.txt');
+						if (!trackerFile) {
+							throw new Error('duty-tracker.txt not found in tracker folder');
+						}
+						
+						console.log('Found duty-tracker.txt, getting download URL...');
+						
+						// Get download URL and fetch
+						return trackerFile.getDownloadURL();
+					})
+					.then((url) => {
+						console.log('Download URL obtained:', url);
+						
+						// Fetch the file content
+						return fetch(url);
+					})
+					.then(response => {
+						console.log('Fetch response:', response.status, response.statusText);
+						if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+						return response.text();
+					})
+					.then(text => {
+						console.log('Duty tracker loaded successfully. Length:', text.length);
+						dutyData = text;
+						resolve();
+					})
+					.catch(error => {
+						console.error('Error fetching duty tracker:', error);
+						reject(error);
+					});
+			});
+		}
+
+        // --- END: Firebase Integration and Authentication ---
+
+        function calculateBreakDetails(duty) {
+            if (!duty.FirstHalfEndTime || !duty.SecondHalfStartTime) return "N/A";
+
+            const [breakHours, breakMins] = calculateTimeDifference(
+                duty.FirstHalfEndTime,
+                duty.SecondHalfStartTime
+            ).split(':').map(Number);
+
+            const [mealHours, mealMins] = duty.MealBreakDuration.split(':').map(Number);
+            
+            const totalBreakMins = (breakHours * 60 + breakMins);
+            const mealBreakMins = (mealHours * 60 + mealMins);
+            const paidBreakMins = totalBreakMins - mealBreakMins;
+            
+            const paidHours = Math.floor(paidBreakMins / 60);
+            const paidMins = paidBreakMins % 60;
+            const paidBreak = `${paidHours.toString().padStart(2, '0')}:${paidMins.toString().padStart(2, '0')}`;
+
+            return `${formatTime(breakHours, breakMins)} (${duty.MealBreakDuration} unpaid + ${paidBreak} paid)`;
+        }
+
+        function calculateTimeDifference(time1, time2) {
+            const [h1, m1] = time1.split(':').map(Number);
+            const [h2, m2] = time2.split(':').map(Number);
+            
+            let diffMinutes = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (diffMinutes < 0) diffMinutes += 24 * 60;
+            
+            const hours = Math.floor(diffMinutes / 60);
+            const minutes = diffMinutes % 60;
+            return formatTime(hours, minutes);
+        }
+
+        function formatTime(hours, minutes) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        
         // Data storage
         let csvData = null;
         let dutyData = null;
@@ -214,147 +897,12 @@
         let previousStatus = { main: null, details: null };
         let currentTimetableName = 'N/A';
         let lastPositionForLogging = null;
-        
+		
         // Global update buffer to prevent rapid-fire updates
         let updateBuffer = {
             timer: null,
             pendingUpdate: null
         };
-        
-        // TIMEZONE SETTING - Change this to use different timezone
-        const SYSTEM_TIMEZONE = "America/New_York";
-        
-        // Get current time in the set timezone
-        function getCurrentTimeInTimezone(dateTime = null) {
-            const now = dateTime || new Date();
-            
-            try {
-                // Get current time in the set timezone
-                const localTimeString = now.toLocaleString("en-US", {
-                    timeZone: SYSTEM_TIMEZONE,
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false
-                });
-                
-                // Parse the local time string (format: "MM/DD/YYYY, HH:mm:ss")
-                const [datePart, timePart] = localTimeString.split(', ');
-                const [month, day, year] = datePart.split('/');
-                const [hour, minute, second] = timePart.split(':');
-                
-                const localDateTime = new Date(year, month - 1, day, hour, minute, second);
-                
-                return localDateTime;
-                
-            } catch (error) {
-                console.error(`[ERROR] getCurrentTimeInTimezone failed:`, error);
-                return new Date(); // Fallback to system time
-            }
-        }
-
-        // Get operating Date object (for timetable selection)
-        function getOperatingDateTime(dateTime = null) {
-            const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
-            
-            // If before 03:00, use previous day as operating date
-            if (localDateTime.getHours() < 3) {
-                localDateTime.setDate(localDateTime.getDate() - 1);
-            }
-            
-            return localDateTime;
-        }
-        
-        // Main function to initialize app after login
-        function initializeApp() {			
-            // Show loading overlay
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingOverlay').style.opacity = '1';
-            
-            console.log('initializeApp called for user:', firebase.auth().currentUser?.email);			
-            
-            // Hide login screen immediately
-            loginSplashScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginSplashScreen.style.display = 'none';
-            }, 500);
-
-            // Show main container immediately
-            mainContainer.style.display = 'flex';			
-            
-            // Load duty tracker, duty lookup data, and initialize modal functionality
-            Promise.all([
-                fetchDutyTracker(),
-                fetchDutyLookupData(),
-                initializeModalFunctionality()
-            ])
-            .then(() => {
-                console.log('All data loaded successfully');
-                
-                // Same timing for overlays...
-                setTimeout(() => {
-                    const loadingOverlay = document.getElementById('loadingOverlay');
-                    if (loadingOverlay) {
-                        loadingOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                }, 3200);				
-                
-                setTimeout(() => {
-                    const textOverlay = document.getElementById('textOverlay');
-                    if (textOverlay) {
-                        textOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            textOverlay.style.display = 'none';
-                            document.getElementById('calendarNavButton').style.display = 'block';
-                            document.getElementById('signOutButton').style.display = 'block';
-                        }, 800);
-                    }
-                }, 4000);
-                
-                // Start the real-time updates
-                startRealTimeUpdates();
-            })
-            .catch(error => {
-                console.error("Data loading failed:", error);
-                
-                // Handle error with same timing...
-                setTimeout(() => {
-                    const loadingOverlay = document.getElementById('loadingOverlay');
-                    if (loadingOverlay) {
-                        loadingOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                }, 3200);
-                
-                setTimeout(() => {
-                    const textOverlay = document.getElementById('textOverlay');
-                    if (textOverlay) {
-                        textOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            textOverlay.style.display = 'none';
-                        }, 800);
-                    }
-                    
-                    const statusMain = document.getElementById('statusMain');
-                    const statusDetails = document.getElementById('statusDetails');
-                    
-                    if (statusMain) {
-                        statusMain.textContent = 'Error loading duty data';
-                    }
-                    if (statusDetails) {
-                        statusDetails.textContent = error.message;
-                    }
-                }, 4000);
-            });
-        }
         
         // Start real-time updates
         function startRealTimeUpdates() {
@@ -414,6 +962,393 @@
                 displayStatus(status.main, status.details, !isCountdownUpdate); // animate only if not countdown
                 previousStatus = { main: status.main, details: status.details };
             }
+        }
+        
+        // Check if the status change is only a countdown update
+        function isOnlyCountdownChange(oldStatus, newStatus) {
+            if (!oldStatus.details || !newStatus.details) return false;
+            if (oldStatus.main !== newStatus.main) return false;
+            
+            // Check if only the minute number changed in departure countdown
+            const oldMinutes = oldStatus.details.match(/departing in (\d+) minute/);
+            const newMinutes = newStatus.details.match(/departing in (\d+) minute/);
+            
+            if (oldMinutes && newMinutes) {
+                // Same pattern, just different numbers - this is a countdown update
+                const oldRest = oldStatus.details.replace(/departing in \d+ minute[s]?/, 'departing in X minute');
+                const newRest = newStatus.details.replace(/departing in \d+ minute[s]?/, 'departing in X minute');
+                return oldRest === newRest;
+            }
+            
+            return false;
+        }
+        
+        // TIMEZONE SETTING - Change this to use different timezone
+        const SYSTEM_TIMEZONE = "America/New_York";
+        
+        // Get current time in the set timezone
+        function getCurrentTimeInTimezone(dateTime = null) {
+            const now = dateTime || new Date();
+            
+            try {
+                // Get current time in the set timezone
+                const localTimeString = now.toLocaleString("en-US", {
+                    timeZone: SYSTEM_TIMEZONE,
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                
+                // Parse the local time string (format: "MM/DD/YYYY, HH:mm:ss")
+                const [datePart, timePart] = localTimeString.split(', ');
+                const [month, day, year] = datePart.split('/');
+                const [hour, minute, second] = timePart.split(':');
+                
+                const localDateTime = new Date(year, month - 1, day, hour, minute, second);
+                
+                return localDateTime;
+                
+            } catch (error) {
+                console.error(`[ERROR] getCurrentTimeInTimezone failed:`, error);
+                return new Date(); // Fallback to system time
+            }
+        }
+
+        // Get operating Date object (for timetable selection)
+        function getOperatingDateTime(dateTime = null) {
+            const localDateTime = getCurrentTimeInTimezone(dateTime || new Date());
+            
+            // If before 03:00, use previous day as operating date
+            if (localDateTime.getHours() < 3) {
+                localDateTime.setDate(localDateTime.getDate() - 1);
+            }
+            
+            return localDateTime;
+        }
+        
+        // Get operating date string (for duty lookup)
+        function getOperatingDate(dateTime = null) {
+            const operatingDateTime = getOperatingDateTime(dateTime);
+            // Return just the date part as a string
+            return operatingDateTime.toISOString().split('T')[0];
+        }
+        
+        // Convert duty time to actual datetime in the set timezone (handles 25:55 = 01:55 next day)
+        function convertDutyTimeToDateTime(dutyDate, dutyTime) {
+            const [hours, minutes] = dutyTime.split(':').map(Number);
+            const actualHours = hours >= 24 ? hours - 24 : hours;
+            const isNextDay = hours >= 24;
+            
+            // Create the datetime in local timezone, not UTC
+            const dutyDateTime = new Date(dutyDate + 'T' + actualHours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':00');
+            
+            if (isNextDay) {
+                dutyDateTime.setDate(dutyDateTime.getDate() + 1);
+            }
+            
+            return dutyDateTime;
+        }
+        
+        // Location mapping from timetable explorer
+        const locationMapping = {
+            'ABR': 'Abbey Road', 'ALS': 'All Saints', 'BAN': 'Bank', 'BEC': 'Beckton', 
+            'BEP': 'Beckton Park', 'BLA': 'Blackwall', 'BOC': 'Bow Church', 'CAW': 'Canary Wharf',
+            'CAT': 'Canning Town', 'CRO': 'Crossharbour', 'CUH': 'Custom House', 'CUS': 'Cutty Sark',
+            'CYP': 'Cyprus', 'DEB': 'Deptford Bridge', 'DER': 'Devons Road', 'EAI': 'East India',
+            'ELR': 'Elverson Road', 'GAR': 'Gallions Reach', 'GRE': 'Greenwich', 'HEQ': 'Heron Quays',
+            'ISG': 'Island Gardens', 'KGV': 'King George V', 'LAP': 'Langdon Park', 'LEW': 'Lewisham',
+            'LIM': 'Limehouse', 'LCA': 'London City Airport', 'MUD': 'Mudchute', 'PDK': 'Pontoon Dock',
+            'POP': 'Poplar', 'PRR': 'Prince Regent', 'PML': 'Pudding Mill Lane', 'ROA': 'Royal Albert',
+            'ROV': 'Royal Victoria', 'SHA': 'Shadwell', 'SOQ': 'South Quay', 'STL': 'Star Lane',
+            'SHS': 'Stratford High Street', 'STI': 'Stratford International', 'STR': 'Stratford',
+            'TOG': 'Tower Gateway', 'WEH': 'West Ham', 'WIQ': 'West India Quay', 'WST': 'West Silvertown',
+            'WES': 'Westferry', 'WOA': 'Woolwich Arsenal'
+        };
+        
+        // --- TIMETABLE FETCHING LOGIC ---
+
+        function parseDateRange(dateStr) {
+			dateStr = dateStr.replace(/['"]/g, '');
+			if (dateStr.includes('/')) {
+				const [start, end] = dateStr.split('/').map(d => new Date(d.trim()));
+				return { start, end };
+			}
+			const date = new Date(dateStr);
+			return { start: date, end: date };
+		}
+
+		function getDayName(date) {
+			return date.toLocaleDateString('en-US', { weekday: 'long' });
+		}
+
+		function isDateInRange(date, rangeStr) {
+			const ranges = rangeStr.split(',').map(r => r.trim().replace(/['"]/g, ''));
+			return ranges.some(range => {
+				if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(range)) {
+					return getDayName(date) === range;
+				}
+				const dateRange = parseDateRange(range);
+				return date >= dateRange.start && date <= dateRange.end;
+			});
+		}
+		
+        // Uses getOperatingDateTime to ensure correct day is used
+		function sortTimetablesByApplicability(entries) {
+			const operatingDateTime = getOperatingDateTime(); // Use operating day logic
+			const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+			
+			return entries.sort((a, b) => {
+				const aApplies = a.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+				const bApplies = b.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
+				
+				const aHasSpecificDate = aApplies.some(range => !dayNames.includes(range));
+				const bHasSpecificDate = bApplies.some(range => !dayNames.includes(range));
+				
+				const aAppliesNow = aApplies.some(range => isDateInRange(operatingDateTime, range));
+				const bAppliesNow = bApplies.some(range => isDateInRange(operatingDateTime, range));
+				
+				if (aAppliesNow && bAppliesNow) {
+					if (aHasSpecificDate && !bHasSpecificDate) return -1;
+					if (!aHasSpecificDate && bHasSpecificDate) return 1;
+				}
+				
+				if (aAppliesNow && !bAppliesNow) return -1;
+				if (!aAppliesNow && bAppliesNow) return 1;
+				
+				return a.name.localeCompare(b.name);
+			});
+		}
+
+        async function fetchAndProcessTimetable() {
+            const pathsUrl = 'https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt';
+            
+            try {
+                // 1. Fetch paths.txt
+                const response = await fetch(pathsUrl, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Failed to fetch paths.txt: ${response.statusText}`);
+                const text = await response.text();
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+
+                // 2. Parse paths.txt to get timetable entries
+                let currentEntry = {};
+				const timetableEntries = [];
+				for (const line of lines) {
+					const trimmedLine = line.trim();
+					if (trimmedLine.startsWith('Name:')) {
+						if (Object.keys(currentEntry).length > 0) timetableEntries.push({...currentEntry});
+						currentEntry = { name: trimmedLine.substring(5).trim() };
+					} else if (trimmedLine.startsWith('Applies:')) {
+						currentEntry.applies = trimmedLine.substring(8).trim();
+					} else if (trimmedLine.startsWith('URL:')) {
+						currentEntry.url = trimmedLine.substring(4).trim();
+					}
+				}
+				if (Object.keys(currentEntry).length > 0) timetableEntries.push(currentEntry);
+
+                if (timetableEntries.length === 0) {
+                    throw new Error('No valid timetables found in paths.txt');
+                }
+
+                // 3. Determine the most applicable timetable
+                const sortedEntries = sortTimetablesByApplicability(timetableEntries);
+                const applicableTimetable = sortedEntries[0];
+                currentTimetableName = applicableTimetable.name;
+                console.log(`[INFO] Using timetable: '${currentTimetableName}' from URL: ${applicableTimetable.url}`);
+
+                // 4. Fetch the applicable timetable CSV
+                const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
+                if (!csvResponse.ok) throw new Error(`Failed to fetch timetable CSV: ${csvResponse.statusText}`);
+                const csvText = await csvResponse.text();
+
+                // 5. Process the CSV data
+                csvData = csvText;
+                parsedCsvData = parseCSVData(csvData);
+                runTransitions = detectRunTransitions(csvData);
+                console.log('Timetable data loaded and parsed automatically.');
+
+            } catch (error) {
+                console.error('[ERROR] Automatic timetable fetching failed:', error);
+                throw error;
+            }
+        }
+        
+        // --- END OF TIMETABLE LOGIC ---
+
+        // Stores the raw CSV line for debugging
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const runData = {};
+            
+            const junctions = [
+                'JRMS', 'JRMX', 'JCAW', 'JWEM', 'JCRO', 'JC2M', 'JC3M',
+                'JC4M', 'JROM', 'JWEX', 'JCTM', 'JCTX', 'JWIQ', 'JNQX',
+                'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
+            ];
+            
+            lines.forEach((line, index) => {
+                const parts = line.split(',');
+                if (parts.length >= 7) {
+                    const runNumber = parts[1].trim();
+                    const locationCode = parts[4].trim();
+                    const arrivalTime = parts[5].trim();
+                    const departureTime = parts[6].trim();
+                    
+                    if (!junctions.includes(locationCode)) {
+                        if (!runData[runNumber]) {
+                            runData[runNumber] = [];
+                        }
+                        
+                        let location = '';
+                        let platform = '';
+                        
+                        if (locationCode === 'BANH') {
+                            location = 'Bank Headshunt';
+                        } else {
+                            const codePrefix = locationCode.slice(0, 3);
+                            platform = locationCode.slice(3);
+                            
+                            if (locationMapping[codePrefix]) {
+                                location = locationMapping[codePrefix];
+                                if (['LEW', 'BEC', 'STI', 'WOA'].includes(codePrefix) || locationCode === 'STR4B') {
+                                    platform = '';
+                                }
+                            } else {
+                                location = locationCode;
+                                platform = '';
+                            }
+                        }
+                        
+                        runData[runNumber].push({
+                            location,
+                            platform,
+                            arrivalTime,
+                            departureTime,
+                            locationCode,
+                            rawLine: line // Store original line
+                        });
+                    }
+                }
+            });
+            
+            return runData;
+        }
+        
+        // Detect run transitions (from timetable explorer)
+        function detectRunTransitions(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const transitions = {};
+            
+            // Adjacency map of DLR stations
+            const adjacencyMap = {
+                "ABR": ["SHS", "WEH"], "ALS": ["LAP", "POP"], "BAN": ["SHA", "BANH"],
+                "BANH": ["BAN"], "BEC": ["GAR"], "BEP": ["CYP", "ROA"],
+                "BLA": ["EAI", "POP"], "BOC": ["DER", "PML"], "CAT": ["EAI", "ROV", "STL", "WST"],
+                "CAW": ["HEQ", "WES", "WIQ"], "CRO": ["MUD", "SOQ"], "CUH": ["PRR", "ROV"],
+                "CUS": ["GRE", "ISG"], "CYP": ["BEP", "GAR"], "DEB": ["ELR", "GRE"],
+                "DER": ["BOC", "LAP"], "EAI": ["BLA", "CAT"], "ELR": ["DEB", "LEW"],
+                "GAR": ["BEC", "CYP"], "GRE": ["CUS", "DEB"], "HEQ": ["CAW", "SOQ"],
+                "ISG": ["CUS", "MUD"], "KGV": ["LCA", "WOA"], "LAP": ["ALS", "DER"],
+                "LCA": ["KGV", "PDK"], "LEW": ["ELR"], "LIM": ["SHA", "WES"],
+                "MUD": ["CRO", "ISG"], "PDK": ["LCA", "WST"], "PML": ["BOC", "STR"],
+                "POP": ["ALS", "BLA", "WES", "WIQ"], "PRR": ["CUH", "ROA"], "ROA": ["BEP", "PRR"],
+                "ROV": ["CAT", "CUH"], "SHA": ["BAN", "LIM", "TOG"], "SHS": ["ABR", "STR"],
+                "SOQ": ["CRO", "HEQ"], "STI": ["STR"], "STL": ["CAT", "WEH"],
+                "STR": ["PML", "SHS", "STI"], "TOG": ["SHA"], "WEH": ["ABR", "STL"],
+                "WES": ["CAW", "LIM", "POP", "WIQ"], "WIQ": ["CAW", "POP", "WES"],
+                "WOA": ["KGV"], "WST": ["CAT", "PDK"]
+            };
+            
+            function getStationCode(locationCode) {
+                if (locationCode === "BANH") return "BANH";
+                if (locationCode === "STR4B") return "STR";
+                return locationCode.substring(0, 3);
+            }
+            
+            function areStationsAdjacent(station1, station2) {
+                const code1 = getStationCode(station1);
+                const code2 = getStationCode(station2);
+                if (code1 === code2) return true;
+                if (adjacencyMap[code1] && adjacencyMap[code1].includes(code2)) return true;
+                if (adjacencyMap[code2] && adjacencyMap[code2].includes(code1)) return true;
+                return false;
+            }
+            
+            function parseTime(timeStr) {
+                const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+                return hours * 3600 + minutes * 60 + seconds;
+            }
+            
+            // Create a map of run numbers to their line indices
+            const runLineIndices = {};
+            lines.forEach((line, index) => {
+                const parts = line.split(',');
+                if (parts.length >= 7) {
+                    const runNumber = parts[1].trim();
+                    if (!runLineIndices[runNumber]) {
+                        runLineIndices[runNumber] = [];
+                    }
+                    runLineIndices[runNumber].push(index);
+                }
+            });
+            
+            const allRuns = Object.keys(runLineIndices);
+            
+            for (const fromRun of allRuns) {
+                const fromRunIndices = runLineIndices[fromRun];
+                if (fromRunIndices.length === 0) continue;
+                
+                const lastLineIndex = Math.max(...fromRunIndices);
+                const lastLine = lines[lastLineIndex];
+                const lastLineParts = lastLine.split(',');
+                
+                const lastLocationCode = lastLineParts[4].trim();
+                const lastDepartureTime = lastLineParts[6].trim();
+                const lastDepartureSeconds = parseTime(lastDepartureTime);
+                
+                if (lastLocationCode.startsWith('J')) continue;
+                
+                for (let i = lastLineIndex + 1; i <= lastLineIndex + 3 && i < lines.length; i++) {
+                    const nextLine = lines[i];
+                    const nextLineParts = nextLine.split(',');
+                    
+                    if (nextLineParts.length < 7) continue;
+                    
+                    const nextRun = nextLineParts[1].trim();
+                    if (nextRun === fromRun) continue;
+                    
+                    if (Math.min(...runLineIndices[nextRun]) !== i) continue;
+                    
+                    const nextLocationCode = nextLineParts[4].trim();
+                    const nextArrivalTime = nextLineParts[5].trim();
+                    const nextArrivalSeconds = parseTime(nextArrivalTime);
+                    
+                    if (nextLocationCode.startsWith('J')) continue;
+                    
+                    const timeDiffMinutes = (nextArrivalSeconds - lastDepartureSeconds) / 60;
+                    
+                    if (areStationsAdjacent(lastLocationCode, nextLocationCode) && 
+                        timeDiffMinutes >= 0.5 && 
+                        timeDiffMinutes <= 5) {
+                        
+                        transitions[fromRun] = { 
+                            nextRun, 
+                            location: nextLocationCode,
+                            fromLocation: lastLocationCode
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            return transitions;
+        }
+        
+        function formatDateForDuty(date) {
+            return date.toISOString().split('T')[0]; //-MM-DD format
         }
         
         function findNextDuty(currentOperatingDate, currentTime, currentDateTime) {
@@ -508,50 +1443,50 @@
             return result;
         }
         
-        function formatNextDutyDate(nextDuty, currentDateTime) {
-            const nextDate = new Date(nextDuty.dateTime);
-            const today = new Date(currentDateTime);
-            today.setHours(0, 0, 0, 0);
+		function formatNextDutyDate(nextDuty, currentDateTime) {
+			const nextDate = new Date(nextDuty.dateTime);
+			const today = new Date(currentDateTime);
+			today.setHours(0, 0, 0, 0);
 
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
+			const tomorrow = new Date(today);
+			tomorrow.setDate(tomorrow.getDate() + 1);
 
-            const nextDateOnly = new Date(nextDate);
-            nextDateOnly.setHours(0, 0, 0, 0);
+			const nextDateOnly = new Date(nextDate);
+			nextDateOnly.setHours(0, 0, 0, 0);
 
-            const timeStr = nextDuty.time.substring(0, 5); // Strip seconds from time
+			const timeStr = nextDuty.time.substring(0, 5); // Strip seconds from time
 
-            const getWeekNumber = (date) => {
-                const d = new Date(date);
-                d.setHours(0, 0, 0, 0);
-                d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-                const yearStart = new Date(d.getFullYear(), 0, 1);
-                return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            };
+			const getWeekNumber = (date) => {
+				const d = new Date(date);
+				d.setHours(0, 0, 0, 0);
+				d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+				const yearStart = new Date(d.getFullYear(), 0, 1);
+				return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+			};
 
-            if (+nextDateOnly === +today) {
-                return `today at ${timeStr}`;
-            } else if (+nextDateOnly === +tomorrow) {
-                return `tomorrow at ${timeStr}`;
-            }
+			if (+nextDateOnly === +today) {
+				return `today at ${timeStr}`;
+			} else if (+nextDateOnly === +tomorrow) {
+				return `tomorrow at ${timeStr}`;
+			}
 
-            const dayName = nextDate.toLocaleDateString('en-US', { weekday: 'long' });
-            const nextWeekNum = getWeekNumber(nextDateOnly);
-            const currentWeekNum = getWeekNumber(today);
+			const dayName = nextDate.toLocaleDateString('en-US', { weekday: 'long' });
+			const nextWeekNum = getWeekNumber(nextDateOnly);
+			const currentWeekNum = getWeekNumber(today);
 
-            if (nextWeekNum === currentWeekNum) {
-                return `on ${dayName} at ${timeStr}`;
-            } else if (nextWeekNum === currentWeekNum + 1) {
-                return `on ${dayName} next week at ${timeStr}`;
-            } else {
-                const day = nextDate.getDate();
-                const suffix = day % 10 === 1 && day !== 11 ? 'st' :
-                              day % 10 === 2 && day !== 12 ? 'nd' :
-                              day % 10 === 3 && day !== 13 ? 'rd' : 'th';
-                const month = nextDate.toLocaleDateString('en-US', { month: 'long' });
-                return `on the ${day}${suffix} of ${month} at ${timeStr}`;
-            }
-        }
+			if (nextWeekNum === currentWeekNum) {
+				return `on ${dayName} at ${timeStr}`;
+			} else if (nextWeekNum === currentWeekNum + 1) {
+				return `on ${dayName} next week at ${timeStr}`;
+			} else {
+				const day = nextDate.getDate();
+				const suffix = day % 10 === 1 && day !== 11 ? 'st' :
+							  day % 10 === 2 && day !== 12 ? 'nd' :
+							  day % 10 === 3 && day !== 13 ? 'rd' : 'th';
+				const month = nextDate.toLocaleDateString('en-US', { month: 'long' });
+				return `on the ${day}${suffix} of ${month} at ${timeStr}`;
+			}
+		}
         
         // *** MODIFIED ***: Correctly adjusts current time for comparison with timetable
         function calculateCurrentStatus(operatingDate, time, currentDateTime) {
@@ -690,276 +1625,114 @@
             }
         }
         
-        // Enhanced getRunStatus function with base/non-base duty detection
-        function getRunStatus(runInfo, currentTimeSeconds, timeStr) {
-            // Get duty versions to check if it's a base duty
-            const operatingDate = getOperatingDate();
-            const dutyVersions = getDutyForDate(runInfo.firstRun, operatingDate);
-            const isBaseDuty = dutyVersions.length > 0 && isDutyBaseType(dutyVersions[0]);
-            
-            // SIMPLE RULE: Don't start position updates until 1 minute after pickup time
-            const dutyStartTimeSeconds = parseTime(runInfo.startTime);
-            const oneMinuteAfterStart = dutyStartTimeSeconds + 60;
-            
-            if (currentTimeSeconds < oneMinuteAfterStart) {
-                // We're still in the "pickup period" - show simple departing status
-                const startLocationName = getLocationName(runInfo.startLocation);
-                
-                // Handle run transitions to get the right run number
-                let actualRunNumber = runInfo.firstRun;
-                let displayRunNumber = runInfo.runNumber;
-                
-                if (runInfo.secondRun && runInfo.transitionTime && currentTimeSeconds > runInfo.transitionTime) {
-                    actualRunNumber = runInfo.secondRun;
-                    displayRunNumber = actualRunNumber;
-                }
-                
-                // Get simple destination
-                let destination;
-                if (isBaseDuty && parsedCsvData[actualRunNumber]) {
-                    const lastStop = parsedCsvData[actualRunNumber][parsedCsvData[actualRunNumber].length - 1];
-                    destination = lastStop.location;
-                } else {
-                    destination = getLocationName(runInfo.endLocation);
-                }
-                
-                return {
-                    main: `departing ${startLocationName}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            }
-            
-            // If it's not a base duty, use fallback logic
-            if (!isBaseDuty) {
-                const startLocationName = getLocationName(runInfo.startLocation);
-                const endLocationName = getLocationName(runInfo.endLocation);
-                const displayRunNumber = runInfo.runNumber;
-                
-                return {
-                    main: 'somewhere on the DLR',
-                    details: `onboard Run ${displayRunNumber} which picked up from ${startLocationName} at ${runInfo.startTime.substring(0, 5)} and is relieved at ${endLocationName} at ${runInfo.endTime.substring(0, 5)}`
-                };
-            }
-            
-            // Continue with existing base duty logic...
-            // Handle run transitions
-            let actualRunNumber = runInfo.firstRun;
-            let displayRunNumber = runInfo.runNumber;
-            
-            if (runInfo.secondRun && runInfo.transitionTime) {
-                // Check if we're in the transition gap
-                if (currentTimeSeconds > runInfo.transitionTime) {
-                    // We're after the first run ended, check if second run has started
-                    const secondRunStops = parsedCsvData[runInfo.secondRun];
-                    if (secondRunStops && secondRunStops.length > 0) {
-                        const secondRunStartTime = parseTime(secondRunStops[0].arrivalTime);
-                        
-                        if (currentTimeSeconds < secondRunStartTime) {
-                            // We're in the transition gap - between runs
-                            const firstRunStops = parsedCsvData[runInfo.firstRun];
-                            if (firstRunStops && firstRunStops.length > 0) {
-                                const lastStopFirstRun = firstRunStops[firstRunStops.length - 1];
-                                const firstStopSecondRun = secondRunStops[0];
-                                
-                                return {
-                                    main: `between ${lastStopFirstRun.location} and ${firstStopSecondRun.location}`,
-                                    details: `Transitioning from Run ${runInfo.firstRun} to Run ${runInfo.secondRun}`
-                                };
-                            }
-                        } else {
-                            // Second run has started, use second run
-                            actualRunNumber = runInfo.secondRun;
-                        }
-                    }
-                }
-                // If we're still before transition time, continue using first run
-                displayRunNumber = actualRunNumber; // Show the actual run number being used
-            }
-            
-            // Check if we have this run in our CSV data
-            if (!parsedCsvData[actualRunNumber]) {
-                // Regular operating service without timetable
-                const startStation = getLocationName(runInfo.startLocation);
-                const endStation = getLocationName(runInfo.endLocation);
-                
-                return {
-                    main: `operating between ${startStation} and ${endStation}`,
-                    details: `onboard Run ${displayRunNumber} - timetable not available`
-                };
-            }
-            
-            // Get the destination for this trip (not the entire run)
-            const destination = getCurrentTripDestination(actualRunNumber, currentTimeSeconds);
-            
-            // Find current position in the timetable
-            const currentPosition = findCurrentPosition(parsedCsvData[actualRunNumber], timeStr, currentTimeSeconds);
-            
-            if (currentPosition.type === 'at_station') {
-                let details = '';
-                if (currentPosition.details === 'departing soon') {
-                    details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
-                } else if (currentPosition.details.includes('minute')) {
-                    details = `onboard Run ${displayRunNumber} to ${destination} - ${currentPosition.details}`;
-                } else {
-                    // This covers "departing now" which we're removing - treat as departing soon
-                    details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
-                }
-                
-                return {
-                    main: `at ${currentPosition.location}`,
-                    details: details
-                };
-            } else if (currentPosition.type === 'departing_station') {
-                return {
-                    main: `departing ${currentPosition.location}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            } else if (currentPosition.type === 'approaching_station') {
-                return {
-                    main: `approaching ${currentPosition.to}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            } else if (currentPosition.type === 'between_stations') {
-                return {
-                    main: `between ${currentPosition.from} and ${currentPosition.to}`,
-                    details: `onboard Run ${displayRunNumber} to ${destination}`
-                };
-            } else {
-                // Existing fallback logic for depot movements...
-                const startLocation = runInfo.startLocation;
-                const endLocation = runInfo.endLocation;
-                
-                if (['POD', 'BED'].includes(startLocation) || ['POD', 'BED'].includes(endLocation)) {
-                    if (['POD', 'BED'].includes(startLocation)) {
-                        // Empty stock leaving depot
-                        const depot = getDepotName(startLocation);
-                        let dutyStartTime = runInfo.startTime.substring(0, 5);
-                        
-                        // Convert 25:55 format to 01:55 for display  
-                        if (dutyStartTime.startsWith('2') && parseInt(dutyStartTime.split(':')[0]) >= 24) {
-                            const [hours, minutes] = dutyStartTime.split(':');
-                            const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                            dutyStartTime = `${adjustedHours}:${minutes}`;
-                        }
-                        
-                        const firstStation = getRunFirstStation(actualRunNumber);
-                        
-                        if (firstStation) {
-                            let firstStationTime = firstStation.time.substring(0, 5);
-                            if (firstStationTime.startsWith('2') && parseInt(firstStationTime.split(':')[0]) >= 24) {
-                                const [hours, minutes] = firstStationTime.split(':');
-                                const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                                firstStationTime = `${adjustedHours}:${minutes}`;
-                            }
-                            
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber} when it reaches ${firstStation.location} at ${firstStationTime}`
-                            };
-                        } else {
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber}`
-                            };
-                        }
-                    } else {
-                        // Empty stock returning to depot
-                        const depot = getDepotName(endLocation);
-                        let dutyEndTime = runInfo.endTime.substring(0, 5);
-                        
-                        // Convert 25:55 format to 01:55 for display
-                        if (dutyEndTime.startsWith('2') && parseInt(dutyEndTime.split(':')[0]) >= 24) {
-                            const [hours, minutes] = dutyEndTime.split(':');
-                            const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                            dutyEndTime = `${adjustedHours}:${minutes}`;
-                        }
-                        
-                        const lastStation = getRunLastStation(actualRunNumber);
-                        
-                        if (lastStation) {
-                            let lastStationTime = lastStation.time.substring(0, 5);
-                            // Convert last station time too if needed
-                            if (lastStationTime.startsWith('2') && parseInt(lastStationTime.split(':')[0]) >= 24) {
-                                const [hours, minutes] = lastStationTime.split(':');
-                                const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
-                                lastStationTime = `${adjustedHours}:${minutes}`;
-                            }
-                            
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber} which the timetable for ended when it reached ${lastStation.location} at ${lastStationTime}`
-                            };
-                        } else {
-                            return {
-                                main: 'somewhere on the DLR',
-                                details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber}`
-                            };
-                        }
-                    }
-                }
-                
-                // Fallback to simple calculation
-                const startStation = getLocationName(runInfo.startLocation);
-                const endStation = getLocationName(runInfo.endLocation);
-                const runStartTimeSeconds = parseTime(runInfo.startTime);
-                const runEndTimeSeconds = parseTime(runInfo.endTime);
-                const elapsed = currentTimeSeconds - runStartTimeSeconds;
-                const duration = runEndTimeSeconds - runStartTimeSeconds;
-                const progress = elapsed / duration;
-                
-                if (progress < 0.3) {
-                    return {
-                        main: `departing ${startStation}`,
-                        details: `onboard Run ${displayRunNumber} to ${destination}`
-                    };
-                } else if (progress > 0.8) {
-                    return {
-                        main: `approaching ${endStation}`,
-                        details: `onboard Run ${displayRunNumber} to ${destination}`
-                    };
-                } else {
-                    return {
-                        main: `between ${startStation} and ${endStation}`,
-                        details: `onboard Run ${displayRunNumber} to ${destination}`
-                    };
-                }
-            }
+        function parseTime(timeStr) {
+            // Handle both HH:MM and HH:MM:SS formats
+            const parts = timeStr.split(':');
+            const hours = parseInt(parts[0]);
+            const minutes = parseInt(parts[1]);
+            const seconds = parts[2] ? parseInt(parts[2]) : 0;
+            return hours * 3600 + minutes * 60 + seconds; // Return total seconds for precision
         }
         
-        // Get the destination for current trip within a run - SIMPLIFIED
-        function getCurrentTripDestination(runNumber, currentTimeSeconds) {
-            if (!parsedCsvData[runNumber] || parsedCsvData[runNumber].length === 0) {
-                console.log(`[DEBUG] No data for run ${runNumber}`);
-                return null;
+        function getLocationName(locationCode) {
+            // Handle depot codes first
+            if (locationCode === 'POD') {
+                return 'Poplar Depot';
+            }
+            if (locationCode === 'BED') {
+                return 'Beckton Depot';
             }
             
-            const stops = parsedCsvData[runNumber];
-            const trips = detectTrips(stops);
-            
-            // Find which trip we're currently in
-            for (const trip of trips) {
-                const tripStartTime = parseTime(trip.departureTime);
-                const tripEndTime = parseTime(trip.arrivalTime);
-                
-                if (currentTimeSeconds >= tripStartTime && currentTimeSeconds <= tripEndTime) {
-                    return trip.to;
-                }
-            }
-            
-            // If we're not in any trip, find the next upcoming trip
-            for (const trip of trips) {
-                const tripStartTime = parseTime(trip.departureTime);
-                if (currentTimeSeconds < tripStartTime) {
-                    console.log(`[DEBUG] Next trip destination: ${trip.to}`);
-                    return trip.to;
-                }
-            }
-            
-            // Fallback: return the final destination of the entire run
-            const finalDestination = stops[stops.length - 1].location;
-            console.log(`[DEBUG] Fallback destination: ${finalDestination}`);
-            return finalDestination;
+            const stationCode = locationCode.substring(0, 3);
+            const result = locationMapping[stationCode] || locationCode;
+            return result;
         }
+        
+        function getDepotName(locationCode) {
+            if (locationCode === 'POD') return 'Poplar Depot';
+            if (locationCode === 'BED') return 'Beckton Depot';
+            return locationCode;
+        }
+        
+        // Detect trips within a run (from timetable explorer)
+		function detectTrips(stops) {
+			const trips = [];
+			let currentTrip = [];
+			let tripNumber = 1;
+
+			for (let i = 0; i < stops.length; i++) {
+				currentTrip.push(stops[i]);
+
+				if (i < stops.length - 2) {
+					const loc1 = stops[i].location;
+					const loc2 = stops[i + 1].location;
+					const loc3 = stops[i + 2].location;
+
+					if (loc1 === loc3 && loc1 !== loc2) {
+						trips.push({
+							tripNumber,
+							from: currentTrip[0].location,
+							departureTime: currentTrip[0].departureTime,
+							to: loc2,
+							arrivalTime: stops[i + 1].arrivalTime,
+							stops: [...currentTrip, stops[i + 1]]
+						});
+						
+						currentTrip = [stops[i + 1]];
+						tripNumber++;
+						i++;
+					}
+				}
+			}
+
+			if (currentTrip.length > 0) {
+				trips.push({
+					tripNumber,
+					from: currentTrip[0].location,
+					departureTime: currentTrip[0].departureTime,
+					to: currentTrip[currentTrip.length - 1].location,
+					arrivalTime: currentTrip[currentTrip.length - 1].arrivalTime,
+					stops: [...currentTrip]
+				});
+			}
+
+			return trips;
+		}
+        
+        // Get the destination for current trip within a run - SIMPLIFIED
+		function getCurrentTripDestination(runNumber, currentTimeSeconds) {
+			if (!parsedCsvData[runNumber] || parsedCsvData[runNumber].length === 0) {
+				console.log(`[DEBUG] No data for run ${runNumber}`);
+				return null;
+			}
+			
+			const stops = parsedCsvData[runNumber];
+			const trips = detectTrips(stops);
+			
+			// Find which trip we're currently in
+			for (const trip of trips) {
+				const tripStartTime = parseTime(trip.departureTime);
+				const tripEndTime = parseTime(trip.arrivalTime);
+				
+				if (currentTimeSeconds >= tripStartTime && currentTimeSeconds <= tripEndTime) {
+					return trip.to;
+				}
+			}
+			
+			// If we're not in any trip, find the next upcoming trip
+			for (const trip of trips) {
+				const tripStartTime = parseTime(trip.departureTime);
+				if (currentTimeSeconds < tripStartTime) {
+					console.log(`[DEBUG] Next trip destination: ${trip.to}`);
+					return trip.to;
+				}
+			}
+			
+			// Fallback: return the final destination of the entire run
+			const finalDestination = stops[stops.length - 1].location;
+			console.log(`[DEBUG] Fallback destination: ${finalDestination}`);
+			return finalDestination;
+		}
         
         function getRunFirstStation(runNumber) {
             if (!parsedCsvData[runNumber] || parsedCsvData[runNumber].length === 0) {
@@ -983,50 +1756,279 @@
             };
         }
         
-        // Detect trips within a run (from timetable explorer)
-        function detectTrips(stops) {
-            const trips = [];
-            let currentTrip = [];
-            let tripNumber = 1;
-
-            for (let i = 0; i < stops.length; i++) {
-                currentTrip.push(stops[i]);
-
-                if (i < stops.length - 2) {
-                    const loc1 = stops[i].location;
-                    const loc2 = stops[i + 1].location;
-                    const loc3 = stops[i + 2].location;
-
-                    if (loc1 === loc3 && loc1 !== loc2) {
-                        trips.push({
-                            tripNumber,
-                            from: currentTrip[0].location,
-                            departureTime: currentTrip[0].departureTime,
-                            to: loc2,
-                            arrivalTime: stops[i + 1].arrivalTime,
-                            stops: [...currentTrip, stops[i + 1]]
-                        });
-                        
-                        currentTrip = [stops[i + 1]];
-                        tripNumber++;
-                        i++;
+        function parseRunInfo(runString) {
+            // Parse format like "R453 CAT2 17:52 20:37 CAT1" or "R425>354 CAT1 13:47 17:36 POP4"
+            const parts = runString.split(' ');
+            
+            if (parts.length >= 5) {
+                const runPart = parts[0].substring(1); // Remove 'R'
+                
+                // Handle run transitions like "425>354"
+                let firstRun = runPart;
+                let secondRun = null;
+                let transitionTime = null;
+                
+                if (runPart.includes('>')) {
+                    [firstRun, secondRun] = runPart.split('>');
+                    
+                    // Find the transition time by looking at when the first run ends
+                    if (parsedCsvData[firstRun]) {
+                        const firstRunStops = parsedCsvData[firstRun];
+                        const lastStop = firstRunStops[firstRunStops.length - 1];
+                        transitionTime = parseTime(lastStop.departureTime);
                     }
                 }
+                
+                const result = {
+                    runNumber: runPart,
+                    firstRun: firstRun,
+                    secondRun: secondRun,
+                    transitionTime: transitionTime,
+                    startLocation: parts[1],
+                    startTime: parts[2],
+                    endTime: parts[3],
+                    endLocation: parts[4]
+                };
+                
+                return result;
             }
-
-            if (currentTrip.length > 0) {
-                trips.push({
-                    tripNumber,
-                    from: currentTrip[0].location,
-                    departureTime: currentTrip[0].departureTime,
-                    to: currentTrip[currentTrip.length - 1].location,
-                    arrivalTime: currentTrip[currentTrip.length - 1].arrivalTime,
-                    stops: [...currentTrip]
-                });
-            }
-
-            return trips;
+            return null;
         }
+        
+		function getRunStatus(runInfo, currentTimeSeconds, timeStr) {
+			// Get duty versions to check if it's a base duty
+			const operatingDate = getOperatingDate();
+			const dutyVersions = getDutyForDate(runInfo.firstRun, operatingDate);
+			const isBaseDuty = dutyVersions.length > 0 && isDutyBaseType(dutyVersions[0]);
+			
+			// SIMPLE RULE: Don't start position updates until 1 minute after pickup time
+			const dutyStartTimeSeconds = parseTime(runInfo.startTime);
+			const oneMinuteAfterStart = dutyStartTimeSeconds + 60;
+			
+			if (currentTimeSeconds < oneMinuteAfterStart) {
+				// We're still in the "pickup period" - show simple departing status
+				const startLocationName = getLocationName(runInfo.startLocation);
+				
+				// Handle run transitions to get the right run number
+				let actualRunNumber = runInfo.firstRun;
+				let displayRunNumber = runInfo.runNumber;
+				
+				if (runInfo.secondRun && runInfo.transitionTime && currentTimeSeconds > runInfo.transitionTime) {
+					actualRunNumber = runInfo.secondRun;
+					displayRunNumber = actualRunNumber;
+				}
+				
+				// Get simple destination
+				let destination;
+				if (isBaseDuty && parsedCsvData[actualRunNumber]) {
+					const lastStop = parsedCsvData[actualRunNumber][parsedCsvData[actualRunNumber].length - 1];
+					destination = lastStop.location;
+				} else {
+					destination = getLocationName(runInfo.endLocation);
+				}
+				
+				return {
+					main: `departing ${startLocationName}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			}
+			
+			// If it's not a base duty, use fallback logic
+			if (!isBaseDuty) {
+				const startLocationName = getLocationName(runInfo.startLocation);
+				const endLocationName = getLocationName(runInfo.endLocation);
+				const displayRunNumber = runInfo.runNumber;
+				
+				return {
+					main: 'somewhere on the DLR',
+					details: `onboard Run ${displayRunNumber} which picked up from ${startLocationName} at ${runInfo.startTime.substring(0, 5)} and is relieved at ${endLocationName} at ${runInfo.endTime.substring(0, 5)}`
+				};
+			}
+			
+			// Continue with existing base duty logic...
+			// Handle run transitions
+			let actualRunNumber = runInfo.firstRun;
+			let displayRunNumber = runInfo.runNumber;
+			
+			if (runInfo.secondRun && runInfo.transitionTime) {
+				// Check if we're in the transition gap
+				if (currentTimeSeconds > runInfo.transitionTime) {
+					// We're after the first run ended, check if second run has started
+					const secondRunStops = parsedCsvData[runInfo.secondRun];
+					if (secondRunStops && secondRunStops.length > 0) {
+						const secondRunStartTime = parseTime(secondRunStops[0].arrivalTime);
+						
+						if (currentTimeSeconds < secondRunStartTime) {
+							// We're in the transition gap - between runs
+							const firstRunStops = parsedCsvData[runInfo.firstRun];
+							if (firstRunStops && firstRunStops.length > 0) {
+								const lastStopFirstRun = firstRunStops[firstRunStops.length - 1];
+								const firstStopSecondRun = secondRunStops[0];
+								
+								return {
+									main: `between ${lastStopFirstRun.location} and ${firstStopSecondRun.location}`,
+									details: `Transitioning from Run ${runInfo.firstRun} to Run ${runInfo.secondRun}`
+								};
+							}
+						} else {
+							// Second run has started, use second run
+							actualRunNumber = runInfo.secondRun;
+						}
+					}
+				}
+				// If we're still before transition time, continue using first run
+				displayRunNumber = actualRunNumber; // Show the actual run number being used
+			}
+			
+			// Check if we have this run in our CSV data
+			if (!parsedCsvData[actualRunNumber]) {
+				// Regular operating service without timetable
+				const startStation = getLocationName(runInfo.startLocation);
+				const endStation = getLocationName(runInfo.endLocation);
+				
+				return {
+					main: `operating between ${startStation} and ${endStation}`,
+					details: `onboard Run ${displayRunNumber} - timetable not available`
+				};
+			}
+			
+			// Get the destination for this trip (not the entire run)
+			const destination = getCurrentTripDestination(actualRunNumber, currentTimeSeconds);
+			
+			// Find current position in the timetable
+			const currentPosition = findCurrentPosition(parsedCsvData[actualRunNumber], timeStr, currentTimeSeconds);
+			
+			if (currentPosition.type === 'at_station') {
+				let details = '';
+				if (currentPosition.details === 'departing soon') {
+					details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
+				} else if (currentPosition.details.includes('minute')) {
+					details = `onboard Run ${displayRunNumber} to ${destination} - ${currentPosition.details}`;
+				} else {
+					// This covers "departing now" which we're removing - treat as departing soon
+					details = `onboard Run ${displayRunNumber} to ${destination} - departing soon`;
+				}
+				
+				return {
+					main: `at ${currentPosition.location}`,
+					details: details
+				};
+			} else if (currentPosition.type === 'departing_station') {
+				return {
+					main: `departing ${currentPosition.location}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			} else if (currentPosition.type === 'approaching_station') {
+				return {
+					main: `approaching ${currentPosition.to}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			} else if (currentPosition.type === 'between_stations') {
+				return {
+					main: `between ${currentPosition.from} and ${currentPosition.to}`,
+					details: `onboard Run ${displayRunNumber} to ${destination}`
+				};
+			} else {
+				// Check for depot movements as fallback
+				const startLocation = runInfo.startLocation;
+				const endLocation = runInfo.endLocation;
+				
+				if (['POD', 'BED'].includes(startLocation) || ['POD', 'BED'].includes(endLocation)) {
+					if (['POD', 'BED'].includes(startLocation)) {
+						// Empty stock leaving depot
+						const depot = getDepotName(startLocation);
+						let dutyStartTime = runInfo.startTime.substring(0, 5);
+						
+						// Convert 25:55 format to 01:55 for display  
+						if (dutyStartTime.startsWith('2') && parseInt(dutyStartTime.split(':')[0]) >= 24) {
+							const [hours, minutes] = dutyStartTime.split(':');
+							const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+							dutyStartTime = `${adjustedHours}:${minutes}`;
+						}
+						
+						const firstStation = getRunFirstStation(actualRunNumber);
+						
+						if (firstStation) {
+							let firstStationTime = firstStation.time.substring(0, 5);
+							if (firstStationTime.startsWith('2') && parseInt(firstStationTime.split(':')[0]) >= 24) {
+								const [hours, minutes] = firstStationTime.split(':');
+								const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+								firstStationTime = `${adjustedHours}:${minutes}`;
+							}
+							
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber} when it reaches ${firstStation.location} at ${firstStationTime}`
+							};
+						} else {
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train that left ${depot} at ${dutyStartTime}, and will form Run ${actualRunNumber}`
+							};
+						}
+					} else {
+						// Empty stock returning to depot
+						const depot = getDepotName(endLocation);
+						let dutyEndTime = runInfo.endTime.substring(0, 5);
+						
+						// Convert 25:55 format to 01:55 for display
+						if (dutyEndTime.startsWith('2') && parseInt(dutyEndTime.split(':')[0]) >= 24) {
+							const [hours, minutes] = dutyEndTime.split(':');
+							const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+							dutyEndTime = `${adjustedHours}:${minutes}`;
+						}
+						
+						const lastStation = getRunLastStation(actualRunNumber);
+						
+						if (lastStation) {
+							let lastStationTime = lastStation.time.substring(0, 5);
+							// Convert last station time too if needed
+							if (lastStationTime.startsWith('2') && parseInt(lastStationTime.split(':')[0]) >= 24) {
+								const [hours, minutes] = lastStationTime.split(':');
+								const adjustedHours = (parseInt(hours) - 24).toString().padStart(2, '0');
+								lastStationTime = `${adjustedHours}:${minutes}`;
+							}
+							
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber} which the timetable for ended when it reached ${lastStation.location} at ${lastStationTime}`
+							};
+						} else {
+							return {
+								main: 'somewhere on the DLR',
+								details: `onboard a train due into ${depot} at ${dutyEndTime}, it was formally Run ${actualRunNumber}`
+							};
+						}
+					}
+				}
+				
+				// Fallback to simple calculation
+				const startStation = getLocationName(runInfo.startLocation);
+				const endStation = getLocationName(runInfo.endLocation);
+				const runStartTimeSeconds = parseTime(runInfo.startTime);
+				const runEndTimeSeconds = parseTime(runInfo.endTime);
+				const elapsed = currentTimeSeconds - runStartTimeSeconds;
+				const duration = runEndTimeSeconds - runStartTimeSeconds;
+				const progress = elapsed / duration;
+				
+				if (progress < 0.3) {
+					return {
+						main: `departing ${startStation}`,
+						details: `onboard Run ${displayRunNumber} to ${destination}`
+					};
+				} else if (progress > 0.8) {
+					return {
+						main: `approaching ${endStation}`,
+						details: `onboard Run ${displayRunNumber} to ${destination}`
+					};
+				} else {
+					return {
+						main: `between ${startStation} and ${endStation}`,
+						details: `onboard Run ${displayRunNumber} to ${destination}`
+					};
+				}
+			}
+		}
         
         // Logs the raw CSV line for debugging
         function findCurrentPosition(runStops, currentTime, currentTimeSeconds) {
@@ -1039,11 +2041,11 @@
                 
                 // Check if we're in the "departing" window (0 seconds before departure, lasting 20 seconds)
                 if (currentTimeSeconds >= (departureTime - 0) && currentTimeSeconds <= (departureTime + 20)) {
-                    const currentPosition = `departing-${stop.location}`;
-                    if (lastPositionForLogging !== currentPosition) {
-                        console.log(`[DEBUG] Departing station. Timetable line:`, stop.rawLine);
-                        lastPositionForLogging = currentPosition;
-                    }					
+					const currentPosition = `departing-${stop.location}`;
+					if (lastPositionForLogging !== currentPosition) {
+						console.log(`[DEBUG] Departing station. Timetable line:`, stop.rawLine);
+						lastPositionForLogging = currentPosition;
+					}					
                     return {
                         type: 'departing_station',
                         location: stop.location
@@ -1061,11 +2063,11 @@
                         // Anything 60 seconds or less becomes "departing soon"
                         details = 'departing soon';
                     }
-                    const currentPosition = `at-${stop.location}`;
-                    if (lastPositionForLogging !== currentPosition) {
-                        console.log(`[DEBUG] At station. Timetable line:`, stop.rawLine);
-                        lastPositionForLogging = currentPosition;
-                    }					
+					const currentPosition = `at-${stop.location}`;
+					if (lastPositionForLogging !== currentPosition) {
+						console.log(`[DEBUG] At station. Timetable line:`, stop.rawLine);
+						lastPositionForLogging = currentPosition;
+					}					
                     return {
                         type: 'at_station',
                         location: stop.location,
@@ -1073,430 +2075,154 @@
                     };
                 }
                 
-                // If we're between this station and the next
-                if (i < runStops.length - 1) {
-                    const nextStop = runStops[i + 1];
-                    const nextArrivalTime = parseTime(nextStop.arrivalTime);
-                    
-                    // SAFETY CHECK: Prevent "between X and X" errors
-                    if (stop.location === nextStop.location) {
-                        console.log(`[DEBUG] Skipping duplicate station: ${stop.location}`);
-                        continue; // Skip to next iteration
-                    }
+				// If we're between this station and the next
+				if (i < runStops.length - 1) {
+					const nextStop = runStops[i + 1];
+					const nextArrivalTime = parseTime(nextStop.arrivalTime);
+					
+					// SAFETY CHECK: Prevent "between X and X" errors
+					if (stop.location === nextStop.location) {
+						console.log(`[DEBUG] Skipping duplicate station: ${stop.location}`);
+						continue; // Skip to next iteration
+					}
 
-                    // Check if we're in the "approaching" window (20 seconds before arrival)
-                    if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
-                        const currentPosition = `approaching-${stop.location}-${nextStop.location}`;
-                        if (lastPositionForLogging !== currentPosition) {
-                            console.log(`[DEBUG] Approaching station. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
-                            lastPositionForLogging = currentPosition;
-                        }
-                        return {
-                            type: 'approaching_station',
-                            from: stop.location,
-                            to: nextStop.location
-                        };
-                    }
+					// Check if we're in the "approaching" window (20 seconds before arrival)
+					if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
+						const currentPosition = `approaching-${stop.location}-${nextStop.location}`;
+						if (lastPositionForLogging !== currentPosition) {
+							console.log(`[DEBUG] Approaching station. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
+							lastPositionForLogging = currentPosition;
+						}
+						return {
+							type: 'approaching_station',
+							from: stop.location,
+							to: nextStop.location
+						};
+					}
                     
-                    // Regular between stations (after departure + 20 seconds, before approaching window)
-                    if (currentTimeSeconds > (departureTime + 20) && currentTimeSeconds < (nextArrivalTime - 20)) {
-                        const currentPosition = `between-${stop.location}-${nextStop.location}`;
-                        if (lastPositionForLogging !== currentPosition) {
-                            console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
-                            lastPositionForLogging = currentPosition;
-                        }
-                        
-                        return {
-                            type: 'between_stations',
-                            from: stop.location,
-                            to: nextStop.location
-                        };
-                    }
+					// Regular between stations (after departure + 20 seconds, before approaching window)
+					if (currentTimeSeconds > (departureTime + 20) && currentTimeSeconds < (nextArrivalTime - 20)) {
+						const currentPosition = `between-${stop.location}-${nextStop.location}`;
+						if (lastPositionForLogging !== currentPosition) {
+							console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
+							lastPositionForLogging = currentPosition;
+						}
+						
+						return {
+							type: 'between_stations',
+							from: stop.location,
+							to: nextStop.location
+						};
+					}
                 }
             }
             
             return { type: 'unknown' };
         }
         
-        // Enhanced displayStatus function that makes run numbers clickable
-        function displayStatus(main, details, animate = false) {
-            // Clear any existing timer
-            if (updateBuffer.timer) {
-                clearTimeout(updateBuffer.timer);
-            }
-            
-            // Store the pending update
-            updateBuffer.pendingUpdate = { main, details, animate };
-            
-            // Set a 3-second timer
-            updateBuffer.timer = setTimeout(() => {
-                const update = updateBuffer.pendingUpdate;
-                if (!update) return;
-                
-                // Update particle speed based on status
-                updateParticleSpeed({ main: update.main, details: update.details });
-                
-                const statusMain = document.getElementById('statusMain');
-                const statusDetails = document.getElementById('statusDetails');
-                const loadingState = document.getElementById('loadingState');
-                
-                // Safety checks
-                if (!statusMain || !statusDetails) return;
+        // Modified displayStatus function with 3-second buffer
+		function displayStatus(main, details, animate = false) {
+			// Clear any existing timer
+			if (updateBuffer.timer) {
+				clearTimeout(updateBuffer.timer);
+			}
+			
+			// Store the pending update
+			updateBuffer.pendingUpdate = { main, details, animate };
+			
+			// Set a 3-second timer
+			updateBuffer.timer = setTimeout(() => {
+				const update = updateBuffer.pendingUpdate;
+				if (!update) return;
+				
+				// Update particle speed based on status
+				updateParticleSpeed({ main: update.main, details: update.details });
+				
+				const statusMain = document.getElementById('statusMain');
+				const statusDetails = document.getElementById('statusDetails');
+				const loadingState = document.getElementById('loadingState');
+				
+				// Safety checks
+				if (!statusMain || !statusDetails) return;
 
-                // Log every time the status text is updated on screen
-                console.log(`[${new Date().toLocaleTimeString()}] Status updated: "${update.main}" | "${update.details}"`);
-                
-                // Hide loading if it exists
-                if (loadingState) {
-                    loadingState.style.display = 'none';
-                }
-                
-                // If not animating, just update text directly
-                if (!update.animate) {
-                    statusMain.textContent = update.main;
-                    statusDetails.textContent = update.details;
-                    
-                    // Make run numbers clickable after setting text
-                    const operatingDate = getOperatingDate();
-                    makeRunNumbersClickable(statusDetails, operatingDate);
-                    return;
-                }
-                
-                // Clear any existing animations and classes
-                statusMain.style.animation = 'none';
-                statusMain.classList.remove('status-change');
-                statusDetails.style.animation = 'none';
-                statusDetails.classList.remove('details-fade-out', 'details-fade-in');
-                
-                // Phase 1: Fade out statusMain
-                statusMain.style.opacity = '0';
-                statusMain.style.transform = 'translateY(10px)';
-                statusMain.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-                
-                // Phase 2: Change statusMain text and fade in
-                setTimeout(() => {
-                    statusMain.textContent = update.main;
-                    statusMain.style.opacity = '1';
-                    statusMain.style.transform = 'translateY(0)';
-                    statusMain.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-                    
-                    // Clean up statusMain transition
-                    setTimeout(() => {
-                        statusMain.style.transition = '';
-                    }, 600);
-                }, 400);
-                
-                // Phase 3: Animate statusDetails using CSS classes with proper cleanup
-                setTimeout(() => {
-                    // Force reflow to ensure animation clearing takes effect
-                    statusDetails.offsetHeight;
-                    
-                    // Start fade out
-                    statusDetails.classList.add('details-fade-out');
-                    
-                    // Change text and fade in after fade out completes
-                    setTimeout(() => {
-                        statusDetails.textContent = update.details;
-                        statusDetails.classList.remove('details-fade-out');
-                        
-                        // Force reflow before applying fade in
-                        statusDetails.offsetHeight;
-                        
-                        statusDetails.classList.add('details-fade-in');
-                        
-                        // Clean up after animation and restore normal CSS behavior
-                        setTimeout(() => {
-                            statusDetails.classList.remove('details-fade-in');
-                            statusDetails.style.animation = ''; // Reset to CSS default
-                            
-                            // Make run numbers clickable after animation completes
-                            const operatingDate = getOperatingDate();
-                            makeRunNumbersClickable(statusDetails, operatingDate);
-                        }, 400);
-                    }, 300);
-                }, 700);
-                
-                // Clear the pending update
-                updateBuffer.pendingUpdate = null;
-                updateBuffer.timer = null;
-            }, 3000);
-        }
-        
-        // --- TIMETABLE FETCHING LOGIC ---
-
-        function parseDateRange(dateStr) {
-            dateStr = dateStr.replace(/['"]/g, '');
-            if (dateStr.includes('/')) {
-                const [start, end] = dateStr.split('/').map(d => new Date(d.trim()));
-                return { start, end };
-            }
-            const date = new Date(dateStr);
-            return { start: date, end: date };
-        }
-
-        function getDayName(date) {
-            return date.toLocaleDateString('en-US', { weekday: 'long' });
-        }
-
-        function isDateInRange(date, rangeStr) {
-            const ranges = rangeStr.split(',').map(r => r.trim().replace(/['"]/g, ''));
-            return ranges.some(range => {
-                if (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(range)) {
-                    return getDayName(date) === range;
-                }
-                const dateRange = parseDateRange(range);
-                return date >= dateRange.start && date <= dateRange.end;
-            });
-        }
-        
-        // Uses getOperatingDateTime to ensure correct day is used
-        function sortTimetablesByApplicability(entries) {
-            const operatingDateTime = getOperatingDateTime(); // Use operating day logic
-            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            
-            return entries.sort((a, b) => {
-                const aApplies = a.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
-                const bApplies = b.applies.split(',').map(s => s.trim().replace(/['"]/g, ''));
-                
-                const aHasSpecificDate = aApplies.some(range => !dayNames.includes(range));
-                const bHasSpecificDate = bApplies.some(range => !dayNames.includes(range));
-                
-                const aAppliesNow = aApplies.some(range => isDateInRange(operatingDateTime, range));
-                const bAppliesNow = bApplies.some(range => isDateInRange(operatingDateTime, range));
-                
-                if (aAppliesNow && bAppliesNow) {
-                    if (aHasSpecificDate && !bHasSpecificDate) return -1;
-                    if (!aHasSpecificDate && bHasSpecificDate) return 1;
-                }
-                
-                if (aAppliesNow && !bAppliesNow) return -1;
-                if (!aAppliesNow && bAppliesNow) return 1;
-                
-                return a.name.localeCompare(b.name);
-            });
-        }
-
-        async function fetchAndProcessTimetable() {
-            const pathsUrl = 'https://raw.githubusercontent.com/dlrttbl/dlrttbl.github.io/refs/heads/main/paths.txt';
-            
-            try {
-                // 1. Fetch paths.txt
-                const response = await fetch(pathsUrl, { cache: 'no-store' });
-                if (!response.ok) throw new Error(`Failed to fetch paths.txt: ${response.statusText}`);
-                const text = await response.text();
-                const lines = text.split('\n').filter(line => line.trim() !== '');
-
-                // 2. Parse paths.txt to get timetable entries
-                let currentEntry = {};
-                const timetableEntries = [];
-                for (const line of lines) {
-                    const trimmedLine = line.trim();
-                    if (trimmedLine.startsWith('Name:')) {
-                        if (Object.keys(currentEntry).length > 0) timetableEntries.push({...currentEntry});
-                        currentEntry = { name: trimmedLine.substring(5).trim() };
-                    } else if (trimmedLine.startsWith('Applies:')) {
-                        currentEntry.applies = trimmedLine.substring(8).trim();
-                    } else if (trimmedLine.startsWith('URL:')) {
-                        currentEntry.url = trimmedLine.substring(4).trim();
-                    }
-                }
-                if (Object.keys(currentEntry).length > 0) timetableEntries.push(currentEntry);
-
-                if (timetableEntries.length === 0) {
-                    throw new Error('No valid timetables found in paths.txt');
-                }
-
-                // 3. Determine the most applicable timetable
-                const sortedEntries = sortTimetablesByApplicability(timetableEntries);
-                const applicableTimetable = sortedEntries[0];
-                currentTimetableName = applicableTimetable.name;
-                console.log(`[INFO] Using timetable: '${currentTimetableName}' from URL: ${applicableTimetable.url}`);
-
-                // 4. Fetch the applicable timetable CSV
-                const csvResponse = await fetch(applicableTimetable.url, { cache: 'no-store' });
-                if (!csvResponse.ok) throw new Error(`Failed to fetch timetable CSV: ${csvResponse.statusText}`);
-                const csvText = await csvResponse.text();
-
-                // 5. Process the CSV data
-                csvData = csvText;
-                parsedCsvData = parseCSVData(csvData);
-                runTransitions = detectRunTransitions(csvData);
-                console.log('Timetable data loaded and parsed automatically.');
-
-            } catch (error) {
-                console.error('[ERROR] Automatic timetable fetching failed:', error);
-                throw error;
-            }
-        }
-        
-        // Parse CSV data
-        function parseCSVData(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim() !== '');
-            const runData = {};
-            
-            const junctions = [
-                'JRMS', 'JRMX', 'JCAW', 'JWEM', 'JCRO', 'JC2M', 'JC3M',
-                'JC4M', 'JROM', 'JWEX', 'JCTM', 'JCTX', 'JWIQ', 'JNQX',
-                'JNQM', 'JWSX', 'JWSM', 'ISP2', 'ISP3'
-            ];
-            
-            lines.forEach((line, index) => {
-                const parts = line.split(',');
-                if (parts.length >= 7) {
-                    const runNumber = parts[1].trim();
-                    const locationCode = parts[4].trim();
-                    const arrivalTime = parts[5].trim();
-                    const departureTime = parts[6].trim();
-                    
-                    if (!junctions.includes(locationCode)) {
-                        if (!runData[runNumber]) {
-                            runData[runNumber] = [];
-                        }
-                        
-                        let location = '';
-                        let platform = '';
-                        
-                        if (locationCode === 'BANH') {
-                            location = 'Bank Headshunt';
-                        } else {
-                            const codePrefix = locationCode.slice(0, 3);
-                            platform = locationCode.slice(3);
-                            
-                            if (locationMapping[codePrefix]) {
-                                location = locationMapping[codePrefix];
-                                if (['LEW', 'BEC', 'STI', 'WOA'].includes(codePrefix) || locationCode === 'STR4B') {
-                                    platform = '';
-                                }
-                            } else {
-                                location = locationCode;
-                                platform = '';
-                            }
-                        }
-                        
-                        runData[runNumber].push({
-                            location,
-                            platform,
-                            arrivalTime,
-                            departureTime,
-                            locationCode,
-                            rawLine: line // Store original line
-                        });
-                    }
-                }
-            });
-            
-            return runData;
-        }
-        
-        // Detect run transitions
-        function detectRunTransitions(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim() !== '');
-            const transitions = {};
-            
-            // Adjacency map of DLR stations
-            const adjacencyMap = {
-                "ABR": ["SHS", "WEH"], "ALS": ["LAP", "POP"], "BAN": ["SHA", "BANH"],
-                "BANH": ["BAN"], "BEC": ["GAR"], "BEP": ["CYP", "ROA"],
-                "BLA": ["EAI", "POP"], "BOC": ["DER", "PML"], "CAT": ["EAI", "ROV", "STL", "WST"],
-                "CAW": ["HEQ", "WES", "WIQ"], "CRO": ["MUD", "SOQ"], "CUH": ["PRR", "ROV"],
-                "CUS": ["GRE", "ISG"], "CYP": ["BEP", "GAR"], "DEB": ["ELR", "GRE"],
-                "DER": ["BOC", "LAP"], "EAI": ["BLA", "CAT"], "ELR": ["DEB", "LEW"],
-                "GAR": ["BEC", "CYP"], "GRE": ["CUS", "DEB"], "HEQ": ["CAW", "SOQ"],
-                "ISG": ["CUS", "MUD"], "KGV": ["LCA", "WOA"], "LAP": ["ALS", "DER"],
-                "LCA": ["KGV", "PDK"], "LEW": ["ELR"], "LIM": ["SHA", "WES"],
-                "MUD": ["CRO", "ISG"], "PDK": ["LCA", "WST"], "PML": ["BOC", "STR"],
-                "POP": ["ALS", "BLA", "WES", "WIQ"], "PRR": ["CUH", "ROA"], "ROA": ["BEP", "PRR"],
-                "ROV": ["CAT", "CUH"], "SHA": ["BAN", "LIM", "TOG"], "SHS": ["ABR", "STR"],
-                "SOQ": ["CRO", "HEQ"], "STI": ["STR"], "STL": ["CAT", "WEH"],
-                "STR": ["PML", "SHS", "STI"], "TOG": ["SHA"], "WEH": ["ABR", "STL"],
-                "WES": ["CAW", "LIM", "POP", "WIQ"], "WIQ": ["CAW", "POP", "WES"],
-                "WOA": ["KGV"], "WST": ["CAT", "PDK"]
-            };
-            
-            function getStationCode(locationCode) {
-                if (locationCode === "BANH") return "BANH";
-                if (locationCode === "STR4B") return "STR";
-                return locationCode.substring(0, 3);
-            }
-            
-            function areStationsAdjacent(station1, station2) {
-                const code1 = getStationCode(station1);
-                const code2 = getStationCode(station2);
-                if (code1 === code2) return true;
-                if (adjacencyMap[code1] && adjacencyMap[code1].includes(code2)) return true;
-                if (adjacencyMap[code2] && adjacencyMap[code2].includes(code1)) return true;
-                return false;
-            }
-            
-            function parseTime(timeStr) {
-                const [hours, minutes, seconds] = timeStr.split(':').map(Number);
-                return hours * 3600 + minutes * 60 + seconds;
-            }
-            
-            // Create a map of run numbers to their line indices
-            const runLineIndices = {};
-            lines.forEach((line, index) => {
-                const parts = line.split(',');
-                if (parts.length >= 7) {
-                    const runNumber = parts[1].trim();
-                    if (!runLineIndices[runNumber]) {
-                        runLineIndices[runNumber] = [];
-                    }
-                    runLineIndices[runNumber].push(index);
-                }
-            });
-            
-            const allRuns = Object.keys(runLineIndices);
-            
-            for (const fromRun of allRuns) {
-                const fromRunIndices = runLineIndices[fromRun];
-                if (fromRunIndices.length === 0) continue;
-                
-                const lastLineIndex = Math.max(...fromRunIndices);
-                const lastLine = lines[lastLineIndex];
-                const lastLineParts = lastLine.split(',');
-                
-                const lastLocationCode = lastLineParts[4].trim();
-                const lastDepartureTime = lastLineParts[6].trim();
-                const lastDepartureSeconds = parseTime(lastDepartureTime);
-                
-                if (lastLocationCode.startsWith('J')) continue;
-                
-                for (let i = lastLineIndex + 1; i <= lastLineIndex + 3 && i < lines.length; i++) {
-                    const nextLine = lines[i];
-                    const nextLineParts = nextLine.split(',');
-                    
-                    if (nextLineParts.length < 7) continue;
-                    
-                    const nextRun = nextLineParts[1].trim();
-                    if (nextRun === fromRun) continue;
-                    
-                    if (Math.min(...runLineIndices[nextRun]) !== i) continue;
-                    
-                    const nextLocationCode = nextLineParts[4].trim();
-                    const nextArrivalTime = nextLineParts[5].trim();
-                    const nextArrivalSeconds = parseTime(nextArrivalTime);
-                    
-                    if (nextLocationCode.startsWith('J')) continue;
-                    
-                    const timeDiffMinutes = (nextArrivalSeconds - lastDepartureSeconds) / 60;
-                    
-                    if (areStationsAdjacent(lastLocationCode, nextLocationCode) && 
-                        timeDiffMinutes >= 0.5 && 
-                        timeDiffMinutes <= 5) {
-                        
-                        transitions[fromRun] = { 
-                            nextRun, 
-                            location: nextLocationCode,
-                            fromLocation: lastLocationCode
-                        };
-                        break;
-                    }
-                }
-            }
-            
-            return transitions;
-        }
+				// Log every time the status text is updated on screen
+				console.log(`[${new Date().toLocaleTimeString()}] Status updated: "${update.main}" | "${update.details}"`);
+				
+				// Hide loading if it exists
+				if (loadingState) {
+					loadingState.style.display = 'none';
+				}
+				
+				// If not animating, just update text directly
+				if (!update.animate) {
+					statusMain.textContent = update.main;
+					statusDetails.textContent = update.details;
+					
+					// NEW: Make run numbers clickable after setting text
+					const operatingDate = getOperatingDate();
+					makeRunNumbersClickable(statusDetails, operatingDate);
+					return;
+				}
+				
+				// Clear any existing animations and classes
+				statusMain.style.animation = 'none';
+				statusMain.classList.remove('status-change');
+				statusDetails.style.animation = 'none';
+				statusDetails.classList.remove('details-fade-out', 'details-fade-in');
+				
+				// Phase 1: Fade out statusMain
+				statusMain.style.opacity = '0';
+				statusMain.style.transform = 'translateY(10px)';
+				statusMain.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+				
+				// Phase 2: Change statusMain text and fade in
+				setTimeout(() => {
+					statusMain.textContent = update.main;
+					statusMain.style.opacity = '1';
+					statusMain.style.transform = 'translateY(0)';
+					statusMain.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+					
+					// Clean up statusMain transition
+					setTimeout(() => {
+						statusMain.style.transition = '';
+					}, 600);
+				}, 400);
+				
+				// Phase 3: Animate statusDetails using CSS classes with proper cleanup
+				setTimeout(() => {
+					// Force reflow to ensure animation clearing takes effect
+					statusDetails.offsetHeight;
+					
+					// Start fade out
+					statusDetails.classList.add('details-fade-out');
+					
+					// Change text and fade in after fade out completes
+					setTimeout(() => {
+						statusDetails.textContent = update.details;
+						statusDetails.classList.remove('details-fade-out');
+						
+						// Force reflow before applying fade in
+						statusDetails.offsetHeight;
+						
+						statusDetails.classList.add('details-fade-in');
+						
+						// Clean up after animation and restore normal CSS behavior
+						setTimeout(() => {
+							statusDetails.classList.remove('details-fade-in');
+							statusDetails.style.animation = ''; // Reset to CSS default
+							
+							// NEW: Make run numbers clickable after animation completes
+							const operatingDate = getOperatingDate();
+							makeRunNumbersClickable(statusDetails, operatingDate);
+						}, 400);
+					}, 300);
+				}, 700);
+				
+				// Clear the pending update
+				updateBuffer.pendingUpdate = null;
+				updateBuffer.timer = null;
+			}, 3000);
+		}
         
         // Initialize particles and add event handlers
         createParticles();
@@ -1509,21 +2235,66 @@
             .catch(error => {
                 console.error('Failed to load timetable on page load:', error);
                 // Show error in main container if it's visible
-                if (mainContainer && mainContainer.style.display === 'flex') {
+                if (mainContainer.style.display === 'flex') {
                     document.getElementById('statusMain').textContent = 'Error loading timetable';
                     document.getElementById('statusDetails').textContent = error.message;
                 }
             });
-        
-        // Initialize auth elements and load Firebase
-        initializeAuthElements();
-
-        loadFirebase({
-            onSignedIn: initializeApp,
-            onSignedOut: function() {
-                // Any page-specific sign out handling
-            }
-        });
     </script>
+
+    <!-- Firebase SDK Loader -->
+    <script>
+		function loadFirebase() {
+			const loadScript = (src, callback) => {
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = callback;
+				document.body.appendChild(script);
+			};
+			
+			loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', () => {
+				loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js', () => {
+					loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js', () => {
+						const firebaseConfig = {
+							apiKey: "AIzaSyBkKclvdWHVQ58IFG_ap0ByJA_2a8J2YXU",
+							authDomain: "owngoal-4f34f.firebaseapp.com",
+							projectId: "owngoal-4f34f",
+							storageBucket: "owngoal-4f34f.firebasestorage.app",
+							messagingSenderId: "270078133518",
+							appId: "1:270078133518:web:36ef7431fda632bed1c35f"
+						};
+						firebase.initializeApp(firebaseConfig);
+						
+						// Set persistence
+						firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+							.catch(error => {
+								console.error("Persistence error:", error);
+							});
+						
+						// Authentication state handler
+						firebase.auth().onAuthStateChanged((user) => {
+							if (user) {
+								console.log('User is signed in:', user.email);
+								initializeApp();
+							} else {
+								console.log('User is signed out.');
+								// Hide loading overlay and show login
+								document.getElementById('loadingOverlay').style.display = 'none';
+								loginSplashScreen.style.display = 'flex';
+								loginSplashScreen.style.opacity = '1';
+								mainContainer.style.display = 'none';
+								loginButton.disabled = false;
+							}
+						});	
+					});
+				});
+			});
+		}
+		loadFirebase();
+    </script>
+
+    <!-- Shared JavaScript Files -->
+    <script src="shared-duty-logic.js"></script>
+    <script src="shared-modal.js"></script>
 </body>
 </html>
