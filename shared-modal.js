@@ -453,7 +453,7 @@ function showDutyDetails(versionInfo, dutyNumber, dutyDate = null) {
     modal.classList.add('is-visible');
     modal.classList.add('modal-opening');
     
-    if (typeof history !== 'undefined') {
+    if (typeof history !== 'undefined' && history.pushState) {
         history.pushState({ modal: 'duty' }, '', '');
     }
 }
@@ -761,7 +761,7 @@ function initializeModalFunctionality() {
     initializeTimetablePaths();
     
     // Handle browser back button
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && window.addEventListener) {
         window.addEventListener('popstate', (event) => {
             const modal = document.getElementById('dutyModal');
             if (modal && modal.classList.contains('is-visible')) {
@@ -771,10 +771,12 @@ function initializeModalFunctionality() {
     }
     
     // Close modal when clicking outside (on the backdrop)
-    document.addEventListener('click', (e) => {
-        const modal = document.getElementById('dutyModal');
-        if (modal && e.target.id === 'dutyModal') {
-            closeDutyModal();
-        }
-    });
+    if (typeof document !== 'undefined' && document.addEventListener) {
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('dutyModal');
+            if (modal && e.target.id === 'dutyModal') {
+                closeDutyModal();
+            }
+        });
+    }
 }

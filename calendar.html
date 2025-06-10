@@ -212,8 +212,9 @@
 
     <script>
         // Data storage
-        let dutyTrackerData = null;
+        let dutyData = null; // Changed from dutyTrackerData to dutyData
         let currentTimetableData = null;
+        let currentDutyDate = null; // Missing global variable declaration
 
         // Initialize app after login
         function initializeApp() {
@@ -231,11 +232,13 @@
             // Show main container immediately
             mainContainer.style.display = 'flex';
             
-            // Load duty tracker, duty lookup data, and timetable paths
+            // Load duty tracker, duty lookup data, and initialize modal functionality
             Promise.all([
-                fetchDutyTracker(),
+                fetchDutyTracker().then(data => { 
+                    dutyData = data || window.dutyData; // Handle both return value and global assignment
+                }),
                 fetchDutyLookupData(),
-                initializeTimetablePaths()
+                initializeModalFunctionality() // This includes initializeTimetablePaths()
             ])
             .then(() => {
                 console.log('All data loaded successfully');
@@ -281,9 +284,9 @@
 
         // Parse duty tracker to get next 21 days
         function parseNext21Days() {
-            if (!dutyTrackerData) return [];
+            if (!dutyData) return []; // Changed from dutyTrackerData to dutyData
             
-            const lines = dutyTrackerData.split('\n');
+            const lines = dutyData.split('\n'); // Changed from dutyTrackerData to dutyData
             const duties = [];
             const startDate = getOperatingDate();
             
@@ -451,17 +454,6 @@
             
             return card;
         }
-
-        // Override fetchDutyTracker to store data in the correct variable
-        const originalFetchDutyTracker = fetchDutyTracker;
-        window.fetchDutyTracker = function() {
-            return originalFetchDutyTracker().then(() => {
-                // Copy from global dutyData to local dutyTrackerData
-                if (typeof dutyData !== 'undefined') {
-                    dutyTrackerData = dutyData;
-                }
-            });
-        };
 
         // Initialize particles and add event handlers
         createParticles();
