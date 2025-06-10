@@ -896,7 +896,8 @@
         let updateInterval = null;
         let previousStatus = { main: null, details: null };
         let currentTimetableName = 'N/A';
-        
+        let lastPositionForLogging = null;
+		
         // Global update buffer to prevent rapid-fire updates
         let updateBuffer = {
             timer: null,
@@ -2025,7 +2026,11 @@
                 
                 // Check if we're in the "departing" window (0 seconds before departure, lasting 20 seconds)
                 if (currentTimeSeconds >= (departureTime - 0) && currentTimeSeconds <= (departureTime + 20)) {
-                    console.log(`[DEBUG] Departing station. Timetable line:`, stop.rawLine);
+					const currentPosition = `departing-${stop.location}`;
+					if (lastPositionForLogging !== currentPosition) {
+						console.log(`[DEBUG] Departing station. Timetable line:`, stop.rawLine);
+						lastPositionForLogging = currentPosition;
+					}					
                     return {
                         type: 'departing_station',
                         location: stop.location
@@ -2043,7 +2048,11 @@
                         // Anything 60 seconds or less becomes "departing soon"
                         details = 'departing soon';
                     }
-                    console.log(`[DEBUG] At station. Timetable line:`, stop.rawLine);
+					const currentPosition = `at-${stop.location}`;
+					if (lastPositionForLogging !== currentPosition) {
+						console.log(`[DEBUG] At station. Timetable line:`, stop.rawLine);
+						lastPositionForLogging = currentPosition;
+					}					
                     return {
                         type: 'at_station',
                         location: stop.location,
@@ -2064,7 +2073,11 @@
 
 					// Check if we're in the "approaching" window (20 seconds before arrival)
 					if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
-						console.log(`[DEBUG] Approaching station. From:`, stop.location, 'To:', nextStop.location);
+						const currentPosition = `approaching-${stop.location}-${nextStop.location}`;
+						if (lastPositionForLogging !== currentPosition) {
+							console.log(`[DEBUG] Approaching station. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
+							lastPositionForLogging = currentPosition;
+						}
 						return {
 							type: 'approaching_station',
 							from: stop.location,
@@ -2074,7 +2087,11 @@
                     
                     // Regular between stations (after departure + 20 seconds, before approaching window)
                     if (currentTimeSeconds > (departureTime + 20) && currentTimeSeconds < (nextArrivalTime - 20)) {
-                        console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
+						const currentPosition = `between-${stop.location}-${nextStop.location}`;
+						if (lastPositionForLogging !== currentPosition) {
+							console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
+							lastPositionForLogging = currentPosition;
+						}
                         return {
                             type: 'between_stations',
                             from: stop.location,
