@@ -983,7 +983,7 @@
         }
         
         // TIMEZONE SETTING - Change this to use different timezone
-        const SYSTEM_TIMEZONE = "Europe/London";
+        const SYSTEM_TIMEZONE = "America/New_York";
         
         // Get current time in the set timezone
         function getCurrentTimeInTimezone(dateTime = null) {
@@ -1654,35 +1654,49 @@
         }
         
         // Detect trips within a run (from timetable explorer)
-        function detectTrips(stops) {
-            const trips = [];
-            let currentTrip = [];
-            let tripNumber = 1;
+		function detectTrips(stops) {
+			const trips = [];
+			let currentTrip = [];
+			let tripNumber = 1;
 
-            for (let i = 0; i < stops.length; i++) {
-                currentTrip.push(stops[i]);
+			for (let i = 0; i < stops.length; i++) {
+				currentTrip.push(stops[i]);
 
-                if (i < stops.length - 2) {
-                    const loc1 = stops[i].location;
-                    const loc2 = stops[i + 1].location;
-                    const loc3 = stops[i + 2].location;
+				if (i < stops.length - 2) {
+					const loc1 = stops[i].location;
+					const loc2 = stops[i + 1].location;
+					const loc3 = stops[i + 2].location;
 
-                    if (loc1 === loc3 && loc1 !== loc2) {
-                        trips.push({
-                            tripNumber,
-                            from: currentTrip[0].location,
-                            departureTime: currentTrip[0].departureTime,
-                            to: loc2,
-                            arrivalTime: stops[i + 1].arrivalTime,
-                            stops: [...currentTrip, stops[i + 1]]
-                        });
-                        
-                        currentTrip = [stops[i + 1]];
-                        tripNumber++;
-                        i++;
-                    }
-                }
-            }
+					if (loc1 === loc3 && loc1 !== loc2) {
+						trips.push({
+							tripNumber,
+							from: currentTrip[0].location,
+							departureTime: currentTrip[0].departureTime,
+							to: loc2,
+							arrivalTime: stops[i + 1].arrivalTime,
+							stops: [...currentTrip, stops[i + 1]]
+						});
+						
+						currentTrip = [stops[i + 1]];
+						tripNumber++;
+						i++;
+					}
+				}
+			}
+
+			if (currentTrip.length > 0) {
+				trips.push({
+					tripNumber,
+					from: currentTrip[0].location,
+					departureTime: currentTrip[0].departureTime,
+					to: currentTrip[currentTrip.length - 1].location,
+					arrivalTime: currentTrip[currentTrip.length - 1].arrivalTime,
+					stops: [...currentTrip]
+				});
+			}
+
+			return trips;
+		}
 
             if (currentTrip.length > 0) {
                 trips.push({
@@ -1699,42 +1713,42 @@
         }
         
         // Get the destination for current trip within a run - SIMPLIFIED
-        function getCurrentTripDestination(runNumber, currentTimeSeconds) {
-            if (!parsedCsvData[runNumber] || parsedCsvData[runNumber].length === 0) {
-                return null;
-            }
-            
-            const trips = detectTrips(parsedCsvData[runNumber]);
-            
-            // Find which trip we're currently in
-            for (let i = 0; i < trips.length; i++) {
-                const trip = trips[i];
-                const tripStartTime = parseTime(trip.departureTime);
-                const tripEndTime = parseTime(trip.arrivalTime);
-                
-                if (currentTimeSeconds >= tripStartTime && currentTimeSeconds <= tripEndTime) {
-                    // Check if we're at the end of this trip AND there's a next trip
-                    if (currentTimeSeconds >= tripEndTime && i < trips.length - 1) {
-                        // We're at the final station of this trip, check if next trip starts here
-                        const nextTrip = trips[i + 1];
-                        const nextTripStartTime = parseTime(nextTrip.departureTime);
-                        
-                        // If we're dwelling at the turnaround point (before next trip starts), 
-                        // show the next trip's destination
-                        if (currentTimeSeconds < nextTripStartTime && trip.to === nextTrip.from) {
-                            return nextTrip.to;
-                        }
-                    }
-                    
-                    // Normal case - return current trip destination
-                    return trip.to;
-                }
-            }
-            
-            // If not found in any trip, return the final destination of the run
-            const lastStop = parsedCsvData[runNumber][parsedCsvData[runNumber].length - 1];
-            return lastStop.location;
-        }
+		function getCurrentTripDestination(runNumber, currentTimeSeconds) {
+			if (!parsedCsvData[runNumber] || parsedCsvData[runNumber].length === 0) {
+				console.log(`[DEBUG] No data for run ${runNumber}`);
+				return null;
+			}
+			
+			const stops = parsedCsvData[runNumber];
+			const trips = detectTrips(stops);
+			
+			console.log(`[DEBUG] Run ${runNumber} has ${trips.length} trips detected`);
+			
+			// Find which trip we're currently in
+			for (const trip of trips) {
+				const tripStartTime = parseTime(trip.departureTime);
+				const tripEndTime = parseTime(trip.arrivalTime);
+				
+				if (currentTimeSeconds >= tripStartTime && currentTimeSeconds <= tripEndTime) {
+					console.log(`[DEBUG] Currently on trip ${trip.tripNumber}: ${trip.from} → ${trip.to}`);
+					return trip.to;
+				}
+			}
+			
+			// If we're not in any trip, find the next upcoming trip
+			for (const trip of trips) {
+				const tripStartTime = parseTime(trip.departureTime);
+				if (currentTimeSeconds < tripStartTime) {
+					console.log(`[DEBUG] Next trip destination: ${trip.to}`);
+					return trip.to;
+				}
+			}
+			
+			// Fallback: return the final destination of the entire run
+			const finalDestination = stops[stops.length - 1].location;
+			console.log(`[DEBUG] Fallback destination: ${finalDestination}`);
+			return finalDestination;
+		}
         
         function getRunFirstStation(runNumber) {
             if (!parsedCsvData[runNumber] || parsedCsvData[runNumber].length === 0) {
@@ -2052,19 +2066,18 @@
                 }
                 
                 // If we're between this station and the next
-                if (i < runStops.length - 1) {
-                    const nextStop = runStops[i + 1];
-                    const nextArrivalTime = parseTime(nextStop.arrivalTime);
-                    
-                    // Check if we're in the "approaching" window (20 seconds before arrival, lasting 20 seconds)
-                    if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
-                        console.log(`[DEBUG] Approaching station. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
-                        return {
-                            type: 'approaching_station',
-                            from: stop.location,
-                            to: nextStop.location
-                        };
-                    }
+				if (i < runStops.length - 1) {
+					const nextStop = runStops[i + 1];
+					const nextArrivalTime = parseTime(nextStop.arrivalTime);
+					
+					// SAFETY CHECK: Prevent "between X and X" errors
+					if (stop.location === nextStop.location) {
+						console.log(`[DEBUG] Skipping duplicate station: ${stop.location}`);
+						continue; // Skip to next iteration
+					}
+					
+					// Check if we're in the "approaching" window
+					if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
                     
                     // Regular between stations (after departure + 10 seconds, before approaching window)
                     if (currentTimeSeconds > (departureTime + 10) && currentTimeSeconds < (nextArrivalTime - 20)) {
