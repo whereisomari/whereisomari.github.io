@@ -1697,20 +1697,6 @@
 
 			return trips;
 		}
-
-            if (currentTrip.length > 0) {
-                trips.push({
-                    tripNumber,
-                    from: currentTrip[0].location,
-                    departureTime: currentTrip[0].departureTime,
-                    to: currentTrip[currentTrip.length - 1].location,
-                    arrivalTime: currentTrip[currentTrip.length - 1].arrivalTime,
-                    stops: [...currentTrip]
-                });
-            }
-
-            return trips;
-        }
         
         // Get the destination for current trip within a run - SIMPLIFIED
 		function getCurrentTripDestination(runNumber, currentTimeSeconds) {
@@ -2065,7 +2051,7 @@
                     };
                 }
                 
-                // If we're between this station and the next
+				// If we're between this station and the next
 				if (i < runStops.length - 1) {
 					const nextStop = runStops[i + 1];
 					const nextArrivalTime = parseTime(nextStop.arrivalTime);
@@ -2075,12 +2061,19 @@
 						console.log(`[DEBUG] Skipping duplicate station: ${stop.location}`);
 						continue; // Skip to next iteration
 					}
-					
-					// Check if we're in the "approaching" window
+
+					// Check if we're in the "approaching" window (20 seconds before arrival)
 					if (currentTimeSeconds >= (nextArrivalTime - 20) && currentTimeSeconds < nextArrivalTime) {
+						console.log(`[DEBUG] Approaching station. From:`, stop.location, 'To:', nextStop.location);
+						return {
+							type: 'approaching_station',
+							from: stop.location,
+							to: nextStop.location
+						};
+					}
                     
-                    // Regular between stations (after departure + 10 seconds, before approaching window)
-                    if (currentTimeSeconds > (departureTime + 10) && currentTimeSeconds < (nextArrivalTime - 20)) {
+                    // Regular between stations (after departure + 20 seconds, before approaching window)
+                    if (currentTimeSeconds > (departureTime + 20) && currentTimeSeconds < (nextArrivalTime - 20)) {
                         console.log(`[DEBUG] Between stations. From line:`, stop.rawLine, 'To line:', nextStop.rawLine);
                         return {
                             type: 'between_stations',
