@@ -1709,15 +1709,12 @@
 			const stops = parsedCsvData[runNumber];
 			const trips = detectTrips(stops);
 			
-			console.log(`[DEBUG] Run ${runNumber} has ${trips.length} trips detected`);
-			
 			// Find which trip we're currently in
 			for (const trip of trips) {
 				const tripStartTime = parseTime(trip.departureTime);
 				const tripEndTime = parseTime(trip.arrivalTime);
 				
 				if (currentTimeSeconds >= tripStartTime && currentTimeSeconds <= tripEndTime) {
-					console.log(`[DEBUG] Currently on trip ${trip.tripNumber}: ${trip.from} → ${trip.to}`);
 					return trip.to;
 				}
 			}
