@@ -1636,7 +1636,7 @@
 						
 						// Add transition message row
 						runData.push({
-							location: "— TRANSITION —",
+							location: `— Forms Run ${secondRun} —`,
 							platform: "—",
 							arrivalTime: "—",
 							departureTime: "—",
@@ -1644,15 +1644,10 @@
 						});
 					}
 					
-					// Get second run data (complete from start)
+					// Get second run data (filtered to relief time + 1 extra stop)
 					if (currentTimetableData[secondRun]) {
-						let secondRunData = [...currentTimetableData[secondRun]];
-						// Apply +1 extra stop rule to second run only
-						if (secondRunData.length > 0) {
-							const lastIncludedIndex = secondRunData.length - 1;
-							const endIndex = Math.min(lastIncludedIndex + 2, secondRunData.length);
-							secondRunData = secondRunData.slice(0, endIndex);
-						}
+						const secondRunStartTime = currentTimetableData[secondRun][0].departureTime;
+						let secondRunData = filterRunByTime(currentTimetableData[secondRun], secondRunStartTime, endTime);
 						secondRunData = addDepotStops(secondRunData, startLocation, endLocation, startTime, endTime);
 						runData = [...runData, ...secondRunData];
 					}
