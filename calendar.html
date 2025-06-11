@@ -1584,94 +1584,140 @@
             return result;
         }
 
-        // Show timetable view
-        async function showTimetableView(halfName, runNumber, startTime, endTime, startLocation, endLocation, dutyDate = currentDutyDate) {
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const closeBtn = document.querySelector('.close-modal');
-            const dutyPane = document.getElementById('duty-pane');
-            let timetablePane = document.getElementById('timetable-pane');
+		// Show timetable view
+		async function showTimetableView(halfName, runNumber, startTime, endTime, startLocation, endLocation, dutyDate = currentDutyDate) {
+			const modalTitle = document.getElementById('modalTitle');
+			const modalBody = document.getElementById('modalBody');
+			const closeBtn = document.querySelector('.close-modal');
+			const dutyPane = document.getElementById('duty-pane');
+			let timetablePane = document.getElementById('timetable-pane');
 
-            // --- Slide out the duty pane to the RIGHT ---
-            dutyPane.classList.remove('is-center');
-            dutyPane.classList.add('is-right');
+			// --- Slide out the duty pane to the RIGHT ---
+			dutyPane.classList.remove('is-center');
+			dutyPane.classList.add('is-right');
 
-            // --- Change header details ---
-            modalTitle.textContent = `${halfName}: Run ${runNumber}`;
-            // MODIFICATION: Set back arrow icon
-            closeBtn.innerHTML = backIconSVG;
-            currentModalView = 'timetable';
+			// --- Change header details ---
+			modalTitle.textContent = `${halfName}: Run ${runNumber}`;
+			// MODIFICATION: Set back arrow icon
+			closeBtn.innerHTML = backIconSVG;
+			currentModalView = 'timetable';
 
-            // --- Prepare the timetable pane (off-screen on the LEFT) ---
-            if (!timetablePane) {
-                timetablePane = document.createElement('div');
-                timetablePane.id = 'timetable-pane';
-                timetablePane.className = 'slide-pane timetable is-left'; // Start off-screen left
-                modalBody.querySelector('.slide-container').appendChild(timetablePane);
-            } else {
-                 timetablePane.className = 'slide-pane timetable is-left';
-            }
-            
-            timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #888;">Loading timetable...</div>`;
-            
-            try {
-                // Get applicable timetable for the duty date
-                const applicableTimetable = getApplicableTimetable(dutyDate);
-                if (!applicableTimetable) throw new Error('No applicable timetable found for this date');
+			// --- Prepare the timetable pane (off-screen on the LEFT) ---
+			if (!timetablePane) {
+				timetablePane = document.createElement('div');
+				timetablePane.id = 'timetable-pane';
+				timetablePane.className = 'slide-pane timetable is-left'; // Start off-screen left
+				modalBody.querySelector('.slide-container').appendChild(timetablePane);
+			} else {
+				 timetablePane.className = 'slide-pane timetable is-left';
+			}
+			
+			timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #888;">Loading timetable...</div>`;
+			
+			try {
+				// Get applicable timetable for the duty date
+				const applicableTimetable = getApplicableTimetable(dutyDate);
+				if (!applicableTimetable) throw new Error('No applicable timetable found for this date');
 
-                // Fetch timetable data if not already cached
-                if (!currentTimetableData) currentTimetableData = await fetchTimetableData(applicableTimetable);
+				// Fetch timetable data if not already cached
+				if (!currentTimetableData) currentTimetableData = await fetchTimetableData(applicableTimetable);
 
-                if (!currentTimetableData || !currentTimetableData[runNumber]) throw new Error('Run not found in timetable');
+				let runData = [];
 
-                // Get and filter run data
-                let runData = currentTimetableData[runNumber];
-                runData = filterRunByTime(runData, startTime, endTime);
-                runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
+				if (runNumber.includes('>')) {
+					// Handle transition runs
+					const [firstRun, secondRun] = runNumber.split('>');
+					
+					// Get first run data (filtered from pickup time)
+					if (currentTimetableData[firstRun]) {
+						let firstRunData = filterRunByTime(currentTimetableData[firstRun], startTime, endTime);
+						firstRunData = addDepotStops(firstRunData, startLocation, endLocation, startTime, endTime);
+						runData = [...firstRunData];
+						
+						// Add transition message row
+						runData.push({
+							location: "— TRANSITION —",
+							platform: "—",
+							arrivalTime: "—",
+							departureTime: "—",
+							isTransition: true
+						});
+					}
+					
+					// Get second run data (complete from start)
+					if (currentTimetableData[secondRun]) {
+						let secondRunData = [...currentTimetableData[secondRun]];
+						// Apply +1 extra stop rule to second run only
+						if (secondRunData.length > 0) {
+							const lastIncludedIndex = secondRunData.length - 1;
+							const endIndex = Math.min(lastIncludedIndex + 2, secondRunData.length);
+							secondRunData = secondRunData.slice(0, endIndex);
+						}
+						secondRunData = addDepotStops(secondRunData, startLocation, endLocation, startTime, endTime);
+						runData = [...runData, ...secondRunData];
+					}
+					
+					if (runData.length <= 1) throw new Error('Transition runs not found in timetable');
+				} else {
+					// Handle single runs (existing logic)
+					if (!currentTimetableData[runNumber]) throw new Error('Run not found in timetable');
+					runData = filterRunByTime(currentTimetableData[runNumber], startTime, endTime);
+					runData = addDepotStops(runData, startLocation, endLocation, startTime, endTime);
+				}
 
-                // Create timetable HTML
-                let timetableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
-                        <thead class="timetable-sticky-header">
-                            <tr>
-                                <th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
-                                <th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
-                                <th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Departure</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+				// Create timetable HTML
+				let timetableHTML = `
+					<table style="width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed;">
+						<thead class="timetable-sticky-header">
+							<tr>
+								<th style="width: 35%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: left;">Location</th>
+								<th style="width: 15%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Plat.</th>
+								<th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Arrival</th>
+								<th style="width: 25%; font-weight: 600; font-size: 14px; color: #888; padding: 12px; text-align: center;">Departure</th>
+							</tr>
+						</thead>
+						<tbody>
+				`;
 
-                runData.forEach(stop => {
-                    const isDepot = stop.isDepot || stop.locationCode === 'POD' || stop.locationCode === 'BED';
-                    const rowStyle = isDepot ? 'background: rgba(30, 136, 229, 0.1);' : '';
-                    const nameColor = isDepot ? 'color: #1e88e5;' : 'color: #ffffff;';
-                    
-                    timetableHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
-                            <td style="padding: 12px; font-weight: 500; font-size: 14px; ${nameColor} vertical-align: middle;">${stop.location}</td>
-                            <td style="padding: 12px; color: #888; font-size: 14px; text-align: center; vertical-align: middle;">${stop.platform}</td>
-                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.arrivalTime}</td>
-                            <td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.departureTime}</td>
-                        </tr>
-                    `;
-                });
+				runData.forEach(stop => {
+					const isDepot = stop.isDepot || stop.locationCode === 'POD' || stop.locationCode === 'BED';
+					const isTransition = stop.isTransition;
+					
+					let rowStyle = '';
+					let nameColor = 'color: #ffffff;';
+					
+					if (isTransition) {
+						rowStyle = 'background: rgba(255, 165, 0, 0.2); border-top: 2px solid #ff6b35; border-bottom: 2px solid #ff6b35;';
+						nameColor = 'color: #ff6b35; font-weight: bold; text-align: center;';
+					} else if (isDepot) {
+						rowStyle = 'background: rgba(30, 136, 229, 0.1);';
+						nameColor = 'color: #1e88e5;';
+					}
+					
+					timetableHTML += `
+						<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); ${rowStyle}">
+							<td style="padding: 12px; font-weight: 500; font-size: 14px; ${nameColor} vertical-align: middle;">${stop.location}</td>
+							<td style="padding: 12px; color: #888; font-size: 14px; text-align: center; vertical-align: middle;">${stop.platform}</td>
+							<td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.arrivalTime}</td>
+							<td style="padding: 12px; font-family: 'Courier New', monospace; font-weight: bold; color: #667eea; font-size: 14px; text-align: center; vertical-align: middle;">${stop.departureTime}</td>
+						</tr>
+					`;
+				});
 
-                timetableHTML += `</tbody></table>`;
-                timetablePane.innerHTML = timetableHTML;
-                
-            } catch (error) {
-                console.error('Error loading timetable:', error);
-                timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #e53935;">${error.message}</div>`;
-            }
+				timetableHTML += `</tbody></table>`;
+				timetablePane.innerHTML = timetableHTML;
+				
+			} catch (error) {
+				console.error('Error loading timetable:', error);
+				timetablePane.innerHTML = `<div style="padding: 2rem; text-align: center; color: #e53935;">${error.message}</div>`;
+			}
 
-            // --- Slide in the new pane from the LEFT ---
-            requestAnimationFrame(() => {
-                 timetablePane.classList.remove('is-left');
-                 timetablePane.classList.add('is-center');
-            });
-        }
+			// --- Slide in the new pane from the LEFT ---
+			requestAnimationFrame(() => {
+				 timetablePane.classList.remove('is-left');
+				 timetablePane.classList.add('is-center');
+			});
+		}
 
         // Check if duty is base type (can show timetable)
         function isDutyBaseType(versionInfo) {
